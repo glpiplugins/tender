@@ -36,6 +36,13 @@
  */
 function plugin_tender_install()
 {
+
+    global $DB;
+    $migration = new Migration(100);
+    if (!$DB->tableExists("glpi_plugin_tender_tenders")) {
+        $DB->runFile(Plugin::getPhpDir('tender')."/install/sql/empty-1.0.0.sql");
+    }
+    $migration->executeMigration();
     return true;
 }
 
@@ -46,5 +53,22 @@ function plugin_tender_install()
  */
 function plugin_tender_uninstall()
 {
+
+    global $DB;
+
+    $tables = [
+        "glpi_plugin_tender_tenders"
+    ];
+
+    foreach ($tables as $table) {
+        $DB->dropTable($table);
+    }
+
+    $tables_glpi = ["glpi_logs"];
+
+    foreach ($tables_glpi as $table_glpi) {
+        $DB->delete($table_glpi, ['itemtype' => 'PluginTender']);
+    }
+
     return true;
 }
