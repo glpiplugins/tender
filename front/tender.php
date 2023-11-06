@@ -1,13 +1,18 @@
 <?php
 
+namespace GlpiPlugin\Tender;
+
+use Plugin;
+use Session;
+use Html;
+use Search;
+
 include ('../../../inc/includes.php');
 
-$plugin = new Plugin();
+Session::checkRight("networking", READ); // Ändern Sie dies entsprechend den Rechten Ihres Plugins
 
-Session::checkRight("networking", READ);
+Html::header(Tender::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Tender", "tender");
 
-Html::header(PluginTenderTender::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "plugintendertender", "tender");
-
-Search::show('PluginTenderTender');
+Search::show("GlpiPlugin\Tender\Tender");
 
 Html::footer();

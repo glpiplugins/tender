@@ -1,0 +1,13 @@
+{% extends "generic_show_form.html.twig" %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% set params  = params ?? [] %}
+
+{% block more_fields %}
+      
+      {{ fields.textField(
+         'tender_subject',
+         item.fields['tender_subject'],
+         __('Tender Subject'),
+         {}
+      ) }}
+{% endblock %}

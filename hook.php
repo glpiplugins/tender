@@ -72,3 +72,7 @@ function plugin_tender_uninstall()
 
     return true;
 }
+
+// function plugin_tender_getDropdown() {
+//     return ['GlpiPlugin\Tender\Tender' => __("Tender", "tender")];
+//  }
