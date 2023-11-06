@@ -1,5 +1,7 @@
 <?php
 
+
+
 /**
  * -------------------------------------------------------------------------
  * tender plugin for GLPI
@@ -29,6 +31,10 @@
  * --------------------------------------------------------------------------
  */
 
+
+use GlpiPlugin\Tender\Tender;
+use GlpiPlugin\Tender\Menu;
+
 define('PLUGIN_TENDER_VERSION', '1.0');
 
 // Minimal GLPI version, inclusive
@@ -48,7 +54,8 @@ function plugin_init_tender()
 
     $PLUGIN_HOOKS['csrf_compliant']['tender'] = true;
 
-    $PLUGIN_HOOKS["menu_toadd"]['tender'] = ['management' => 'PluginTenderMenu'];
+    //$PLUGIN_HOOKS['assign_to_ticket']['tender'] = true;
+    $PLUGIN_HOOKS["menu_toadd"]['tender'] = ['management' => Tender::class];
 
 }
 
