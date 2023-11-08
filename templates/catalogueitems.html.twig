@@ -1,0 +1,56 @@
+{% extends "generic_show_form.html.twig" %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% set params  = params ?? [] %}
+
+{% block more_fields %}
+
+      {{ fields.dropdownItemTypes(
+         'itemtype',
+         item.fields['itemtype'],
+         __('Itemtype'),
+         {
+            types: itemtypes
+         }
+      ) }}
+
+        {{ fields.dropdownField(
+            'ComputerType',
+            'types_id',
+            item.fields['types_id'],
+            __('Type'),
+            {}
+        ) }}
+
+      {{ fields.textareaField(
+         'description',
+         item.fields['description'],
+         __('Description'),
+         {
+            enable_richtext: true
+         }
+      ) }}
+
+<script>
+   $(document).on('change', 'select[name="itemtype"]', function(e) {
+      console.log('change');
+      var itemtype = $('select[name="itemtype"]').find(':selected').val();
+      var dom_name = 'types_id'
+      $.ajax({
+            method: 'GET',
+            url: CFG_GLPI.root_doc + "/plugins/tender/ajax/catalogueitem.php",
+            data: {
+                  action: 'get_types_for_itemtype',
+                  itemtype: itemtype,
+                  dom_name: dom_name
+            }
+         }).done(function(html_data) {
+            var parent_dom = $('select[name="'+dom_name+'"]').parent().parent().parent();
+            parent_dom.empty();
+            parent_dom.append(html_data);
+            var child = parent_dom.children().first();
+            child.children().appendTo(parent_dom);
+            child.remove();
+         });
+   });
+</script>
+{% endblock %}

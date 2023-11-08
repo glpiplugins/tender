@@ -4,17 +4,19 @@ namespace GlpiPlugin\Tender;
 
 use CommonDBTM;
 use CommonGLPI;
+use CommonDropdown;
 use Html;
 use Entity;
+use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
 
-class Tender extends CommonDBTM  {
+class CatalogueItem extends CommonDropdown  {
 
     static $rightname = 'networking';
 
     static function getTypeName($nb = 0) {
       
-        return __('Tender', 'Tender');
+        return __('Catalogue Item', 'Catalogue Items');
     }
 
      public function defineTabs($options = []) {
@@ -22,8 +24,7 @@ class Tender extends CommonDBTM  {
       //add main tab for current object
       $this->addDefaultFormTab($ong);
       //add core Document tab
-      $this->addStandardTab('GlpiPlugin\Tender\TenderItem', $ong, $options);
-      $this->addStandardTab('GlpiPlugin\Tender\TenderSupplier', $ong, $options);
+      $this->addStandardTab('GlpiPlugin\Tender\CatalogueItemSupplier', $ong, $options);
       $this->addStandardTab('Ticket', $ong, $options);
       return $ong;
    }
@@ -37,20 +38,20 @@ class Tender extends CommonDBTM  {
 
         $this->initForm($ID, $options);
         
-        TemplateRenderer::getInstance()->display('@tender/tender.html.twig', [
+        TemplateRenderer::getInstance()->display('@tender/catalogueitems.html.twig', [
             'item'   => $this,
             'params' => $options,
+            'itemtypes' => $CFG_GLPI['plugin_tender_types']
         ]);
 
         return true;
      }
 
-
     public function rawSearchOptions() {
         $tab = parent::rawSearchOptions();
 
         $tab[] = [
-           'id'                 => '2',
+           'id'                 => '8',
            'table'              => $this::getTable(),
            'field'              => 'id',
            'name'               => __('ID'),
@@ -70,24 +71,6 @@ class Tender extends CommonDBTM  {
         $tab[] = [
            'id'                 => '4',
            'table'              => $this::getTable(),
-           'field'              => 'tender_subject',
-           'name'               => __('Tender Subject'),
-           'datatype'           => 'string',
-           'massiveaction'      => false
-        ];
-  
-        $tab[] = [
-           'id'                 => '5',
-           'table'              => 'glpi_entities',
-           'field'              => 'completename',
-           'name'               => Entity::getTypeName(1),
-           'datatype'           => 'dropdown',
-           'massiveaction'      => false
-        ];
-  
-        $tab[] = [
-           'id'                 => '6',
-           'table'              => $this::getTable(),
            'field'              => 'is_recursive',
            'name'               => __('Recursive'),
            'datatype'           => 'bool',
@@ -95,7 +78,7 @@ class Tender extends CommonDBTM  {
         ];
   
         $tab[] = [
-           'id'                 => '7',
+           'id'                 => '5',
            'table'              => $this::getTable(),
            'field'              => 'language',
            'name'               => __('Language'),
@@ -109,5 +92,37 @@ class Tender extends CommonDBTM  {
         return $tab;
 
     }
+
+    static function getCatalogueItemsBySupplier($suppliers) {
+
+      global $DB;
+
+      $iterator = $DB->request([
+         'SELECT' => ['glpi_plugin_tender_catalogueitems.id', 'glpi_plugin_tender_catalogueitems.name'],
+         'DISTINCT' => true,
+          'FROM' => 'glpi_plugin_tender_catalogueitems',
+          'LEFT JOIN' => [
+            'glpi_plugin_tender_catalogueitemsuppliers' => [
+                'FKEY' => [
+                    'glpi_plugin_tender_catalogueitems' => 'id',
+                    'glpi_plugin_tender_catalogueitemsuppliers' => 'catalogueitems_id'
+                ]
+            ]
+         ],        
+          'WHERE' => [
+              'suppliers_id' => $suppliers
+              ]
+      ]);
+
+      $catalogueitems = [];
+      foreach ($iterator as $catalogueitem) {
+          $catalogueitems[$catalogueitem['id']] = $catalogueitem['name'];
+      }
+
+      return $catalogueitems;
+
+    }
+
+
 
 }

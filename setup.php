@@ -33,7 +33,7 @@
 
 
 use GlpiPlugin\Tender\Tender;
-use GlpiPlugin\Tender\Menu;
+use GlpiPlugin\Tender\TenderItem;
 
 define('PLUGIN_TENDER_VERSION', '1.0');
 
@@ -50,12 +50,35 @@ define("PLUGIN_TENDER_MAX_GLPI_VERSION", "10.1.99");
  */
 function plugin_init_tender()
 {
-    global $PLUGIN_HOOKS;
+    global $PLUGIN_HOOKS, $CFG_GLPI, $ITEM_TYPES;
 
     $PLUGIN_HOOKS['csrf_compliant']['tender'] = true;
 
-    //$PLUGIN_HOOKS['assign_to_ticket']['tender'] = true;
+    // $PLUGIN_HOOKS['use_massive_action']['tender'] = 1;
+    // $PLUGIN_HOOKS['assign_to_ticket']['tender'] = true;
     $PLUGIN_HOOKS["menu_toadd"]['tender'] = ['management' => Tender::class];
+    // $PLUGIN_HOOKS['itemtype']['tender'] = ['TenderItem'];
+    // $PLUGIN_HOOKS['add_tab']['tender'] = ['TenderItem' => 'plugin_tender_add_tab'];
+
+    $TENDER_TYPES = [
+        'CartridgeItem',
+        'Certificate',
+        'Computer',
+        'ConsumableItem',
+        'Contract',
+        'Enclosure',
+        'SoftwareLicense',
+        'Monitor',
+        'NetworkEquipment',
+        'Pdu',
+        'Peripheral',
+        'Phone',
+        'Printer',        
+        'Rack',
+        // 'GlpiPlugin\Tender\OtherItem',
+     ];
+
+     $CFG_GLPI['plugin_tender_types'] = $TENDER_TYPES;
 
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-use GlpiPlugin\Tender\Tender;
+use GlpiPlugin\Tender\TenderSupplier;
 
 include ("../../../inc/includes.php");
 
@@ -17,18 +17,18 @@ if (!$plugin->isInstalled('tender') || !$plugin->isActivated('tender')) {
    Html::displayNotFoundError();
 }
 
-$object = new Tender();
-
-
+$object = new TenderSupplier();
 
 if (isset($_POST['add'])) {
+   if($_POST['suppliers_id'] == 0) {
+      Html::back();
+   }
    //Check CREATE ACL
    //$object->check(-1, CREATE, $_POST);
-
    //Do object creation
    $newid = $object->add($_POST);
    //Redirect to newly created object form
-   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/tender.form.php?id=$newid");
+   Html::back();
 } else if (isset($_POST['update'])) {
    //Check UPDATE ACL
    //$object->check($_POST['id'], UPDATE);
@@ -49,9 +49,9 @@ if (isset($_POST['add'])) {
    //Do object purge
    $object->delete($_POST, 1);
    //Redirect to objects list
-   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/tender.php");
+   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/tendersupplier.php");
 } else {
-    Html::header(Tender::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Tender");
+    Html::header(TenderSupplier::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\TenderSupplier");
     //per default, display object
     $object->display(
             $_GET

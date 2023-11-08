@@ -10,4 +10,25 @@
          __('Tender Subject'),
          {}
       ) }}
+
+      {{ fields.dateField(
+         'start_date',
+         item.fields['start_date'],
+         __('Startdate'),
+         {}
+      ) }}
+
+      {{ fields.dateField(
+         'end_date',
+         item.fields['end_date'],
+         __('Enddate'),
+         {}
+      ) }}
+
+      {{ fields.textareaField(
+         'comment',
+         item.fields['comment'],
+         __('Comments'),
+         {}
+      ) }}
 {% endblock %}

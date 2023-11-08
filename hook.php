@@ -29,6 +29,8 @@
  * --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Tender\TenderSupplier;
+
 /**
  * Plugin install process
  *
@@ -56,23 +58,41 @@ function plugin_tender_uninstall()
 
     global $DB;
 
-    $tables = [
-        "glpi_plugin_tender_tenders"
-    ];
+    // $tables = [
+    //     "glpi_plugin_tender_tenders"
+    // ];
 
-    foreach ($tables as $table) {
-        $DB->dropTable($table);
-    }
+    // foreach ($tables as $table) {
+    //     $DB->dropTable($table);
+    // }
 
-    $tables_glpi = ["glpi_logs"];
+    // $tables_glpi = ["glpi_logs"];
 
-    foreach ($tables_glpi as $table_glpi) {
-        $DB->delete($table_glpi, ['itemtype' => 'PluginTender']);
-    }
+    // foreach ($tables_glpi as $table_glpi) {
+    //     $DB->delete($table_glpi, ['itemtype' => 'PluginTender']);
+    // }
 
     return true;
 }
 
-// function plugin_tender_getDropdown() {
-//     return ['GlpiPlugin\Tender\Tender' => __("Tender", "tender")];
+function plugin_tender_getDropdown() {
+    return ['GlpiPlugin\Tender\CatalogueItem' => __("Catalogue Items", "CatalogueItems")];
+ }
+
+
+// function plugin_tender_MassiveActions($type) {
+//     $actions = [
+//         TenderSupplier::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete'    => _x('button', 'delete'),
+//     ];
+//     // switch ($type) {
+//     // //    case 'TenderSupplier' :
+//     //       $myclass      = 'TenderSupplier';
+//     //       $action_key   = 'delete';
+//     //       $action_label = __("plugin_tender_delete", 'delete');
+//     //       $actions[$myclass.MassiveAction::CLASS_ACTION_SEPARATOR.$action_key]
+//     //          = $action_label;
+ 
+//     //       break;
+//     // }
+//     return $actions;
 //  }
