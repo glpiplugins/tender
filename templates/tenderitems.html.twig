@@ -1,83 +1,29 @@
-{{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/tenderitem.form.php'}}) }}
-{% import 'components/form/fields_macros.html.twig' as fields %}
 
-   <div class="card-body d-flex flex-wrap">
-   {{ fields.smallTitle('Catalogue') }}
-      <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
-         <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
-            <div class="row flex-row align-items-start flex-grow-1">
-               <div class="row flex-row">
-                     {{ fields.numberField(
-                        'quantity',
-                        '',
-                        __('Quantity'),
-                     ) }}
-                     {{ fields.hiddenField(
-                        'tenders_id',
-                        item.fields['id']
-                     ) }}
-                           {{ fields.hiddenField(
-                     'add',
-                     'add'
+{{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/tenderitem.form.php'}}) }}
+{% import 'components/form/fields_macros.html.twig' as fields %}  
+<div class="card-body d-flex flex-wrap">
+   <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
+      <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+         <div class="row flex-row align-items-start flex-grow-1">
+            <div class="row flex-row" id="form-content">
+               <div>
+                  {{ fields.hiddenField(
+                     'tenders_id',
+                     item.fields['id']
                   ) }}
                   <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
-               <div>
-                  <button class="btn btn-primary me-2" type="submit" name="add" value="1">
+                  <button class="btn btn-primary me-2" type="submit" name="add_catalogue" value="1" id="btn_add">
                      <i class="fas fa-plus"></i>
                      <span>{{ _x('button', 'Add') }}</span>
                   </button>
-                  <a href="/plugins/tender/front/tenderitem.form.php" class="btn btn-primary me-2" type="submit" name="add" value="1">
-                     <i class="fas fa-plus"></i>
-                     <span>{{ _x('button', 'Add') }}</span>
-                  </a>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
-   {{ fields.smallTitle('Catalogue') }}
-      <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
-         <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
-            <div class="row flex-row align-items-start flex-grow-1">
-               <div class="row flex-row">
-                     {{ fields.dropdownItemTypes(
-                     'itemtype',
-                     item.fields['itemtype'],
-                     __('Itemtype'),
-                     {
-                        types: itemtypes
-                     }
-                     ) }}
-                     {{ fields.dropdownArrayField(
-                        'catalogueitems_id',
-                        '',
-                        catalogueitems,
-                        __('Catalogue Item'),
-                        {'used': used}
-                     ) }}
-                     {{ fields.numberField(
-                        'quantity',
-                        '',
-                        __('Quantity'),
-                     ) }}
-                     {{ fields.hiddenField(
-                        'tenders_id',
-                        item.fields['id']
-                     ) }}
-                           {{ fields.hiddenField(
-                     'add',
-                     'add'
-                  ) }}
-                  <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
-               <div>
-                  <button class="btn btn-primary me-2" type="submit" name="add" value="1">
-                     <i class="fas fa-plus"></i>
-                     <span>{{ _x('button', 'Add') }}</span>
+                  <button class="btn btn-secondary me-2" type="button" name="add_diverse_item" value="1" id="btn_add_diverse_item">
+                     <i class="fas fa-box-open"></i>
+                     <span>{{ _x('button', 'Add diverse item') }}</span>
                   </button>
-                  <a href="/plugins/tender/front/tenderitem.form.php" class="btn btn-primary me-2" type="submit" name="add" value="1">
-                     <i class="fas fa-plus"></i>
-                     <span>{{ _x('button', 'Add') }}</span>
-                  </a>
+                  <button class="btn btn-secondary me-2" type="button" name="add_catalogue_item" value="1" id="btn_add_catalogue_item">
+                     <i class="fas fa-boxes-stacked"></i>
+                     <span>{{ _x('button', 'Add catalogue item') }}</span>
+                  </button>
                </div>
             </div>
          </div>
@@ -88,3 +34,84 @@
       {{ include('components/datatable.html.twig') }}
    </div>
 </div>
+<script>
+   $(document).ready(function() {
+      var dom_element = $('#form-content');
+      var buttonCatalogue = $('#btn_add_catalogue_item');
+      buttonCatalogue.hide();
+      $.ajax({
+            method: 'POST',
+            url: CFG_GLPI.root_doc + "/plugins/tender/ajax/tenderitem.php",
+            data: {
+                  action: 'get_catalogueitem_add_form',
+                  itemtypes: JSON.parse('{{ itemtypes | json_encode | raw }}'),
+                  catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}')
+            }
+         }).done(function(html_data) {
+            dom_element.children('.form-field').remove();
+            dom_element.prepend(html_data);
+         });
+   });
+   $(document).on('click', '#btn_add_catalogue_item', function(e) {
+      var dom_element = $('#form-content');
+      var buttonDiverse = $('#btn_add_diverse_item');
+      var buttonCatalogue = $('#btn_add_catalogue_item');
+      var buttonAdd = $('#btn_add');
+      $.ajax({
+            method: 'POST',
+            url: CFG_GLPI.root_doc + "/plugins/tender/ajax/tenderitem.php",
+            data: {
+                  action: 'get_catalogueitem_add_form',
+                  itemtypes: JSON.parse('{{ itemtypes | json_encode | raw }}'),
+                  catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}')
+            }
+         }).done(function(html_data) {
+            buttonDiverse.show();
+            buttonCatalogue.hide();
+            buttonAdd.attr('name', 'add_catalogue');
+            dom_element.children('.form-field').remove();
+            dom_element.prepend(html_data);
+         });
+   });
+   $(document).on('click', '#btn_add_diverse_item', function(e) {
+      var dom_element = $('#form-content');
+      var buttonDiverse = $('#btn_add_diverse_item');
+      var buttonCatalogue = $('#btn_add_catalogue_item');
+      var buttonAdd = $('#btn_add');
+      $.ajax({
+            method: 'POST',
+            url: CFG_GLPI.root_doc + "/plugins/tender/ajax/tenderitem.php",
+            data: {
+                  action: 'get_diverseitem_add_form'
+            }
+         }).done(function(html_data) {
+            buttonDiverse.hide();
+            buttonCatalogue.show();
+            buttonAdd.attr('name', 'add');
+            dom_element.children('.form-field').remove();
+            dom_element.prepend(html_data);
+         });
+   });
+   $(document).on('change', 'select[name="itemtype"]', function(e) {
+      var itemtype = $('select[name="itemtype"]').find(':selected').val();
+      var suppliers = JSON.parse('{{ suppliers | json_encode | raw }}');
+      var dom_name = 'catalogueitems_id'
+      $.ajax({
+            method: 'POST',
+            url: CFG_GLPI.root_doc + "/plugins/tender/ajax/tenderitem.php",
+            data: {
+                  action: 'get_catalogueitems_for_itemtype',
+                  itemtype: itemtype,
+                  suppliers: suppliers,
+                  dom_name: dom_name
+            }
+         }).done(function(html_data) {
+            var parent_dom = $('select[name="'+dom_name+'"]').parent().parent()
+            parent_dom.empty();
+            parent_dom.append(html_data);
+            var child = parent_dom.children().first();
+            child.children().appendTo(parent_dom);
+            child.remove();
+         });
+   });
+</script>

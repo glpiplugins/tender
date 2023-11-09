@@ -93,36 +93,79 @@ class CatalogueItem extends CommonDropdown  {
 
     }
 
-    static function getCatalogueItemsBySupplier($suppliers) {
+    static function getCatalogueItemsBySupplier($suppliers, $itemtypes = NULL) {
 
-      global $DB;
+        global $DB;
 
-      $iterator = $DB->request([
-         'SELECT' => ['glpi_plugin_tender_catalogueitems.id', 'glpi_plugin_tender_catalogueitems.name'],
-         'DISTINCT' => true,
-          'FROM' => 'glpi_plugin_tender_catalogueitems',
-          'LEFT JOIN' => [
-            'glpi_plugin_tender_catalogueitemsuppliers' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_catalogueitems' => 'id',
-                    'glpi_plugin_tender_catalogueitemsuppliers' => 'catalogueitems_id'
+        $catalogueitems = [];
+
+        if (count($suppliers) > 0) {
+
+            $query = [
+                'SELECT' => ['glpi_plugin_tender_catalogueitems.id', 'glpi_plugin_tender_catalogueitems.name'],
+                'DISTINCT' => true,
+                'FROM' => 'glpi_plugin_tender_catalogueitems',
+                'LEFT JOIN' => [
+                    'glpi_plugin_tender_catalogueitemsuppliers' => [
+                        'FKEY' => [
+                            'glpi_plugin_tender_catalogueitems' => 'id',
+                            'glpi_plugin_tender_catalogueitemsuppliers' => 'catalogueitems_id'
+                        ]
+                    ]
+                ],
+                'WHERE' => [
+                    'suppliers_id' => $suppliers
                 ]
-            ]
-         ],        
-          'WHERE' => [
-              'suppliers_id' => $suppliers
-              ]
-      ]);
+            ];
 
-      $catalogueitems = [];
-      foreach ($iterator as $catalogueitem) {
-          $catalogueitems[$catalogueitem['id']] = $catalogueitem['name'];
-      }
+            if(is_array($itemtypes) && !empty($itemtypes)) {
+                array_push($query['WHERE'], ['itemtype' => $itemtypes]);
+            }
 
-      return $catalogueitems;
+            $iterator = $DB->request($query);
+
+            
+            foreach ($iterator as $catalogueitem) {
+                $catalogueitems[$catalogueitem['id']] = $catalogueitem['name'];
+            }
+        }
+
+        return $catalogueitems;
 
     }
 
+    static function getByItemtypes($suppliers) {
 
+        global $DB;
+
+        $catalogueitems = [];
+
+        if (count($suppliers) > 0) {
+            $iterator = $DB->request([
+                'SELECT' => ['glpi_plugin_tender_catalogueitems.id', 'glpi_plugin_tender_catalogueitems.name'],
+                'DISTINCT' => true,
+                'FROM' => 'glpi_plugin_tender_catalogueitems',
+                'LEFT JOIN' => [
+                    'glpi_plugin_tender_catalogueitemsuppliers' => [
+                        'FKEY' => [
+                            'glpi_plugin_tender_catalogueitems' => 'id',
+                            'glpi_plugin_tender_catalogueitemsuppliers' => 'catalogueitems_id'
+                        ]
+                    ]
+                ],        
+                'WHERE' => [
+                    'suppliers_id' => $suppliers
+                    ]
+            ]);
+
+            
+            foreach ($iterator as $catalogueitem) {
+                $catalogueitems[$catalogueitem['id']] = $catalogueitem['name'];
+            }
+        }
+
+        return $catalogueitems;
+
+    }
 
 }

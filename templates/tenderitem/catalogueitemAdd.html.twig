@@ -1,0 +1,20 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{{ fields.dropdownItemTypes(
+    'itemtype',
+    item.fields['itemtype'],
+    __('Itemtype'),
+    {
+    types: itemtypes
+    }
+) }}
+{{ fields.dropdownArrayField(
+    'catalogueitems_id',
+    '',
+    catalogueitems,
+    __('Catalogue Item'),
+) }}
+{{ fields.numberField(
+    'quantity',
+    '',
+    __('Quantity'),
+) }}

@@ -131,36 +131,36 @@ class TenderSupplier extends CommonDBTM   {
               echo Html::submit(__('Post'), array('name' => 'massiveaction'))."</span>";
   
               return true;
-      }
+        }
         return parent::showMassiveActionsSubForm($ma);
-     }
+    }
   
-     static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
-                                                         array $ids) {
+    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                        array $ids) {
         global $DB;
-  
+
         switch ($ma->getAction()) {
-           case 'delete' :
-              $input = $ma->getInput();
+            case 'delete' :
+                $input = $ma->getInput();
 
-              foreach ($ids as $id) {
+                foreach ($ids as $id) {
 
-                 if ($item->getFromDB($id)
-                     && $item->deleteFromDB()) {
+                    if ($item->getFromDB($id)
+                        && $item->deleteFromDB()) {
                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                 } else {
+                    } else {
                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                     $ma->addMessage(__("Something went wrong"));
-                 }
-              }
-              return;
-  
+                    }
+                }
+                return;
+
         }
         parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
-     }
+    }
 
 
-     static function getSuppliers($tender_id) {
+    static function getSuppliers($tender_id) {
 
         global $DB;
   
@@ -175,9 +175,9 @@ class TenderSupplier extends CommonDBTM   {
         foreach ($iterator as $supplier) {
             $suppliers[] = $supplier['suppliers_id'];
         }
-  
+        
         return $suppliers;
   
-      }
+    }
 
 }

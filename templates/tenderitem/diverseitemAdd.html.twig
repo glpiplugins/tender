@@ -1,0 +1,19 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{{ fields.textField(
+    'name',
+    '',
+    __('Name'),
+) }}
+{{ fields.numberField(
+    'quantity',
+    '',
+    __('Quantity'),
+) }}
+{{ fields.textareaField(
+    'description',
+    '',
+    __('Description'),
+    {
+    enable_richtext: true
+    }
+) }}

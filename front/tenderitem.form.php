@@ -1,6 +1,7 @@
 <?php
 
 use GlpiPlugin\Tender\TenderItem;
+use GlpiPlugin\Tender\CatalogueItem;
 
 include ("../../../inc/includes.php");
 
@@ -25,7 +26,19 @@ if (isset($_POST['add'])) {
    //Do object creation
    $newid = $object->add($_POST);
    //Redirect to newly created object form
-   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/tenderitem.form.php?id=$newid");
+   Html::back();
+} else if (isset($_POST['add_catalogue'])) {
+   //Check UPDATE ACL
+   //$object->check($_POST['id'], UPDATE);
+   $catalogueItem = CatalogueItem::getByID($_POST['catalogueitems_id']);
+
+   $_POST['name'] = $catalogueItem->fields['name'];
+   $_POST['description'] = $catalogueItem->fields['description'];
+   //Do object creation
+
+   $newid = $object->add($_POST);
+   //Redirect to object form
+   Html::back();
 } else if (isset($_POST['update'])) {
    //Check UPDATE ACL
    //$object->check($_POST['id'], UPDATE);
@@ -48,7 +61,7 @@ if (isset($_POST['add'])) {
    //Redirect to objects list
    Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/tenderitem.php");
 } else {
-    Html::header(Tender::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\TenderItem");
+    Html::header(TenderItem::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\TenderItem");
     //per default, display object
     $object->display(
             $_GET

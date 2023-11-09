@@ -1,9 +1,8 @@
 
 {% import 'components/form/fields_macros.html.twig' as fields %}
-        {{ fields.dropdownField(
-            itemtype ~ 'Type',
-            'types_id',
-            '',
-            __('Type'),
-            {}
-        ) }}
+{{ fields.dropdownArrayField(
+    'catalogueitems_id',
+    '',
+    catalogueitems,
+    __('Catalogue Item'),
+) }}

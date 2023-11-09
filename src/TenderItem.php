@@ -38,14 +38,15 @@ class TenderItem extends CommonDBTM   {
       }
    }
 
-   static function showList($item) {
+   static function showList($tenderItem) {
 
     global $DB;
+    global $CFG_GLPI;
 
     $iterator = $DB->request([
         'FROM' => 'glpi_plugin_tender_tenderitems',
         'WHERE' => [
-            'tenders_id' => $item->getID()
+            'tenders_id' => $tenderItem->getID()
             ]
     ]);
 
@@ -55,10 +56,13 @@ class TenderItem extends CommonDBTM   {
         $item['itemtype'] = "GlpiPlugin\Tender\TenderItem";
         $items[] = $item;
     }
-
+    
+    $suppliers = TenderSupplier::getSuppliers($tenderItem->getID());
       TemplateRenderer::getInstance()->display('@tender/tenderitems.html.twig', [
-          'item'   => $item,
-          'catalogueitems' => CatalogueItem::getCatalogueItemsBySupplier(TenderSupplier::getSuppliers($item->getID())),
+          'item'   => $tenderItem,
+          'suppliers' => $suppliers,
+          'catalogueitems' => CatalogueItem::getCatalogueItemsBySupplier($suppliers),
+          'itemtypes' => $CFG_GLPI['plugin_tender_types'],
           'is_tab' => true,
           'filters' => [],
           'nofilter' => true,
