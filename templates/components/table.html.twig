@@ -186,6 +186,8 @@
                                         {{ entry[colkey]|raw }}
                                     {% elseif formatter == "float" %}
                                         {{ entry[colkey]|number_format(2, ',', '.') }}
+                                    {% elseif formatter == "net_float" %}
+                                        {{ (entry[colkey])|number_format(2, ',', '.') }}
                                     {% else %}
                                         {{ entry[colkey] }}
                                     {% endif %}

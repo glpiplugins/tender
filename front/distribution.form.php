@@ -1,8 +1,7 @@
 <?php
 
-use GlpiPlugin\Tender\TenderItem;
-use GlpiPlugin\Tender\CatalogueItem;
 use GlpiPlugin\Tender\Distribution;
+use GlpiPlugin\Tender\TenderItem;
 
 include ("../../../inc/includes.php");
 
@@ -19,42 +18,24 @@ if (!$plugin->isInstalled('tender') || !$plugin->isActivated('tender')) {
    Html::displayNotFoundError();
 }
 
-$object = new TenderItem();
+$object = new Distribution();
 
 if (isset($_POST['add'])) {
    //Check CREATE ACL
    //$object->check(-1, CREATE, $_POST);
    //Do object creation
-   $newid = $object->add($_POST);
-
+   $tenderItemObj = new TenderItem();
+   $tenderItem = $tenderItemObj->getByID($_POST['tenderitems_id'])->fields;
+   $tenderItem['quantity'] = $tenderItem['quantity'] + $_POST['quantity'];
+   $tenderItemObj->update($tenderItem);
    Distribution::addDistribution(
-      $newid,
+      $_POST['tenderitems_id'],
       $_POST['quantity'],
       $_POST['budgets_id'],
       $_POST['locations_id'],
-      $_POST['delivery_locations_id']
-   );
-
+      $_POST['delivery_locations_id'],
+      );
    //Redirect to newly created object form
-   Html::back();
-} else if (isset($_POST['add_catalogue'])) {
-   //Check UPDATE ACL
-   //$object->check($_POST['id'], UPDATE);
-   $catalogueItem = CatalogueItem::getByID($_POST['catalogueitems_id']);
-   $_POST['name'] = $catalogueItem->fields['name'];
-   $_POST['description'] = $catalogueItem->fields['description'];
-   //Do object creation
-
-   $newid = $object->add($_POST);
-   
-   Distribution::addDistribution(
-      $newid,
-      $_POST['quantity'],
-      $_POST['budgets_id'],
-      $_POST['locations_id'],
-      $_POST['delivery_locations_id']
-   );
-   //Redirect to object form
    Html::back();
 } else if (isset($_POST['update'])) {
    //Check UPDATE ACL
@@ -65,13 +46,6 @@ if (isset($_POST['add'])) {
    Html::back();
 } else if (isset($_POST['delete'])) {
    //Check DELETE ACL
-
-   Distribution::removeAllDistributions($_GET['id']);
-   // $distributions = Distribution::getDistributions($_GET["id"]);
-   // foreach ($distributions as $item) {
-   //    $distribution = new Distribution();
-   //    $distribution->delete($item['id']);
-   // }
    //$object->check($_POST['id'], DELETE);
    //Put object in dustbin
    $object->delete($_POST);
@@ -83,9 +57,9 @@ if (isset($_POST['add'])) {
    //Do object purge
    $object->delete($_POST, 1);
    //Redirect to objects list
-   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/tenderitem.php");
+   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/distribution.php");
 } else {
-    Html::header(TenderItem::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Tender", "tender");
+    Html::header(Distribution::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Distribution");
     //per default, display object
     $object->display(
             $_GET

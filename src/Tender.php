@@ -22,8 +22,19 @@ class Tender extends CommonDBTM  {
       //add main tab for current object
       $this->addDefaultFormTab($ong);
       //add core Document tab
-      $this->addStandardTab('GlpiPlugin\Tender\TenderItem', $ong, $options);
       $this->addStandardTab('GlpiPlugin\Tender\TenderSupplier', $ong, $options);
+      $tendersupplier = new TenderSupplier();
+      if ($tendersupplier->find(['tenders_id' => $this->fields['id']])) {
+         $this->addStandardTab('GlpiPlugin\Tender\TenderItem', $ong, $options);
+      }
+      
+      $tenderitem = new TenderItem();
+      if ($tenderitem->find(['tenders_id' => $this->fields['id']])) {
+         $this->addStandardTab('GlpiPlugin\Tender\OfferItem', $ong, $options);
+      }
+
+      $this->addStandardTab('GlpiPlugin\Tender\Order', $ong, $options);
+      $this->addStandardTab('GlpiPlugin\Tender\Delivery', $ong, $options);
       $this->addStandardTab('Ticket', $ong, $options);
       return $ong;
    }

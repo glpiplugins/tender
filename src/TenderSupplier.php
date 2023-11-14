@@ -96,34 +96,6 @@ class TenderSupplier extends CommonDBTM   {
         return true;
      }
 
-    /**
-     * send back to stock
-     *
-     * @param array $input Array of item fields. Only the ID field is used here.
-     * @param int $history Not used
-     *
-     * @return bool
-     */
-    public function backToStock(array $input, $history = 1)
-    {
-        /** @var \DBmysql $DB */
-        global $DB;
-
-        $result = $DB->update(
-            $this->getTable(),
-            [
-                'date_out' => 'NULL'
-            ],
-            [
-                'id' => $input['id']
-            ]
-        );
-        if ($result) {
-            return true;
-        }
-        return false;
-    }
-
     static function showMassiveActionsSubForm(MassiveAction $ma) {
 
         switch ($ma->getAction()) {
@@ -160,14 +132,14 @@ class TenderSupplier extends CommonDBTM   {
     }
 
 
-    static function getSuppliers($tender_id) {
+    static function getSuppliers($tenders_id) {
 
         global $DB;
   
         $iterator = $DB->request([
             'FROM' => 'glpi_plugin_tender_tendersuppliers',
             'WHERE' => [
-                'tenders_id' => $tender_id
+                'tenders_id' => $tenders_id
                 ]
         ]);
   
@@ -177,6 +149,22 @@ class TenderSupplier extends CommonDBTM   {
         }
         
         return $suppliers;
+  
+    }
+
+    static function getSupplier($tenders_id, $suppliers_id) {
+
+        global $DB;
+  
+        $iterator = $DB->request([
+            'FROM' => 'glpi_plugin_tender_tendersuppliers',
+            'WHERE' => [
+                'tenders_id' => $tenders_id,
+                'suppliers_id' => $suppliers_id
+                ]
+        ]);
+  
+        return $iterator->current();
   
     }
 

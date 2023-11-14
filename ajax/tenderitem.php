@@ -14,16 +14,20 @@ switch ($action) {
     case 'get_catalogueitems_for_itemtype':
         TemplateRenderer::getInstance()->display('@tender/tenderitem/catalogueitemDropdown.html.twig', [
             'itemtype' => $_POST['itemtype'],
-            'catalogueitems' => CatalogueItem::getCatalogueItemsBySupplier($_POST['suppliers'], [$_POST['itemtype']])
+            'catalogueitems' => CatalogueItem::getCatalogueItemsBySupplier($_POST['suppliers'], [$_POST['itemtype']]),
+            'item' => $_POST['item']
         ]);
         break;
     case 'get_catalogueitem_add_form':
         TemplateRenderer::getInstance()->display('@tender/tenderitem/catalogueitemAdd.html.twig', [
             'itemtypes' => $_POST['itemtypes'],
             'catalogueitems' => $_POST['catalogueitems'],
+            'item' => $_POST['item']
         ]);
         break;
     case 'get_diverseitem_add_form':
-        TemplateRenderer::getInstance()->display('@tender/tenderitem/diverseitemAdd.html.twig', []);
+        TemplateRenderer::getInstance()->display('@tender/tenderitem/diverseitemAdd.html.twig', [
+            'item' => $_POST['item']
+        ]);
         break;        
 }

@@ -7,14 +7,50 @@
     types: itemtypes
     }
 ) }}
+
 {{ fields.dropdownArrayField(
     'catalogueitems_id',
     '',
     catalogueitems,
     __('Catalogue Item'),
 ) }}
+
+
 {{ fields.numberField(
     'quantity',
     '',
     __('Quantity'),
+) }}
+
+{{ fields.dropdownField(
+    'Location',
+    'locations_id',
+    item['default_locations_id'],
+    __('Location')
+) }}
+
+{{ fields.dropdownField(
+    'Location',
+    'delivery_locations_id',
+    item['default_delivery_locations_id'],
+    __('Delivery Location')
+) }}
+
+{{ fields.dropdownField(
+    'Budget',
+    'budgets_id',
+    '',
+    __('Budget'),
+) }}
+
+{{ fields.numberField(
+    'net_price',
+    '',
+    __('Net Price'),
+) }}
+
+{{ fields.numberField(
+    'tax',
+    '',
+    __('Tax'),
 ) }}

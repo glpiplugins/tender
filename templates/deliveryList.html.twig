@@ -1,0 +1,99 @@
+{{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/delivery.form.php'}}) }}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+   <div class="card-body d-flex flex-wrap">
+      <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
+         <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+            <div class="row flex-row align-items-start flex-grow-1">
+               <div class="row flex-row">
+
+                     {{ fields.textField(
+                        'delivery_reference',
+                        '',
+                        __('Delivery Reference'),
+                     ) }}
+
+                     {{ fields.dateField(
+                           'delivery_date',
+                           '',
+                           __('Delivery Date'),
+                           {
+                              'required': true
+                           }
+                     ) }}
+                     {{ fields.hiddenField(
+                           'tenders_id',
+                           tenders_id
+                     ) }}
+            <div class="table-responsive" {% if showmassiveactions %} id="{{ massiveactionparams['container'] }}" {% endif %}>
+               <table class="table table-hover">
+                     <thead>
+                        <tr>
+                           <th>{{__('Name')}}</th>
+                           <th>{{__('Description')}}</th>
+                           <th>{{__('Quantity')}}</th>
+                           <th>{{__('Already delivered')}}</th>
+                           <th>{{__('Delivered Quantity')}}</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        {% for item in tenderitems %}
+                        {% set pending_quantity = item.quantity - item.delivered_quantity %}
+                        <tr>
+                           <td>
+                                 {{ item.name }}
+                           </td>
+                           <td>
+                                 <span class="d-inline-block text-truncate"
+                                    style="max-width: 250px;">
+                                    {{ item['description']|raw }}
+                                 </span>
+                           </td>
+                           <td>
+                              {{ item.quantity }}
+                           </td>
+                           <td>
+                              {{ item.delivered_quantity }}
+                           </td>
+                           <td>
+                              {% if pending_quantity > 0 %}
+                                 {{ fields.numberField(
+                                    'item[' ~ loop.index ~ '][quantity]',
+                                    pending_quantity,
+                                    '',
+                                    {
+                                       'no_label': true,
+                                       'max': pending_quantity,
+                                       'min': 0
+                                    }
+                                 ) }}
+                              {% else %}
+                              {{ pending_quantity }}
+                              {% endif %}
+
+                           </td>
+                                 {{ fields.hiddenField(
+                                       'item[' ~ loop.index ~ '][distributions_id]',
+                                       item.distributions_id
+                                 ) }}
+                           </td>
+                        </tr>
+                        {% endfor %}
+                     </tbody>
+               </table>
+            </div>                     
+            </div>
+               <div>
+                  <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+                  <button class="btn btn-primary me-2" type="submit" name="add" value="1">
+                     <i class="fas fa-plus"></i>
+                     <span>{{ _x('button', 'Add') }}</span>
+                  </button>
+               </div>
+         </div>
+      </div>
+   </div>
+   <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
+      <hr />
+      {{ include('@tender/components/table.html.twig') }}
+   </div>
+</div>

@@ -1,0 +1,148 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="card-body d-flex flex-wrap">
+    <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
+    {{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/offeritem.form.php'}}) }}
+        <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+            <div class="row flex-row align-items-start flex-grow-1">
+                <div class="row flex-row">
+
+                    {{ fields.dropdownField(
+                        'Supplier',
+                        'suppliers_id',
+                        offerItem.suppliers_id,
+                        __('Suppliers'),
+                        {
+                            'disabled': true
+                        }
+                    ) }}
+
+                    {{ fields.dateField(
+                        'offer_date',
+                        offerItem.offer_date,
+                        __('Offerdate'),
+                        {
+                            'required': true
+                        }
+                    ) }}
+
+                    {{ fields.hiddenField(
+                        'tenders_id',
+                        offerItem.tenders_id
+                    ) }}
+
+                    {{ fields.hiddenField(
+                        'id',
+                        offerItem.id
+                    ) }}
+
+                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+
+                    <div>
+                        <button class="btn btn-primary me-2" type="submit" name="update" value="1">
+                            <i class="fas fa-save"></i>
+                            <span>{{ _x('button', 'Save') }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+    <hr />
+    <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
+    {{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/offeritem.form.php'}}) }}
+    <div class="table-responsive" {% if showmassiveactions %} id="{{ massiveactionparams['container'] }}" {% endif %}>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>{{__('Position')}}</th>
+                    <th>{{__('Name')}}</th>
+                    <th>{{__('Description')}}</th>
+                    <th>{{__('Quantity')}}</th>
+                    <th>{{__('Net Price')}}</th>
+                    <th>{{__('Tax')}}</th>
+                    <th>{{__('Gross Price')}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set total_net_price = 0 %}
+                {% set total_tax = 0 %}
+                {% set total_gross_price = 0 %}
+                {% for item in offerItems %}
+                {% set total_net_price = total_net_price + (item.quantity * item.net_price) %}
+                {% set total_tax = total_tax + (item.quantity * item.net_price * (item.tax / 100)) %}
+                {% set total_gross_price = total_gross_price + (item.quantity * item.net_price * (item.tax / 100 + 1)) %}
+                <tr>
+                    <td>
+                        1
+                    </td>
+                    <td>
+                        {{ item.name }}
+                    </td>
+                    <td>
+                        <span class="d-inline-block text-truncate"
+                            style="max-width: 250px;">
+                            {{ item['description']|raw }}
+                        </span>
+                    </td>
+                    <td>
+                        {{ item.quantity }}
+                    </td>
+                    <td>
+                        {{ fields.numberField(
+                            'item[' ~ loop.index ~ '][net_price]',
+                            item.net_price,
+                            __('Net Price'),
+                            {
+                                'no_label': true,
+                            }
+                        ) }}
+                    </td>
+                    <td>
+                        {{ fields.numberField(
+                            'item[' ~ loop.index ~ '][tax]',
+                            item.tax,
+                            __('tax'),
+                            {
+                                'no_label': true,
+                            }
+                        ) }}
+                        {{ fields.hiddenField(
+                                'item[' ~ loop.index ~ '][id]',
+                                item.id
+                        ) }}
+                    </td>
+                    <td>
+                    {{ ((item.quantity * item.net_price) * ((item.tax / 100) + 1))|number_format(2, ',', '.') }}
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="5"></td>
+                    <td> {{__('total net price')}} </td>
+                    <td>{{ total_net_price|number_format(2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td colspan="5"></td>
+                    <td> {{__('total tax')}} </td>
+                    <td>{{ total_tax|number_format(2, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td colspan="5"></td>
+                    <td> {{__('total gross price')}} </td>
+                    <td>{{ total_gross_price|number_format(2, ',', '.') }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="form-field row align-items-center col-12 mb-2"></div>
+    <div>
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+        <button class="btn btn-primary me-2" type="submit" name="update_items" value="1">
+            <i class="fas fa-save"></i>
+            <span>{{ _x('button', 'Save') }}</span>
+        </button>
+    </div>
+    </div>
+</div>

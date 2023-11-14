@@ -31,7 +31,7 @@
    </div>
    <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
       <hr />
-      {{ include('components/datatable.html.twig') }}
+      {{ include('@tender/components/table.html.twig') }}
    </div>
 </div>
 <script>
@@ -45,7 +45,8 @@
             data: {
                   action: 'get_catalogueitem_add_form',
                   itemtypes: JSON.parse('{{ itemtypes | json_encode | raw }}'),
-                  catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}')
+                  catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}'),
+                  item: JSON.parse('{{ item.fields | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             dom_element.children('.form-field').remove();
@@ -63,7 +64,8 @@
             data: {
                   action: 'get_catalogueitem_add_form',
                   itemtypes: JSON.parse('{{ itemtypes | json_encode | raw }}'),
-                  catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}')
+                  catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}'),
+                  item: JSON.parse('{{ item.fields | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             buttonDiverse.show();
@@ -82,7 +84,8 @@
             method: 'POST',
             url: CFG_GLPI.root_doc + "/plugins/tender/ajax/tenderitem.php",
             data: {
-                  action: 'get_diverseitem_add_form'
+                  action: 'get_diverseitem_add_form',
+                  item: JSON.parse('{{ item.fields | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             buttonDiverse.hide();
@@ -103,7 +106,8 @@
                   action: 'get_catalogueitems_for_itemtype',
                   itemtype: itemtype,
                   suppliers: suppliers,
-                  dom_name: dom_name
+                  dom_name: dom_name,
+                  item: JSON.parse('{{ item.fields | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             var parent_dom = $('select[name="'+dom_name+'"]').parent().parent()

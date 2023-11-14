@@ -16,10 +16,6 @@
                      'tenders_id',
                      item.fields['id']
                   ) }}
-                           {{ fields.hiddenField(
-                     'add',
-                     'add'
-                  ) }}
                   <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
                <div>
                   <button class="btn btn-primary me-2" type="submit" name="add" value="1">

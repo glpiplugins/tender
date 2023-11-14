@@ -34,6 +34,8 @@
 
 use GlpiPlugin\Tender\Tender;
 use GlpiPlugin\Tender\TenderItem;
+use GlpiPlugin\Tender\Distribution;
+use Glpi\Plugin\Hooks;
 
 define('PLUGIN_TENDER_VERSION', '1.0');
 
@@ -80,6 +82,8 @@ function plugin_init_tender()
 
      $CFG_GLPI['plugin_tender_types'] = $TENDER_TYPES;
 
+     $PLUGIN_HOOKS[Hooks::ITEM_ADD]['tender']        = [Distribution::class => [Distribution::class,
+     'item_add_distribution']];
 }
 
 
