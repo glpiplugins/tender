@@ -1,5 +1,6 @@
 <?php
 
+use GlpiPlugin\Tender\Tender;
 use GlpiPlugin\Tender\TenderItem;
 use GlpiPlugin\Tender\CatalogueItem;
 use GlpiPlugin\Tender\Distribution;
@@ -27,6 +28,8 @@ if (isset($_POST['add'])) {
    //Do object creation
    $newid = $object->add($_POST);
 
+   Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
+
    Distribution::addDistribution(
       $newid,
       $_POST['quantity'],
@@ -47,6 +50,8 @@ if (isset($_POST['add'])) {
 
    $newid = $object->add($_POST);
    
+   Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
+
    Distribution::addDistribution(
       $newid,
       $_POST['quantity'],
@@ -61,6 +66,7 @@ if (isset($_POST['add'])) {
    //$object->check($_POST['id'], UPDATE);
    //Do object update
    $object->update($_POST);
+   Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
    //Redirect to object form
    Html::back();
 } else if (isset($_POST['delete'])) {
@@ -75,6 +81,7 @@ if (isset($_POST['add'])) {
    //$object->check($_POST['id'], DELETE);
    //Put object in dustbin
    $object->delete($_POST);
+   Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
    //Redirect to objects list
    $object->redirectToList();
 } else if (isset($_POST['purge'])) {

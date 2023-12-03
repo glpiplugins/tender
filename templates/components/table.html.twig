@@ -197,6 +197,53 @@
                     </tr>
                 {% endfor %}
             </tbody>
+            <tfooter>
+                {% for footer_entry in footer_entries %}
+                <tr>
+                    <td></td>
+                    {% for colkey, colum in columns %}
+                        <td>
+                            {% if colkey in footer_entry|keys %}
+
+                                {% set formatter = formatters[colkey] %}
+
+                                {% if formatter == "maintext" %}
+                                    <span class="d-inline-block bg-blue-lt p-1 text-truncate"
+                                        title="{{ footer_entry[colkey] }}"
+                                        data-bs-toggle="tooltip"
+                                        style="max-width: 250px;">
+                                        {{ footer_entry[colkey] }}
+                                    </span>
+                                {% elseif formatter == "longtext" %}
+                                    <span class="d-inline-block text-truncate"
+                                        title="{{ footer_entry[colkey] }}"
+                                        data-bs-toggle="tooltip"
+                                        style="max-width: 250px;">
+                                        {{ footer_entry[colkey] }}
+                                    </span>
+                                {% elseif formatter starts with "progress" %}
+                                    {{ call("Html::progress", [100, footer_entry[colkey]])|raw }}
+                                {% elseif formatter == "date" %}
+                                    {{ call("Html::convDate", [footer_entry[colkey]])|raw }}
+                                {% elseif formatter == "datetime" %}
+                                    {{ call("Html::convDateTime", [footer_entry[colkey]])|raw }}
+                                {% elseif formatter == "bytesize" %}
+                                    {{ call("Toolbox::getSize", [footer_entry[colkey]])|raw }}
+                                {% elseif formatter == "raw_html" %}
+                                    {{ footer_entry[colkey]|raw }}
+                                {% elseif formatter == "float" %}
+                                    {{ footer_entry[colkey]|number_format(2, ',', '.') }}
+                                {% elseif formatter == "net_float" %}
+                                    {{ (footer_entry[colkey])|number_format(2, ',', '.') }}
+                                {% else %}
+                                    {{ footer_entry[colkey] }}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tfooter>
         </table>
     </div>
 

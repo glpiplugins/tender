@@ -32,6 +32,19 @@
    <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
       <hr />
       {{ include('@tender/components/table.html.twig') }}
+    <div class="table-responsive" {% if showmassiveactions %} id="{{ massiveactionparams['container'] }}" {% endif %}>
+        <table class="table table-hover">
+            <body>
+                <tr>
+               <td colspan="5"></td>
+               <td>Net Total</td>
+               <td>{{ net_total }}</td>
+            </tr>
+         </table>
+      </div>
+     Net  Total: {{ net_total }}
+      Tax Total: {{ tax_total }}
+      Gross Total: {{ gross_total }}
    </div>
 </div>
 <script>

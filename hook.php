@@ -76,7 +76,10 @@ function plugin_tender_uninstall()
 }
 
 function plugin_tender_getDropdown() {
-    return ['GlpiPlugin\Tender\CatalogueItem' => __("Catalogue Items", "CatalogueItems")];
+    return [
+        'GlpiPlugin\Tender\TenderType' => __("Tender Types", "TenderTypes"),
+        'GlpiPlugin\Tender\CatalogueItem' => __("Catalogue Items", "CatalogueItems"),
+    ];
  }
 
 

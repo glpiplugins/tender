@@ -11,6 +11,7 @@ CREATE TABLE `glpi_plugin_tender_tenders` (
             `default_delivery_locations_id` int unsigned DEFAULT NULL,
             `users_id` int unsigned DEFAULT NULL,
             `entities_id` int unsigned NOT NULL default '0',
+            `estimated_net_total` decimal(20,4) NOT NULL DEFAULT '0.0000',
             `date_mod` TIMESTAMP DEFAULT NULL,
             `date_creation` TIMESTAMP DEFAULT NULL,
             PRIMARY KEY (`id`),
@@ -148,3 +149,30 @@ CREATE TABLE `glpi_plugin_tender_deliveryitems` (
             KEY `date_mod` (`date_mod`),
             KEY `date_creation` (`date_creation`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+        
+
+CREATE TABLE `glpi_plugin_tender_tendertypes` (
+            `id` int unsigned NOT NULL AUTO_INCREMENT,
+            `tenders_id` int unsigned DEFAULT NULL,
+            `name` VARCHAR(255) DEFAULT NULL,
+            `date_mod` TIMESTAMP DEFAULT NULL,
+            `date_creation` TIMESTAMP DEFAULT NULL,
+            PRIMARY KEY (`id`),
+            KEY `name` (`name`),
+            KEY `date_mod` (`date_mod`),
+            KEY `date_creation` (`date_creation`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;        
+
+
+CREATE TABLE `glpi_plugin_tender_tendertypeoptions` (
+            `id` int unsigned NOT NULL AUTO_INCREMENT,
+            `tendertypes_id` int unsigned DEFAULT NULL,
+            `stage` int unsigned DEFAULT NULL,
+            `name` VARCHAR(255) DEFAULT NULL,
+            `date_mod` TIMESTAMP DEFAULT NULL,
+            `date_creation` TIMESTAMP DEFAULT NULL,
+            PRIMARY KEY (`id`),
+            KEY `name` (`name`),
+            KEY `date_mod` (`date_mod`),
+            KEY `date_creation` (`date_creation`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;  

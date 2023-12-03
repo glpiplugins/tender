@@ -1,0 +1,14 @@
+{% extends "generic_show_form.html.twig" %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% set params  = params ?? [] %}
+
+{% block more_fields %}
+
+   {{ fields.sliderField(
+      'active',
+      item.fields['active'],
+      __('Active?'),
+   ) }}
+
+
+{% endblock %}

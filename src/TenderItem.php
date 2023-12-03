@@ -125,6 +125,10 @@ class TenderItem extends CommonDBTM   {
             ]
     ]);
 
+    $net_total = 0;
+    $tax_total = 0;
+    $gross_total = 0;
+
     $items = [];
     foreach ($iterator as $item) {
         $item['itemtype'] = "GlpiPlugin\Tender\TenderItem";
@@ -154,8 +158,18 @@ class TenderItem extends CommonDBTM   {
             $distributions .= '<small>(' . $distribution['quantity'] . ' - '  . $distribution['name'] . ')</small><br />';
         }
 
+        $item['tax_rate'] = $item['tax'] . ' %';
+
+        $item['net_total'] = $item['net_price'] * $item['quantity'];
+        $item['tax'] = $item['net_total'] * ($item['tax'] == 0 ? 1 : ($item['tax'] / 100) );
+        $item['gross_total'] = $item['net_total'] + $item['tax'];
+        
+
+        $net_total += $item['net_total'];
+        $tax_total += $item['tax'];
+        $gross_total += $item['gross_total'];
+
         $item['quantity'] = $distributions;
-        $item['tax'] = $item['tax'] . ' %';
         $items[] = $item;
     }
     
@@ -165,21 +179,35 @@ class TenderItem extends CommonDBTM   {
           'suppliers' => $suppliers,
           'catalogueitems' => CatalogueItem::getCatalogueItemsBySupplier($suppliers),
           'itemtypes' => $CFG_GLPI['plugin_tender_types'],
+          'footer_entries' => [
+            0 => [
+                'net_total' => $net_total,
+                'tax' => $tax_total,
+                'gross_total' => $gross_total,
+            ]
+          ],
+          'tax_total',
+          'gross_total',
           'is_tab' => true,
           'filters' => [],
           'nofilter' => true,
           'columns' => [
-              'id' => __('ID'),
               'name' => __('name'),
               'quantity' => __('quantity'),
-              'net_price' => __('net_price'),
+              'net_price' => __('net price'),
+              'net_total' => __('net total'),
+              'tax_rate' => __('tax rate'),
               'tax' => __('tax'),
+              'gross_total' => __('gross total'),
               'view_details' => __('View Detail'),
           ],
           'formatters' => [
                 'quantity' => 'raw_html',
                 'view_details' => 'raw_html',
-                'net_price' => 'float'
+                'net_price' => 'float',
+                'tax' => 'float',
+                'net_total' => 'float',
+                'gross_total' => 'float',
           ],
           'total_number' => count($items),
           'entries' => $items,
@@ -221,7 +249,7 @@ class TenderItem extends CommonDBTM   {
                     Distribution::removeAllDistributions($id);
                     if ($item->getFromDB($id)
                         && $item->deleteFromDB()) {
-                    
+                    Tender::calculateEstimatedNetTotal($item->fields['tenders_id']);
                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                     } else {
                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
@@ -234,24 +262,24 @@ class TenderItem extends CommonDBTM   {
         parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
     }
 
-   static function getTenderitems($tenders_id) {
+    static function getTenderitems($tenders_id) {
 
-    global $DB;
+        global $DB;
 
-    $iterator = $DB->request([
-        'FROM' => 'glpi_plugin_tender_tenderitems',
-        'WHERE' => [
-            'tenders_id' => $tenders_id
-            ]
-    ]);
+        $iterator = $DB->request([
+            'FROM' => 'glpi_plugin_tender_tenderitems',
+            'WHERE' => [
+                'tenders_id' => $tenders_id
+                ]
+        ]);
 
-    $items = [];
-    foreach ($iterator as $item) {
-        $items[] = $item;
+        $items = [];
+        foreach ($iterator as $item) {
+            $items[] = $item;
+        }
+        
+        return $items;
+
     }
-    
-    return $items;
-
-   }
 
 }

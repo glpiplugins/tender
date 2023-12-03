@@ -35,6 +35,13 @@
                   ) }}
 
                   {{ fields.dateField(
+                     'submission_date',
+                     item.fields['submission_date'],
+                     __('Submission Date'),
+                     {}
+                  ) }}
+
+                  {{ fields.dateField(
                      'end_date',
                      item.fields['end_date'],
                      __('Enddate'),
@@ -61,6 +68,16 @@
                      __('Comments'),
                      {}
                   ) }}
+
+                  {{ fields.textField(
+                     'estimated_net_total',
+                     item.fields['estimated_net_total']|number_format(2, ',', '.'),
+                     __('Estimated Net Total'),
+                     {
+                        'disabled': true
+                     }
+                  ) }}
+
                   <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
                <div>
                {% if item.fields['id'] is not empty %}

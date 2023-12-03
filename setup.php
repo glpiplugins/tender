@@ -96,7 +96,7 @@ function plugin_init_tender()
 function plugin_version_tender()
 {
     return [
-        'name'           => 'tender',
+        'name'           => 'Tender',
         'version'        => PLUGIN_TENDER_VERSION,
         'author'         => 'Roy Brannath',
         'license'        => 'MIT',
