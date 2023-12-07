@@ -9,7 +9,6 @@ CREATE TABLE `glpi_plugin_tender_tenders` (
             `users_id` int unsigned DEFAULT NULL,
             `default_locations_id` int unsigned DEFAULT NULL,
             `default_delivery_locations_id` int unsigned DEFAULT NULL,
-            `users_id` int unsigned DEFAULT NULL,
             `entities_id` int unsigned NOT NULL default '0',
             `estimated_net_total` decimal(20,4) NOT NULL DEFAULT '0.0000',
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
