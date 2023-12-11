@@ -2,6 +2,7 @@
 
 use GlpiPlugin\Tender\Distribution;
 use GlpiPlugin\Tender\TenderItem;
+use GlpiPlugin\Tender\Tender;
 
 include ("../../../inc/includes.php");
 
@@ -35,6 +36,7 @@ if (isset($_POST['add'])) {
       $_POST['locations_id'],
       $_POST['delivery_locations_id'],
       );
+   Tender::calculateEstimatedNetTotal($tenderItem['tenders_id']);
    //Redirect to newly created object form
    Html::back();
 } else if (isset($_POST['update'])) {
@@ -47,6 +49,9 @@ if (isset($_POST['add'])) {
 } else if (isset($_POST['delete'])) {
    //Check DELETE ACL
    //$object->check($_POST['id'], DELETE);
+   $tenderItemObj = new TenderItem();
+   $tenderItem = $tenderItemObj->getByID($_POST['tenderitems_id'])->fields;
+   Tender::calculateEstimatedNetTotal($tenderItem['tenders_id']);
    //Put object in dustbin
    $object->delete($_POST);
    //Redirect to objects list
