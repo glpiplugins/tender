@@ -139,7 +139,7 @@ class Tender extends CommonDBTM  {
       }
 
       $tender = new Tender();
-      $tender = $tender->getbyID($tenders_id);
+      // $tender = $tender->getbyID($tenders_id);
       
       $tender->update([
           'id' => $tenders_id,
