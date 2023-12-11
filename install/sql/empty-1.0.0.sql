@@ -54,6 +54,7 @@ CREATE TABLE `glpi_plugin_tender_distributions` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
             `tenderitems_id` int unsigned DEFAULT NULL,
             `quantity` int unsigned DEFAULT NULL,
+            `budgets_id` int unsigned DEFAULT NULL,
             `locations_id` int unsigned DEFAULT NULL,
             `delivery_locations_id` int unsigned DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

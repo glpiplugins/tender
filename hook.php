@@ -58,19 +58,30 @@ function plugin_tender_uninstall()
 
     global $DB;
 
-    // $tables = [
-    //     "glpi_plugin_tender_tenders"
-    // ];
+    $tables = [
+        "glpi_plugin_tender_tenders",
+        "glpi_plugin_tender_tendersuppliers",
+        "glpi_plugin_tender_tenderitems",
+        "glpi_plugin_tender_distributions",
+        "glpi_plugin_tender_catalogueitems",
+        "glpi_plugin_tender_catalogueitemsuppliers",
+        "glpi_plugin_tender_offeritems",
+        "glpi_plugin_tender_orders",
+        "glpi_plugin_tender_deliveries",
+        "glpi_plugin_tender_deliveryitems",
+        "glpi_plugin_tender_tendertypes",
+        "glpi_plugin_tender_tendertypeoptions",
+    ];
 
-    // foreach ($tables as $table) {
-    //     $DB->dropTable($table);
-    // }
+    foreach ($tables as $table) {
+        $DB->dropTable($table);
+    }
 
-    // $tables_glpi = ["glpi_logs"];
+    $tables_glpi = ["glpi_logs"];
 
-    // foreach ($tables_glpi as $table_glpi) {
-    //     $DB->delete($table_glpi, ['itemtype' => 'PluginTender']);
-    // }
+    foreach ($tables_glpi as $table_glpi) {
+        $DB->delete($table_glpi, ['itemtype' => 'PluginTender']);
+    }
 
     return true;
 }
