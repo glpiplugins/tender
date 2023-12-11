@@ -24,7 +24,7 @@ $object = new Tender();
 if (isset($_POST['add'])) {
    //Check CREATE ACL
    //$object->check(-1, CREATE, $_POST);
-
+   $_POST = array_filter($_POST);
    //Do object creation
    $newid = $object->add($_POST);
    //Redirect to newly created object form
