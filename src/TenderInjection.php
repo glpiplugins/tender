@@ -4,6 +4,7 @@ namespace GlpiPlugin\Tender;
 
 use Search;
 use PluginDatainjectionInjectionInterface;
+use PluginDatainjectionCommonInjectionLib;
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
