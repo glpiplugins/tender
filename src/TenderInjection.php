@@ -5,8 +5,6 @@ namespace GlpiPlugin\Tender;
 use Search;
 use PluginDatainjectionInjectionInterface;
 
-include_once(GLPI_ROOT . '/plugins/datainjection/inc/injectioninterface.class.php'); 
-
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
