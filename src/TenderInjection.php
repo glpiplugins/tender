@@ -3,6 +3,7 @@
 namespace GlpiPlugin\Tender;
 
 use Search;
+use PluginDatainjectionInjectionInterface;
 
 include_once(GLPI_ROOT . '/plugins/datainjection/inc/injectioninterface.class.php'); 
 
@@ -10,7 +11,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class TenderInjection extends Tender implements \PluginDatainjectionInjectionInterface {
+class TenderInjection extends Tender implements PluginDatainjectionInjectionInterface {
 
    public function __construct() {
       $this->table = getTableForItemType(get_parent_class($this));

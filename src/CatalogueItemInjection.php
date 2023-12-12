@@ -3,14 +3,14 @@
 namespace GlpiPlugin\Tender;
 
 use Search;
-
-include_once(GLPI_ROOT . '/plugins/datainjection/inc/injectioninterface.class.php'); 
+use PluginDatainjectionInjectionInterface;
+// include_once(GLPI_ROOT . '/plugins/datainjection/inc/injectioninterface.class.php'); 
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class CatalogueItemInjection extends CatalogueItem implements \PluginDatainjectionInjectionInterface {
+class CatalogueItemInjection extends CatalogueItem implements PluginDatainjectionInjectionInterface {
 
 
    public function __construct() {
