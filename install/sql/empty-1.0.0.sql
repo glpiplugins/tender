@@ -40,7 +40,7 @@ CREATE TABLE `glpi_plugin_tender_tenderitems` (
             `net_price` decimal(20,4) NOT NULL DEFAULT '0.0000',
             `tax` int unsigned DEFAULT NULL,
             `tenders_id` int unsigned DEFAULT NULL,
-            `tender_catalogueitems_id` int unsigned DEFAULT NULL,
+            `plugin_tender_catalogueitems_id` int unsigned DEFAULT NULL,
             `entities_id` int unsigned NOT NULL default '0',
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -71,6 +71,7 @@ CREATE TABLE `glpi_plugin_tender_catalogueitems` (
             `description` TEXT DEFAULT NULL,
             `manufacturers_id` int unsigned DEFAULT NULL,
             `manufacturers_reference` varchar(255) DEFAULT NULL,
+            `models_id` int unsigned DEFAULT NULL,
             `itemtype` varchar(255) DEFAULT NULL,
             `types_id` int unsigned DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -83,7 +84,7 @@ CREATE TABLE `glpi_plugin_tender_catalogueitems` (
 
 CREATE TABLE `glpi_plugin_tender_catalogueitemsuppliers` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `catalogueitems_id` int unsigned DEFAULT NULL,
+            `plugin_tender_catalogueitems_id` int unsigned DEFAULT NULL,
             `suppliers_id` int unsigned DEFAULT NULL,
             `suppliers_reference` varchar(255) DEFAULT NULL,
             `net_price` decimal(20,4) NOT NULL DEFAULT '0.0000',

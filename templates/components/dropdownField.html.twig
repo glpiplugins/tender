@@ -1,9 +1,10 @@
 
 {% import 'components/form/fields_macros.html.twig' as fields %}
+
         {{ fields.dropdownField(
-            itemtype ~ 'Type',
-            'types_id',
+            itemtype ~ name,
+            dom_name,
             '',
-            __('Type'),
+            __(name),
             {}
         ) }}

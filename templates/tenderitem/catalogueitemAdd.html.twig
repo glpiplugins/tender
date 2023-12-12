@@ -9,7 +9,7 @@
 ) }}
 
 {{ fields.dropdownArrayField(
-    'catalogueitems_id',
+    'plugin_tender_catalogueitems_id',
     '',
     catalogueitems,
     __('Catalogue Item'),
@@ -47,6 +47,9 @@
     'net_price',
     '',
     __('Net Price'),
+    {
+        'step' : ".01"
+    }
 ) }}
 
 {{ fields.numberField(

@@ -53,7 +53,7 @@ class CatalogueItemSupplier extends CommonDBTM   {
                 ]
             ],
             'WHERE' => [
-                'catalogueitems_id' => $item->getID()
+                'plugin_tender_catalogueitems_id' => $item->getID()
                 ]
         ]);
 

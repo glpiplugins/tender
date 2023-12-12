@@ -40,11 +40,11 @@ class Distribution extends CommonDBTM  {
                 
                 foreach ($ids as $id) {
                     $object = new Distribution();
-                    $tenderItem = new TenderItem();
-                    
+                    $tenderItemObj = new TenderItem();
+                    $tenderItem = $tenderItemObj->getFromDB($object->fields['tenderitems_id']);
                     if ($object->getFromDB($id) && $tenderItem->getFromDB($object->fields['tenderitems_id'])
                         && self::removeDistribution($id)
-                        && $tenderItem->update(['id' => $tenderItem->getID(), 'quantity' => ($tenderItem->fields['quantity'] - $object->fields['quantity'])])
+                        && $tenderItemObj->update(['id' => $tenderItem->getID(), 'quantity' => ($tenderItem->fields['quantity'] - $object->fields['quantity'])])
                         && $object->delete(['id' => $id])) {
                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                     } else {

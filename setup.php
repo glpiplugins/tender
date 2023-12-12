@@ -84,6 +84,12 @@ function plugin_init_tender()
 
      $PLUGIN_HOOKS[Hooks::ITEM_ADD]['tender']        = [Distribution::class => [Distribution::class,
      'item_add_distribution']];
+
+    // Add Fields to Datainjection
+    if (Plugin::isPluginActive('datainjection')) {
+        $PLUGIN_HOOKS['plugin_datainjection_populate']['tender'] = "plugin_datainjection_populate_tender";
+    }
+
 }
 
 

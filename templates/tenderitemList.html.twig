@@ -108,7 +108,7 @@
    $(document).on('change', 'select[name="itemtype"]', function(e) {
       var itemtype = $('select[name="itemtype"]').find(':selected').val();
       var suppliers = JSON.parse('{{ suppliers | json_encode | raw }}');
-      var dom_name = 'catalogueitems_id'
+      var dom_name = 'plugin_tender_catalogueitems_id'
       $.ajax({
             method: 'POST',
             url: CFG_GLPI.root_doc + "/plugins/tender/ajax/tenderitem.php",

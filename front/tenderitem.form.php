@@ -43,7 +43,7 @@ if (isset($_POST['add'])) {
 } else if (isset($_POST['add_catalogue'])) {
    //Check UPDATE ACL
    //$object->check($_POST['id'], UPDATE);
-   $catalogueItem = CatalogueItem::getByID($_POST['catalogueitems_id']);
+   $catalogueItem = CatalogueItem::getByID($_POST['plugin_tender_catalogueitems_id']);
    $_POST['name'] = $catalogueItem->fields['name'];
    $_POST['description'] = $catalogueItem->fields['description'];
    //Do object creation

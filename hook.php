@@ -30,6 +30,7 @@
  */
 
 use GlpiPlugin\Tender\TenderSupplier;
+use GlpiPlugin\Tender\Tender;
 
 /**
  * Plugin install process
@@ -93,6 +94,18 @@ function plugin_tender_getDropdown() {
     ];
  }
 
+/**
+ * Load Fields classes in datainjection.
+ * Called by Setup.php:44 if Datainjection is installed and active
+ */
+function plugin_datainjection_populate_tender()
+{
+    /** @var array $INJECTABLE_TYPES */
+    global $INJECTABLE_TYPES;
+
+    $INJECTABLE_TYPES['GlpiPlugin\Tender\TenderInjection'] = 'Tender';
+    $INJECTABLE_TYPES['GlpiPlugin\Tender\CatalogueItemInjection'] = 'Tender';
+}
 
 // function plugin_tender_MassiveActions($type) {
 //     $actions = [
