@@ -8,6 +8,7 @@ use Html;
 use Entity;
 use MassiveAction;
 use Infocom;
+use Session;
 use Glpi\Application\View\TemplateRenderer;
 
 class Distribution extends CommonDBTM  {
@@ -39,17 +40,34 @@ class Distribution extends CommonDBTM  {
                 $input = $ma->getInput();
                 
                 foreach ($ids as $id) {
-                    $object = new Distribution();
-                    $tenderItemObj = new TenderItem();
-                    $tenderItem = $tenderItemObj->getFromDB($object->fields['tenderitems_id']);
-                    if ($object->getFromDB($id) && $tenderItem->getFromDB($object->fields['tenderitems_id'])
-                        && self::removeDistribution($id)
-                        && $tenderItemObj->update(['id' => $tenderItem->getID(), 'quantity' => ($tenderItem->fields['quantity'] - $object->fields['quantity'])])
-                        && $object->delete(['id' => $id])) {
-                    $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                    } else {
-                    $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
-                    $ma->addMessage(__("Something went wrong"));
+                    try {
+                        $object = new Distribution();
+                        $object->getFromDB($id);
+
+                        $tenderitem = $DB->request([
+                            'FROM' => 'glpi_plugin_tender_tenderitems',
+                            'WHERE' => [
+                                'id' => $object->fields['tenderitems_id']
+                                ]
+                        ]);
+                        $tenderitem = $tenderitem->current();
+
+                        $tenderItemObj = new TenderItem();
+                        $newQuantity = $tenderitem['quantity'] - $object->fields['quantity'];
+                        if ($newQuantity > 0) {
+                            $tenderItemObj->update(['id' => $tenderitem['id'], 'quantity' => ($tenderitem['quantity'] - $object->fields['quantity'])]);
+                            self::removeDistribution($id);
+                            $object->delete(['id' => $id]);
+                        } else {
+                            self::removeAllDistributions($tenderitem['id']);
+                            $tenderItemObj->delete(['id' => $tenderitem['id']]);
+                        }
+                                               
+                        
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                    } catch (Exception $e) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                        $ma->addMessage(__("Something went wrong"));
                     }
                 }
                 return;
@@ -98,8 +116,6 @@ class Distribution extends CommonDBTM  {
         
         $tenderitem = TenderItem::getByID($tenderitems_id);
 
-        $infocom = new Infocom();
-
         $iterator = $DB->request([
             'FROM' => 'glpi_infocoms',
             'WHERE' => [
@@ -116,14 +132,18 @@ class Distribution extends CommonDBTM  {
         $infocomObj = new Infocom();
 
         if(!$infocom) {
-            
-            $infocomObj->add([
+            print_r("yes");
+            print_r($budgets_id);
+            print_r("yes");
+
+            $newid = $infocomObj->add([
                 'items_id' => $tenderitem->fields['tenders_id'],
                 'itemtype' => 'GlpiPlugin\Tender\Tender',
                 'budgets_id' => $budgets_id,
                 'value' => $value
             ]);
-
+            print_r($newid);
+            die();
         } else {
             $infocomObj->update([
                 'id' => $infocom['id'],
@@ -226,7 +246,7 @@ class Distribution extends CommonDBTM  {
             ]);
     
             $infocom = $iterator->current();
-
+            
             $newValue = $infocom['value'] - $value;
             $infocomObj = new Infocom();
             if($newValue > 0) {

@@ -105,6 +105,7 @@ function plugin_datainjection_populate_tender()
 
     $INJECTABLE_TYPES['GlpiPlugin\Tender\TenderInjection'] = 'Tender';
     $INJECTABLE_TYPES['GlpiPlugin\Tender\CatalogueItemInjection'] = 'Tender';
+    $INJECTABLE_TYPES['GlpiPlugin\Tender\CatalogueItemSupplierInjection'] = 'Tender';
 }
 
 // function plugin_tender_MassiveActions($type) {

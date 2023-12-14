@@ -130,4 +130,95 @@ class CatalogueItemSupplier extends CommonDBTM   {
         parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
      }
 
+     public function rawSearchOptions() {
+
+        $tab = parent::rawSearchOptions();
+
+        // $tab[] = [
+        //     'id'                 => '2',
+        //     'table'              => $this->getTable(),
+        //     'field'              => 'id',
+        //     'name'               => __('ID'),
+        //     'massiveaction'      => false, // implicit field is id
+        //     'datatype'           => 'number'
+        // ];
+
+        $tab[] = [
+            'id'                 => '3',
+            'table'              => self::getTable(),
+            'field'              => 'net_price',
+            'name'               => __('Name'),
+            'datatype'           => 'dropdown',
+            'injectable'    => true,
+        ];
+
+
+        $tab[] = [
+            'id'            => '6',
+            'table'         => self::getTable(),
+            'field'         => 'net_price',
+            'name'          => __('Net Price'),
+            'datatype'      => 'float',
+            'checktype'     => 'float',
+            'injectable'    => true,
+        ];
+
+        $tab[] = [
+            'id'                 => '7',
+            'table'              => self::getTable(),
+            'field'              => 'suppliers_reference',
+            'name'               => __('Suppliers Reference'),
+            'datatype'           => 'dropdown',
+            'injectable'    => true,
+        ];
+
+        $tab[] = [
+            'id'            => 34,
+            'table'         => 'glpi_suppliers',
+            'field'         => 'name',
+            'name'          => __('Supplier'),
+            'datatype'      => 'itemlink',
+            'itemlink_type' => 'Supplier',
+            'forcegroupby'  => false,
+            'usehaving'     => true,
+            'massiveaction' => false,
+            'joinparams'    => [
+                'joinparams' => ['jointype' => 'child']
+            ],
+            'injectable'    => true,
+         ];
+   
+         // $tab[] = [
+         //    'id'            => 35,
+         //    'table'         => self::getTable(),
+         //    'field'         => 'date_mod',
+         //    'name'          => __('Last update'),
+         //    'datatype'      => 'datetime',
+         //    'massiveaction' => false,
+         // ];
+   
+         // $tab[] = [
+         //    'id'            => 80,
+         //    'table'         => 'glpi_entities',
+         //    'field'         => 'completename',
+         //    'name'          => __('Entity'),
+         //    'datatype'      => 'dropdown',
+         //    'injectable'    => false,
+         // ];
+   
+         // $tab[] = [
+         //    'id'            => 86,
+         //    'table'         => self::getTable(),
+         //    'field'         => 'is_recursive',
+         //    'name'          => __('Child entities'),
+         //    'datatype'      => 'bool',
+         //    'checktype'     => 'text',
+         //    'displaytype'   => 'dropdown',
+         //    'injectable'    => true,
+         //    'searchtype'    => ['equals'],
+         // ];
+   
+         return $tab;
+      }
+
 }

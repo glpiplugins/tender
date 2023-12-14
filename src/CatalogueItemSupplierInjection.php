@@ -10,7 +10,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class CatalogueItemInjection extends CatalogueItem implements PluginDatainjectionInjectionInterface {
+class CatalogueItemSupplierInjection extends CatalogueItemSupplier implements PluginDatainjectionInjectionInterface {
 
 
    public function __construct() {
@@ -37,7 +37,7 @@ class CatalogueItemInjection extends CatalogueItem implements PluginDatainjectio
 
    public function connectedTo() {
       return [
-         'GlpiPlugin\Tender\CatalogueItemSupplier'
+         'GlpiPlugin\Tender\CatalogueItem'
       ];
    }
 
