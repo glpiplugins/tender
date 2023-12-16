@@ -134,23 +134,23 @@ class CatalogueItemSupplier extends CommonDBTM   {
 
         $tab = parent::rawSearchOptions();
 
-        // $tab[] = [
-        //     'id'                 => '2',
-        //     'table'              => $this->getTable(),
-        //     'field'              => 'id',
-        //     'name'               => __('ID'),
-        //     'massiveaction'      => false, // implicit field is id
-        //     'datatype'           => 'number'
-        // ];
-
         $tab[] = [
-            'id'                 => '3',
-            'table'              => self::getTable(),
-            'field'              => 'net_price',
-            'name'               => __('Name'),
-            'datatype'           => 'dropdown',
-            'injectable'    => true,
+            'id'                 => '2',
+            'table'              => $this->getTable(),
+            'field'              => 'id',
+            'name'               => __('ID'),
+            'massiveaction'      => false, // implicit field is id
+            'datatype'           => 'number'
         ];
+
+        // $tab[] = [
+        //     'id'                 => '3',
+        //     'table'              => self::getTable(),
+        //     'field'              => 'net_price',
+        //     'name'               => __('Name'),
+        //     'datatype'           => 'dropdown',
+        //     'injectable'    => true,
+        // ];
 
 
         $tab[] = [
@@ -158,8 +158,9 @@ class CatalogueItemSupplier extends CommonDBTM   {
             'table'         => self::getTable(),
             'field'         => 'net_price',
             'name'          => __('Net Price'),
-            'datatype'      => 'float',
-            'checktype'     => 'float',
+            'datatype'      => 'decimal',
+            'checktype'     => 'decimal',
+            // 'displaytype'   => 'float',
             'injectable'    => true,
         ];
 
@@ -169,8 +170,27 @@ class CatalogueItemSupplier extends CommonDBTM   {
             'field'              => 'suppliers_reference',
             'name'               => __('Suppliers Reference'),
             'datatype'           => 'dropdown',
+            'displaytype'        => 'text',
             'injectable'    => true,
         ];
+
+        // $tab[] = [
+        //     'id'            => 34,
+        //     'table'         => 'glpi_suppliers',
+        //     'field'         => 'name',
+        //     'name'          => __('Supplier'),
+        //     'datatype'      => 'itemlink',
+        //     'itemlink_type' => 'Supplier',
+        //     'displaytype'   => 'relation',
+        //     'linkfield'     => 'suppliers_id',
+        //     'forcegroupby'  => false,
+        //     'usehaving'     => true,
+        //     'massiveaction' => false,
+        //     'joinparams'    => [
+        //         'joinparams' => ['jointype' => 'child']
+        //     ],
+        //     'injectable'    => true,
+        //  ];
 
         $tab[] = [
             'id'            => 34,
@@ -178,16 +198,39 @@ class CatalogueItemSupplier extends CommonDBTM   {
             'field'         => 'name',
             'name'          => __('Supplier'),
             'datatype'      => 'itemlink',
-            'itemlink_type' => 'Supplier',
-            'forcegroupby'  => false,
-            'usehaving'     => true,
-            'massiveaction' => false,
-            'joinparams'    => [
-                'joinparams' => ['jointype' => 'child']
-            ],
+            //'itemlink_type' => 'Supplier',
+            //'linkfield'     => 'suppliers_id',
+            'forcegroupby'  => true,
+            'checktype'     => 'text',
+            'displaytype'   => 'dropdown',
             'injectable'    => true,
+            'massiveaction' => false,
          ];
-   
+
+         $tab[] = [
+            'id'                 => '35',
+            'table'              => 'glpi_plugin_tender_catalogueitems',
+            'field'              => 'name',
+            'itemlink_type'      => 'GlpiPlugin\Tender\CatalogueItem',
+            'linkfield'          => 'items_id',
+            'name'               => __('Catalogue Item'),
+            'displaytype'        => 'dropdown',
+            'relationclass'      => 'GlpiPlugin\Tender\CatalogueItem',
+            'storevaluein'       => 'plugin_tender_catalogueitems_id',
+            'injectable'    => true,
+        ];
+
+        //  $tab[] = [
+        //     'id'                 => '35',
+        //     'table'              => 'glpi_plugin_tender_catalogueitems',
+        //     'field'              => 'plugin_tender_catalogueitems_id',
+        //     'name'               => __('Catalogue Item'),
+        //     'linkfield'     => 'id',
+        //     'datatype'      => 'itemlink',
+        //     'displaytype'   => 'relation',
+        //     'injectable'    => true,
+        // ];
+
          // $tab[] = [
          //    'id'            => 35,
          //    'table'         => self::getTable(),

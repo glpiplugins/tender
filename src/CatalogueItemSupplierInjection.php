@@ -88,4 +88,25 @@ class CatalogueItemSupplierInjection extends CatalogueItemSupplier implements Pl
 //  }
 
 
+    /**
+    * @param $primary_type
+    * @param $values
+   **/
+   function addSpecificNeededFields($primary_type, $values) {
+
+      $fields['plugin_tender_catalogueitems_id'] = $values[$primary_type]['id'];
+      $fields['itemtype'] = $primary_type;
+      return $fields;
+   }
+
+    /**
+    * @param $fields_toinject    array
+    * @param $options            array
+   **/
+   function checkPresent($fields_toinject = [], $options = []) {
+
+   return (" AND `suppliers_id` = ".$fields_toinject['GlpiPlugin\Tender\CatalogueItemSupplier']['suppliers_id']." AND `plugin_tender_catalogueitems_id` = ".$fields_toinject['GlpiPlugin\Tender\CatalogueItem']['id']);
+
+}
+
 }

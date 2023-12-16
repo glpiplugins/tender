@@ -112,6 +112,7 @@ class CatalogueItem extends CommonDropdown  {
             'field'              => 'name',
             'name'               => __('Name'),
             'datatype'           => 'dropdown',
+            'displaytype'   => 'text',
             'injectable'    => true,
         ];
 
@@ -121,6 +122,7 @@ class CatalogueItem extends CommonDropdown  {
             'field'              => 'itemtype',
             'name'               => __('Itemtype'),
             'datatype'           => 'dropdown',
+            'displaytype'   => 'dropdown',
             'injectable'    => true,
         ];
 
@@ -130,6 +132,7 @@ class CatalogueItem extends CommonDropdown  {
             'field'              => 'itemtype',
             'name'               => __('Itemtype'),
             'datatype'           => 'dropdown',
+            'displaytype'   => 'text',
             'injectable'    => true,
         ];
 
@@ -150,8 +153,10 @@ class CatalogueItem extends CommonDropdown  {
             'field'              => 'manufacturers_reference',
             'name'               => __('Manufacturers Reference'),
             'datatype'           => 'dropdown',
+            'displaytype'   => 'text',
             'injectable'    => true,
         ];
+
 
         // $tab[] = [
         //    'id'            => 1,
@@ -290,6 +295,7 @@ class CatalogueItem extends CommonDropdown  {
            'datatype'      => 'itemlink',
            'itemlink_type' => 'Supplier',
            'forcegroupby'  => false,
+           'displaytype'   => 'dropdown',
            'usehaving'     => true,
            'massiveaction' => false,
            'joinparams'    => [
