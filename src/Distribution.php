@@ -129,21 +129,16 @@ class Distribution extends CommonDBTM  {
 
         $value = $quantity * $tenderitem->fields['net_price'] * ($tenderitem->fields['tax'] = 0 ? 1 : ($tenderitem->fields['tax'] / 100) + 1 );
 
-        $infocomObj = new Infocom();
+        $infocomObj = new TenderInfocom();
+
 
         if(!$infocom) {
-            print_r("yes");
-            print_r($budgets_id);
-            print_r("yes");
-
             $newid = $infocomObj->add([
                 'items_id' => $tenderitem->fields['tenders_id'],
                 'itemtype' => 'GlpiPlugin\Tender\Tender',
                 'budgets_id' => $budgets_id,
                 'value' => $value
-            ]);
-            print_r($newid);
-            die();
+            ], ['disable_unicity_check' => true]);
         } else {
             $infocomObj->update([
                 'id' => $infocom['id'],

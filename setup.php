@@ -35,6 +35,7 @@
 use GlpiPlugin\Tender\Tender;
 use GlpiPlugin\Tender\TenderItem;
 use GlpiPlugin\Tender\Distribution;
+use GlpiPlugin\Tender\Financial;
 use Glpi\Plugin\Hooks;
 
 define('PLUGIN_TENDER_VERSION', '1.0');
@@ -58,7 +59,8 @@ function plugin_init_tender()
 
     // $PLUGIN_HOOKS['use_massive_action']['tender'] = 1;
     // $PLUGIN_HOOKS['assign_to_ticket']['tender'] = true;
-    $PLUGIN_HOOKS["menu_toadd"]['tender'] = ['management' => Tender::class];
+    $PLUGIN_HOOKS["menu_toadd"]['tender'] = ['management' => [Tender::class, Financial::class]];
+
     // $PLUGIN_HOOKS['itemtype']['tender'] = ['TenderItem'];
     // $PLUGIN_HOOKS['add_tab']['tender'] = ['TenderItem' => 'plugin_tender_add_tab'];
 
@@ -77,7 +79,7 @@ function plugin_init_tender()
         'Phone',
         'Printer',        
         'Rack',
-        // 'GlpiPlugin\Tender\OtherItem',
+        'GlpiPlugin\\\Tender\\\OtherItem',
      ];
 
      $CFG_GLPI['plugin_tender_types'] = $TENDER_TYPES;

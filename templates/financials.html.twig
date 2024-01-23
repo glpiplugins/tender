@@ -1,0 +1,42 @@
+{% extends "generic_show_form.html.twig" %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% set params  = params ?? [] %}
+
+{% block more_fields %}
+
+   {{ fields.dropdownField(
+      'Entity',
+      'entities_id',
+      item.fields['entities_id'],
+      __('Entity')
+   ) }}
+
+   {{ fields.dropdownArrayField(
+      'plugin_tender_costcenter_id',
+      item.fields['plugin_tender_costcenter_id'],
+      costcenters,
+      __('Costcenter'),
+      {
+         'disabled': true
+      }
+   ) }}
+
+   {{ fields.dropdownArrayField(
+      'plugin_tender_accounts_id',
+      item.fields['plugin_tender_accounts_id'],
+      accounts,
+      __('Account'),
+      {
+         'disabled': true
+      }
+   ) }}
+
+   {{ fields.textField(
+      'total',
+      total|number_format(2, ',', '.'),
+      __('Total'),
+      {
+         'disabled': true
+      }
+   ) }}
+{% endblock %}

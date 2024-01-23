@@ -72,6 +72,7 @@ function plugin_tender_uninstall()
         "glpi_plugin_tender_deliveryitems",
         "glpi_plugin_tender_tendertypes",
         "glpi_plugin_tender_tendertypeoptions",
+        "glpi_plugin_tender_financials",
     ];
 
     foreach ($tables as $table) {
@@ -91,6 +92,8 @@ function plugin_tender_getDropdown() {
     return [
         'GlpiPlugin\Tender\TenderType' => __("Tender Types", "TenderTypes"),
         'GlpiPlugin\Tender\CatalogueItem' => __("Catalogue Items", "CatalogueItems"),
+        'GlpiPlugin\Tender\Costcenter' => __("Costcenter", "Costcenter"),
+        'GlpiPlugin\Tender\Account' => __("Accounts", "Accounts"),
     ];
  }
 

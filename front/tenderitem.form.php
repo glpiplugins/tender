@@ -30,13 +30,13 @@ if (isset($_POST['add'])) {
 
    Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
 
-   Distribution::addDistribution(
-      $newid,
-      $_POST['quantity'],
-      $_POST['budgets_id'],
-      $_POST['locations_id'],
-      $_POST['delivery_locations_id']
-   );
+   // Distribution::addDistribution(
+   //    $newid,
+   //    $_POST['quantity'],
+   //    $_POST['budgets_id'],
+   //    $_POST['locations_id'],
+   //    $_POST['delivery_locations_id']
+   // );
 
    //Redirect to newly created object form
    Html::back();
@@ -52,13 +52,13 @@ if (isset($_POST['add'])) {
    
    Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
 
-   Distribution::addDistribution(
-      $newid,
-      $_POST['quantity'],
-      $_POST['budgets_id'],
-      $_POST['locations_id'],
-      $_POST['delivery_locations_id']
-   );
+   // Distribution::addDistribution(
+   //    $newid,
+   //    $_POST['quantity'],
+   //    $_POST['budgets_id'],
+   //    $_POST['locations_id'],
+   //    $_POST['delivery_locations_id']
+   // );
    //Redirect to object form
    Html::back();
 } else if (isset($_POST['update'])) {

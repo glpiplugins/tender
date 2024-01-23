@@ -1,0 +1,49 @@
+
+{{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/financialItem.form.php'}}) }}
+{% import 'components/form/fields_macros.html.twig' as fields %}  
+<div class="card-body d-flex flex-wrap">
+   <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
+      <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+         <div class="row flex-row align-items-start flex-grow-1">
+            <div class="row flex-row" id="form-content">
+                  {{ fields.dropdownArrayField(
+                     'year',
+                     'now'|date("Y"),
+                     years,
+                     __('Year'),
+                  ) }}
+                  {{ fields.dropdownArrayField(
+                     'type',
+                     'Expense',
+                     types,
+                     __('Type'),
+                  ) }}
+                  {{ fields.numberField(
+                     'value',
+                     '',
+                     __('Value'),
+                     {
+                        'step' : ".01",
+                        'min': '0.01'
+                     }
+                  ) }}
+               <div>
+                  {{ fields.hiddenField(
+                     'plugin_tender_financials_id',
+                     item.fields['id']
+                  ) }}
+                  <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+                  <button class="btn btn-primary me-2" type="submit" name="add" value="1" id="btn_add">
+                     <i class="fas fa-plus"></i>
+                     <span>{{ _x('button', 'Add') }}</span>
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
+      <hr />
+      {{ include('@tender/components/table.html.twig') }}
+   </div>
+</div>

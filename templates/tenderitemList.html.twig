@@ -32,38 +32,53 @@
    <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
       <hr />
       {{ include('@tender/components/table.html.twig') }}
-    <div class="table-responsive" {% if showmassiveactions %} id="{{ massiveactionparams['container'] }}" {% endif %}>
-        <table class="table table-hover">
-            <body>
-                <tr>
-               <td colspan="5"></td>
-               <td>Net Total</td>
-               <td>{{ net_total }}</td>
-            </tr>
-         </table>
-      </div>
    </div>
 </div>
 <script>
    $(document).ready(function() {
+      var catalogueitems = catalogueitems;
       var dom_element = $('#form-content');
       var buttonCatalogue = $('#btn_add_catalogue_item');
-      buttonCatalogue.hide();
-      $.ajax({
-            method: 'POST',
-            url: CFG_GLPI.root_doc + "/plugins/tender/ajax/tenderitem.php",
-            data: {
-                  action: 'get_catalogueitem_add_form',
-                  itemtypes: JSON.parse('{{ itemtypes | json_encode | raw }}'),
-                  catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}'),
-                  item: JSON.parse('{{ item.fields | json_encode | raw }}'),
-            }
-         }).done(function(html_data) {
-            dom_element.children('.form-field').remove();
-            dom_element.prepend(html_data);
-         });
+      var buttonDiverse = $('#btn_add_diverse_item');
+
+      if (typeof catalogueitems !== 'undefined') {
+         buttonCatalogue.hide();
+         $.ajax({
+               method: 'POST',
+               url: CFG_GLPI.root_doc + "/plugins/tender/ajax/tenderitem.php",
+               data: {
+                     action: 'get_catalogueitem_add_form',
+                     itemtypes: JSON.parse('{{ itemtypes | json_encode | raw }}'),
+                     catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}'),
+                     item: JSON.parse('{{ item.fields | json_encode | raw }}'),
+               }
+            }).done(function(html_data) {
+               dom_element.children('.form-field').remove();
+               dom_element.prepend(html_data);
+            });
+      } else {
+         buttonCatalogue.hide();
+         buttonDiverse.hide();
+         var dom_element = $('#form-content');
+         var buttonAdd = $('#btn_add');
+         $.ajax({
+               method: 'POST',
+               url: CFG_GLPI.root_doc + "/plugins/tender/ajax/tenderitem.php",
+               data: {
+                     action: 'get_diverseitem_add_form',
+                     item: JSON.parse('{{ item.fields | json_encode | raw }}'),
+               }
+            }).done(function(html_data) {
+               buttonDiverse.hide();
+               buttonCatalogue.show();
+               buttonAdd.attr('name', 'add');
+               dom_element.children('.form-field').remove();
+               dom_element.prepend(html_data);
+            });
+         }
    });
    $(document).on('click', '#btn_add_catalogue_item', function(e) {
+
       var dom_element = $('#form-content');
       var buttonDiverse = $('#btn_add_diverse_item');
       var buttonCatalogue = $('#btn_add_catalogue_item');

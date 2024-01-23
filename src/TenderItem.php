@@ -172,12 +172,13 @@ class TenderItem extends CommonDBTM   {
         $item['quantity'] = $distributions;
         $items[] = $item;
     }
-    
+
     $suppliers = TenderSupplier::getSuppliers($tenderItem->getID());
+    $catalogueitems = CatalogueItem::getCatalogueItemsBySupplier($suppliers);
       TemplateRenderer::getInstance()->display('@tender/tenderitemList.html.twig', [
           'item'   => $tenderItem,
           'suppliers' => $suppliers,
-          'catalogueitems' => CatalogueItem::getCatalogueItemsBySupplier($suppliers),
+          'catalogueitems' => $catalogueitems,
           'itemtypes' => $CFG_GLPI['plugin_tender_types'],
           'footer_entries' => [
             0 => [

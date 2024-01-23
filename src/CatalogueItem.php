@@ -25,7 +25,7 @@ class CatalogueItem extends CommonDropdown  {
       $this->addDefaultFormTab($ong);
       //add core Document tab
       $this->addStandardTab('GlpiPlugin\Tender\CatalogueItemSupplier', $ong, $options);
-      $this->addStandardTab('Ticket', $ong, $options);
+      
       return $ong;
    }
        
