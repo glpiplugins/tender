@@ -1,7 +1,7 @@
 <?php
 
 use GlpiPlugin\Tender\Invoice;
-// use GlpiPlugin\Tender\InvoiceItem;
+use GlpiPlugin\Tender\InvoiceItem;
 
 include ("../../../inc/includes.php");
 
@@ -25,11 +25,11 @@ if (isset($_POST['add'])) {
    $newid = $object->add($_POST);
    //Check CREATE ACL
 
-   // foreach ($_POST['item'] as $item) {
-   //    $deliveryitem = new DeliveryItem();
-   //    $item['deliveries_id'] = $newid;
-   //    $deliveryitem->add($item);
-   // }
+   foreach ($_POST['item'] as $item) {
+      $invoiceitem = new InvoiceItem();
+      $item['plugin_tender_invoices_id'] = $newid;
+      $invoiceitem->add($item);
+   }
    //$object->check(-1, CREATE, $_POST);
    //Do object creation
 

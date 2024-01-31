@@ -14,7 +14,7 @@ class Tender extends CommonDBTM  {
 
     static function getTypeName($nb = 0) {
       
-        return __('Tender', 'Tender');
+        return __('Tenders', 'tender');
     }
 
      public function defineTabs($options = []) {

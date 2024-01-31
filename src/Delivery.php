@@ -15,25 +15,37 @@ class Delivery extends CommonDBTM   {
     static $rightname = 'networking';
 
     static function getTypeName($nb = 0) {
-        return __('Delivery', 'delivery');
+        return __('Delivery', 'tender');
     }
 
+    static function getIcon() {
+        return "fas fa-truck-ramp-box";
+     }
 
-   public function getTabNameForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      if ($item->getType() == 'GlpiPlugin\Tender\Tender') {
-          // Hier können Sie prüfen, ob der Benutzer die Rechte hat, den Tab zu sehen
-          // und entsprechend den Namen zurückgeben oder false, wenn der Tab nicht angezeigt werden soll
-          return __("Delivery", "tender");
-      }
-      return '';
-  }
+    public function getTabNameForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
+        if ($item->getType() == 'GlpiPlugin\Tender\Tender') {
+            // Hier können Sie prüfen, ob der Benutzer die Rechte hat, den Tab zu sehen
+            // und entsprechend den Namen zurückgeben oder false, wenn der Tab nicht angezeigt werden soll
+            return __("Delivery", "tender");
+        }
+            return '';
+    }
 
-   public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      if ($item->getType() == 'GlpiPlugin\Tender\Tender') {
-         // Hier generieren Sie den Inhalt, der im Tab angezeigt werden soll
-         self::showList($item);
-      }
-   }
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
+        if ($item->getType() == 'GlpiPlugin\Tender\Tender') {
+            // Hier generieren Sie den Inhalt, der im Tab angezeigt werden soll
+            self::showList($item);
+        }
+    }
+
+    public function defineTabs($options = []) {
+        $ong = [];
+        //add main tab for current object
+        $this->addDefaultFormTab($ong);
+        $this->addStandardTab('Document_Item', $ong, $options);
+    
+        return $ong;
+    }
 
    public function showForm($ID, array $options = []) {
     global $DB;
@@ -131,75 +143,75 @@ class Delivery extends CommonDBTM   {
     return true;
 }
 
-   static function showList($tender = NULL) {
+    static function showList($tender = NULL) {
 
-    global $DB;
-    global $CFG_GLPI;
-    
-    $delivery = new Delivery();
-    $delivery->initForm('');
+        global $DB;
+        global $CFG_GLPI;
+        
+        $delivery = new Delivery();
+        $delivery->initForm('');
 
-    $iterator = $DB->request([
-        'FROM' => 'glpi_plugin_tender_deliveries',
-        'WHERE' => [
-            'glpi_plugin_tender_deliveries.tenders_id' => $tender->getID()
-            ]
-    ]);
+        $iterator = $DB->request([
+            'FROM' => 'glpi_plugin_tender_deliveries',
+            'WHERE' => [
+                'glpi_plugin_tender_deliveries.tenders_id' => $tender->getID()
+                ]
+        ]);
 
-    $deliveries = [];
-    foreach ($iterator as $item) {
-        $item['itemtype'] = "GlpiPlugin\Tender\Delivery";
-        $item['view_details'] = '<a href="/plugins/tender/front/delivery.form.php?id=' . $item['id'] . '">' . __('View Details'). '</a>';
-        $deliveries[] = $item;
-    }
+        $deliveries = [];
+        foreach ($iterator as $item) {
+            $item['itemtype'] = "GlpiPlugin\Tender\Delivery";
+            $item['view_details'] = '<a href="/plugins/tender/front/delivery.form.php?id=' . $item['id'] . '">' . __('View Details'). '</a>';
+            $deliveries[] = $item;
+        }
 
-    $iterator = $DB->request([
-        'SELECT' => [
-            'glpi_plugin_tender_distributions.id AS distributions_id',
-            'glpi_plugin_tender_distributions.quantity AS quantity',
-            'loc.name AS location_name',
-            'deliv_loc.name AS delivery_location_name',
-            'glpi_plugin_tender_tenderitems.name',
-            'glpi_plugin_tender_tenderitems.description',
-            'SUM' => [
-                'glpi_plugin_tender_deliveryitems.quantity AS delivered_quantity'
-            ]
-        ],
-        'FROM' => 'glpi_plugin_tender_distributions',
-        'INNER JOIN' => [
-            'glpi_locations AS loc' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'locations_id',
-                    'loc' => 'id'
+        $iterator = $DB->request([
+            'SELECT' => [
+                'glpi_plugin_tender_distributions.id AS distributions_id',
+                'glpi_plugin_tender_distributions.quantity AS quantity',
+                'loc.name AS location_name',
+                'deliv_loc.name AS delivery_location_name',
+                'glpi_plugin_tender_tenderitems.name',
+                'glpi_plugin_tender_tenderitems.description',
+                'SUM' => [
+                    'glpi_plugin_tender_deliveryitems.quantity AS delivered_quantity'
                 ]
             ],
-            'glpi_locations AS deliv_loc' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'delivery_locations_id',
-                    'deliv_loc' => 'id'
+            'FROM' => 'glpi_plugin_tender_distributions',
+            'INNER JOIN' => [
+                'glpi_locations AS loc' => [
+                    'FKEY' => [
+                        'glpi_plugin_tender_distributions' => 'locations_id',
+                        'loc' => 'id'
+                    ]
+                ],
+                'glpi_locations AS deliv_loc' => [
+                    'FKEY' => [
+                        'glpi_plugin_tender_distributions' => 'delivery_locations_id',
+                        'deliv_loc' => 'id'
+                    ]
+                ],
+                'glpi_plugin_tender_tenderitems' => [
+                    'FKEY' => [
+                        'glpi_plugin_tender_tenderitems' => 'id',
+                        'glpi_plugin_tender_distributions' => 'tenderitems_id'
+                    ]
+                ],
+            ],
+            'LEFT JOIN' => [
+                'glpi_plugin_tender_deliveryitems' => [
+                    'FKEY' => [
+                        'glpi_plugin_tender_distributions' => 'id',
+                        'glpi_plugin_tender_deliveryitems' => 'distributions_id'
+                    ]
                 ]
             ],
-            'glpi_plugin_tender_tenderitems' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_tenderitems' => 'id',
-                    'glpi_plugin_tender_distributions' => 'tenderitems_id'
-                ]
-            ],
-        ],
-        'LEFT JOIN' => [
-            'glpi_plugin_tender_deliveryitems' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'id',
-                    'glpi_plugin_tender_deliveryitems' => 'distributions_id'
-                ]
+            'GROUPBY' => [
+                'glpi_plugin_tender_distributions.locations_id',
+                'glpi_plugin_tender_distributions.delivery_locations_id'
             ]
-        ],
-        'GROUPBY' => [
-            'glpi_plugin_tender_distributions.locations_id',
-            'glpi_plugin_tender_distributions.delivery_locations_id'
-        ]
-    ]);
-    
+        ]);
+        
 
     $tenderitems = [];
     foreach ($iterator as $item) {
@@ -214,7 +226,7 @@ class Delivery extends CommonDBTM   {
         'filters' => [],
         'nofilter' => true,
         'columns' => [
-            'delivery_reference' => __('Delivery Reference'),
+            'name' => __('Delivery Reference'),
             'delivery_date' => __('Delivery date'),
             'view_details' => __('View Details'),
         ],

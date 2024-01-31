@@ -7,15 +7,21 @@
          <div class="row flex-row align-items-start flex-grow-1">
             <div class="row flex-row" id="form-content">
                   {{ fields.dropdownArrayField(
-                     'name',
+                     'plugin_tender_financials_id',
                      '',
                      financials,
-                     __('Financial'),
+                     __('Financial', "tender"),
+                  ) }}
+                  {{ fields.dropdownArrayField(
+                     'year',
+                     'now'|date("Y"),
+                     years,
+                     __('Year', "tender")
                   ) }}
                   {{ fields.numberField(
                      'value',
                      '',
-                     __('Value'),
+                     __('Value', "tender"),
                      {
                         'step' : ".01",
                         'min': '0.01'
@@ -23,7 +29,7 @@
                   ) }}
                <div>
                   {{ fields.hiddenField(
-                     'plugin_tender_financials_id',
+                     'plugin_tender_tenders_id',
                      item.fields['id']
                   ) }}
                   <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />

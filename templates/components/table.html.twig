@@ -36,6 +36,7 @@
       {{ __('No data') }}
    </div>
 {% else %}
+
     {{ include('components/pager.html.twig', {
         'count': filtered_number,
         'additional_params': additional_params ~ '&sort=' ~ sort ~ '&order=' ~ order

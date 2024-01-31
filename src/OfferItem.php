@@ -14,14 +14,13 @@ class OfferItem extends CommonDBTM   {
 
     static $rightname = 'networking';
 
-    static function getIcon() {
-        return "fas fa-shopping-cart";
-     }
-
     static function getTypeName($nb = 0) {
         return __('Offer Item', 'offeritem');
     }
 
+    static function getIcon() {
+        return "fas fa-envelopes-bulk";
+    }
 
     public function getTabNameForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
         if ($item->getType() == 'GlpiPlugin\Tender\Tender') {

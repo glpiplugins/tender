@@ -7,15 +7,15 @@
                <div class="row flex-row">
 
                      {{ fields.textField(
-                        'delivery_reference',
+                        'name',
                         '',
-                        __('Delivery Reference'),
+                        __('Delivery Reference', "tender"),
                      ) }}
 
                      {{ fields.dateField(
                            'delivery_date',
                            '',
-                           __('Delivery Date'),
+                           __('Delivery Date', "tender"),
                            {
                               'required': true
                            }
@@ -30,9 +30,9 @@
                         <tr>
                            <th>{{__('Name')}}</th>
                            <th>{{__('Description')}}</th>
-                           <th>{{__('Quantity')}}</th>
-                           <th>{{__('Already delivered')}}</th>
-                           <th>{{__('Delivered Quantity')}}</th>
+                           <th>{{__('Quantity', "tender")}}</th>
+                           <th>{{__('Already delivered', "tender")}}</th>
+                           <th>{{__('Delivered Quantity', "tender")}}</th>
                         </tr>
                      </thead>
                      <tbody>

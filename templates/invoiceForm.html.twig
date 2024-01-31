@@ -1,4 +1,4 @@
-{{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/delivery.form.php'}}) }}
+{{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/invoice.form.php'}}) }}
 {% import 'components/form/fields_macros.html.twig' as fields %}
    <div class="card-body d-flex flex-wrap">
       <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
@@ -8,14 +8,20 @@
 
                      {{ fields.textField(
                         'name',
-                        delivery.name,
-                        __('Delivery Reference', "tender"),
+                        invoice.name,
+                        __('Invoice Reference', "tender"),
+                     ) }}
+
+                     {{ fields.textField(
+                        'internal_reference',
+                        '',
+                        __('Internal Reference', "tender"),
                      ) }}
 
                      {{ fields.dateField(
-                           'delivery_date',
-                           delivery.delivery_date,
-                           __('Delivery Date', "tender"),
+                           'invoice_date',
+                           invoice.invoice_date,
+                           __('Invoice Date', "tender"),
                            {
                               'required': true
                            }
@@ -26,11 +32,11 @@
                      ) }}                   
                      {{ fields.hiddenField(
                            'id',
-                           delivery.id
+                           invoice.id
                      ) }}         
                <div>
                   <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
-               {% if delivery is not empty %}
+               {% if invoice is not empty %}
                   <button class="btn btn-primary me-2" type="submit" name="update" value="1">
                      <i class="fas fa-save"></i>
                      <span>{{ _x('button', 'Save') }}</span>

@@ -23,28 +23,28 @@
                   {{ fields.textField(
                      'tender_subject',
                      item.fields['tender_subject'],
-                     __('Tender Subject'),
+                     __('Tender Subject', "tender"),
                      {}
                   ) }}
 
                   {{ fields.dateField(
                      'start_date',
                      item.fields['start_date'],
-                     __('Startdate'),
+                     __('Startdate', "tender"),
                      {}
                   ) }}
 
                   {{ fields.dateField(
                      'submission_date',
                      item.fields['submission_date'],
-                     __('Submission Date'),
+                     __('Submission Date', "tender"),
                      {}
                   ) }}
 
                   {{ fields.dateField(
                      'end_date',
                      item.fields['end_date'],
-                     __('Enddate'),
+                     __('Enddate', "tender"),
                      {}
                   ) }}
 
@@ -52,14 +52,14 @@
                      'Location',
                      'default_locations_id',
                      item.fields['default_locations_id'],
-                     __('Default Location')
+                     __('Default Location', "tender")
                   ) }}
 
                   {{ fields.dropdownField(
                      'Location',
                      'default_delivery_locations_id',
                      item.fields['default_delivery_locations_id'],
-                     __('Default Delivery Location')
+                     __('Default Delivery Location', "tender")
                   ) }}
 
                   {{ fields.textareaField(
@@ -72,7 +72,7 @@
                   {{ fields.textField(
                      'estimated_net_total',
                      item.fields['estimated_net_total']|number_format(2, ',', '.'),
-                     __('Estimated Net Total'),
+                     __('Estimated Net Total', "tender"),
                      {
                         'disabled': true
                      }

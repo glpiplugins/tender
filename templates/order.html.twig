@@ -19,7 +19,7 @@
                         'Contact',
                         'contacts_id',
                         order['contacts_id'],
-                        __('Supplier Contact')
+                        __('Supplier Contact', "tender"),
                      ) }}
 
                      {{ fields.dateField(
@@ -34,13 +34,13 @@
                      {{ fields.textField(
                         'order_reference',
                         order['order_reference'],
-                        __('Order Reference'),
+                        __('Order Reference', "tender"),
                      ) }}
 
                      {{ fields.dateField(
                            'approx_delivery_date',
                            order['approx_delivery_date'],
-                           __('Approx. Deliverydate'),
+                           __('Approx. Deliverydate', "tender"),
                            {}
                      ) }}
 

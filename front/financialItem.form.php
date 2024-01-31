@@ -28,7 +28,7 @@ if (isset($_POST['add'])) {
    //Do object creation
    $newid = $object->add($_POST);
    //Redirect to newly created object form
-   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/financial.form.php?id=$newid");
+   Html::back();
 } else if (isset($_POST['update'])) {
    //Check UPDATE ACL
    //$object->check($_POST['id'], UPDATE);

@@ -231,3 +231,28 @@ CREATE TABLE `glpi_plugin_tender_financialitems` (
             KEY `date_mod` (`date_mod`),
             KEY `date_creation` (`date_creation`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;  
+
+CREATE TABLE `glpi_plugin_tender_invoices` (
+            `id` int unsigned NOT NULL AUTO_INCREMENT,
+            `tenders_id` int unsigned DEFAULT NULL,
+            `invoice_date` DATE,
+            `invoice_reference` varchar(255) DEFAULT NULL,
+            `internal_reference` varchar(255) DEFAULT NULL,
+            `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `date_mod` (`date_mod`),
+            KEY `date_creation` (`date_creation`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `glpi_plugin_tender_invoiceitems` (
+            `id` int unsigned NOT NULL AUTO_INCREMENT,
+            `plugin_tender_invoices_id` int unsigned DEFAULT NULL,
+            `plugin_tender_financialitems_id` int unsigned DEFAULT NULL,
+            `quantity` int unsigned DEFAULT NULL,
+            `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `date_mod` (`date_mod`),
+            KEY `date_creation` (`date_creation`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;

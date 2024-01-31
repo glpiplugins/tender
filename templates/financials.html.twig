@@ -12,12 +12,12 @@
    ) }}
 
    {{ fields.dropdownArrayField(
-      'plugin_tender_costcenter_id',
+      'plugin_tender_costcenters_id',
       item.fields['plugin_tender_costcenter_id'],
       costcenters,
-      __('Costcenter'),
+      __('Costcenter', "tender"),
       {
-         'disabled': true
+         'disabled': false
       }
    ) }}
 
@@ -25,18 +25,18 @@
       'plugin_tender_accounts_id',
       item.fields['plugin_tender_accounts_id'],
       accounts,
-      __('Account'),
+      __('Account', "tender"),
       {
-         'disabled': true
+         'disabled': false
       }
    ) }}
 
    {{ fields.textField(
       'total',
       total|number_format(2, ',', '.'),
-      __('Total'),
+      __('Total', "tender"),
       {
-         'disabled': true
+         'disabled': false
       }
    ) }}
 {% endblock %}

@@ -7,15 +7,21 @@
                <div class="row flex-row">
 
                      {{ fields.textField(
-                        'invoice_reference',
+                        'name',
                         '',
-                        __('Invoice Reference'),
+                        __('Invoice Reference', "tender"),
+                     ) }}
+
+                     {{ fields.textField(
+                        'internal_reference',
+                        '',
+                        __('Internal Reference', "tender"),
                      ) }}
 
                      {{ fields.dateField(
                            'invoice_date',
                            '',
-                           __('Invoice Date'),
+                           __('Invoice Date', "tender"),
                            {
                               'required': true
                            }
@@ -30,14 +36,19 @@
                         <tr>
                            <th>{{__('Name')}}</th>
                            <th>{{__('Description')}}</th>
-                           <th>{{__('Quantity')}}</th>
-                           <th>{{__('Already delivered')}}</th>
-                           <th>{{__('Invoice Quantity')}}</th>
+                           <th>{{__('Quantity', "tender")}}</th>
+                           <th>{{__('Already invoiced', "tender")}}</th>
+                           <th>{{__('Invoice Quantity', "tender")}}</th>
+                           <th>{{__('Net Price', "tender")}}</th>
+                           <th>{{__('Net Total Price', "tender")}}</th>
+                           <th>{{__('Tax', "tender")}}</th>
+                           <th>{{__('Gross Price', "tender")}}</th>
+                           <th>{{__('Financial', "tender")}}</th>
                         </tr>
                      </thead>
                      <tbody>
                         {% for item in tenderitems %}
-                        {% set pending_quantity = item.quantity - item.delivered_quantity %}
+                        {% set pending_quantity = item.quantity - item.invoiced_quantity %}
                         <tr>
                            <td>
                                  {{ item.name }}
@@ -49,12 +60,12 @@
                                  </span>
                            </td>
                            <td>
-                              {{ item.quantity }}
+                              {{ item.delivered_quantity }} / {{ item.quantity }}
                            </td>
                            <td>
-                              {{ item.delivered_quantity }}
+                              {{ item.invoiced_quantity }}
                            </td>
-                           <td>
+                           <td class="item_quantity">
                               {% if pending_quantity > 0 %}
                                  {{ fields.numberField(
                                     'item[' ~ loop.index ~ '][quantity]',
@@ -69,13 +80,38 @@
                               {% else %}
                               {{ pending_quantity }}
                               {% endif %}
-
+                           </td>
+                           <td class="net_price">
+                              {{ item.net_price|number_format(2, ',', '.') }}
+                           </td>
+                           <td class="net_total">
+                              {{ (item.net_price * pending_quantity)|number_format(2, ',', '.') }}
+                           </td>
+                           <td class="tax">
+                              {{ item.tax }}
+                           </td>
+                           <td class="gross_total">
+                           {% if item.tax == 0 %} 
+                              {{ item.net_price * pending_quantity }}
+                           {% else %}
+                              {{ (item.net_price * pending_quantity * (1 + (item.tax / 100)))|number_format(2, ',', '.') }}
+                           {% endif %}
+                           </td>
+                           <td>
+                              {{ fields.dropdownArrayField(
+                                 'plugin_tender_financialitems_id',
+                                 '',
+                                 financials,
+                                 '',
+                                 {
+                                    'no_label': true,
+                                 }
+                              ) }}
                            </td>
                                  {{ fields.hiddenField(
-                                       'item[' ~ loop.index ~ '][distributions_id]',
-                                       item.distributions_id
+                                       'item[' ~ loop.index ~ '][plugin_tender_tenderitems_id]',
+                                       item.plugin_tender_tenderitems_id
                                  ) }}
-                           </td>
                         </tr>
                         {% endfor %}
                      </tbody>
@@ -97,3 +133,18 @@
       {{ include('@tender/components/table.html.twig') }}
    </div>
 </div>
+<script>
+$(document).ready(function() {
+   $(document).on('change', '.item_quantity input', function(e) {
+      var net_price = this.closest('.item_quantity').parentElement.querySelector('.net_price');
+      var net_total = this.closest('.item_quantity').parentElement.querySelector('.net_total');
+      var tax = this.closest('.item_quantity').parentElement.querySelector('.tax');
+      var gross_total = this.closest('.item_quantity').parentElement.querySelector('.gross_total');
+
+      var tax = tax.textContent > 0 ? (1 + (parseFloat(tax.textContent) / 100)) : 1;
+      //var gross_total = net_total * (1 + (tax / 100));
+      net_total.textContent = (parseFloat(net_price.textContent) * parseFloat(this.value)).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?:\,\d+)?$)/g, "$1.");
+      gross_total.textContent = (parseFloat(net_price.textContent) * parseFloat(this.value) * parseFloat(tax)).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?:\,\d+)?$)/g, "$1.");
+   });
+});
+</script>

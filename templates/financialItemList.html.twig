@@ -10,7 +10,7 @@
                      'year',
                      'now'|date("Y"),
                      years,
-                     __('Year'),
+                     __('Year', "tender")
                   ) }}
                   {{ fields.dropdownArrayField(
                      'type',
@@ -21,7 +21,7 @@
                   {{ fields.numberField(
                      'value',
                      '',
-                     __('Value'),
+                     __('Value', "tender"),
                      {
                         'step' : ".01",
                         'min': '0.01'

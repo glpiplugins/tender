@@ -13,7 +13,7 @@ class Financial extends CommonDBTM   {
 
     static function getTypeName($nb = 0) {
       
-        return __('Financial', 'Financials');
+        return __('Financial', 'tender');
     }
 
     static function getIcon() {
@@ -37,7 +37,7 @@ class Financial extends CommonDBTM   {
    }
 
 
-     public function defineTabs($options = []) {
+   public function defineTabs($options = []) {
       $ong = [];
       //add main tab for current object
       $this->addDefaultFormTab($ong);
@@ -56,7 +56,7 @@ class Financial extends CommonDBTM   {
             'FROM' => 'glpi_plugin_tender_financialitems',
             'WHERE' => [
                 'plugin_tender_financials_id' => $ID
-                ]
+               ]
         ]);
     
         $total = 0;
@@ -175,7 +175,10 @@ class Financial extends CommonDBTM   {
             'glpi_plugin_tender_financials' => 'name as name',
             'glpi_plugin_tender_costcenters' => 'name as costcenter',
             'glpi_plugin_tender_accounts' => 'name as account',
-            'glpi_plugin_tender_financialitems' => 'type as type',
+            'glpi_plugin_tender_financialitems' => [
+               'type as type',
+               'year as year'
+            ],
             'SUM' => [
                'glpi_plugin_tender_financialitems.value as value'
            ]
@@ -200,20 +203,22 @@ class Financial extends CommonDBTM   {
                   'glpi_plugin_tender_financials' => 'plugin_tender_accounts_id'
                ]
             ],
-      ],
+         ],
          'WHERE' => [
-            'plugin_tender_tenders_id' => $tender->getID()
-            ]
+            'plugin_tender_tenders_id' => $tender->getID(),
+            'glpi_plugin_tender_financialitems.type' => 0
+         ],
+         'GROUPBY' => [
+            'glpi_plugin_tender_financials.name',
+            'glpi_plugin_tender_financialitems.year'
+         ]
       ]);
 
       $total = 0;
       $items = [];
       foreach ($iterator as $item) {
          $items[] = $item;
-         if($item['type'] == 0) {
-            $value = $item['value'] * -1;
-         }
-         $total += $value;
+         $total += $item['value'];
       }
       
       TemplateRenderer::getInstance()->display('@tender/financialList.html.twig', [
@@ -221,17 +226,27 @@ class Financial extends CommonDBTM   {
          'financials' => $financials,
          'footer_entries' => [
             0 => [
-               'total' => $total
+               'value' => $total
             ]
          ],
+         'years' => [
+            2026 => 2026,
+            2025 => 2025,
+            2024 => 2024,
+            2023 => 2023,
+            2022 => 2022,
+            2021 => 2021,
+            2020 => 2020
+        ],
          'is_tab' => true,
          'filters' => [],
          'nofilter' => true,
          'columns' => [
                'name' => __('name'),
-               'costcenter' => __('costcenter'),
-               'account' => __('account'),
-               'value' => __('value'),
+               'year' => __('Year', 'tender'),
+               'costcenter' => __('Costcenter', 'tender'),
+               'account' => __('Account', 'tender'),
+               'value' => __('Value', 'tender'),
          ],
          'formatters' => [
             'value' => 'float',

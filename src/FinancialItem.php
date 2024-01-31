@@ -57,7 +57,28 @@ class FinancialItem extends CommonDBTM   {
         global $CFG_GLPI;
     
         $iterator = $DB->request([
+            'SELECT' => [
+                'glpi_plugin_tender_financialitems' => [
+                    'id',
+                    'year',
+                    'type',
+                    'value'
+                ],
+                'glpi_plugin_tender_tenders' => [
+                    'id as tenders_id',
+                    'name',
+                    'tender_subject'
+                ]
+            ],
             'FROM' => 'glpi_plugin_tender_financialitems',
+            'LEFT JOIN' => [
+                'glpi_plugin_tender_tenders' => [
+                    'FKEY' => [
+                        'glpi_plugin_tender_financialitems' => 'plugin_tender_tenders_id',
+                        'glpi_plugin_tender_tenders' => 'id'
+                    ]
+                ]
+            ],
             'WHERE' => [
                 'plugin_tender_financials_id' => $financial->getID()
                 ]
@@ -67,15 +88,14 @@ class FinancialItem extends CommonDBTM   {
         $items = [];
         foreach ($iterator as $item) {
             $item['itemtype'] = "GlpiPlugin\Tender\FinancialItem";
-            $item['view_details'] = '<a href="/plugins/tender/front/tenderitem.form.php?id=' . $item['id'] . '">' . __('View Details'). '</a>';
-            $item['type_name'] = $item['type'] == 0 ? __('Expense') : __('Income');
-            $items[] = $item;
+            $item['view_details'] = '<a href="/plugins/tender/front/tenderitem.form.php?id=' . $item['id'] . '">' . __('View Details', 'tender'). '</a>';
+            $item['type_name'] = $item['type'] == 0 ? __('Expense', 'tender') : __('Income', 'tender');
+            $item['tender_link'] = $item['name'] !== NULL ? '<a href="/plugins/tender/front/tender.form.php?id=' . $item['tenders_id'] . '">' .$item['tender_subject'] . ' ' . $item['name'] . '</a>' : '';
             if($item['type'] == 0) {
-                $value = $item['value'] * -1;
-            } else {
-                $value = $item['value'];
+                $item['value'] = $item['value'] * -1;
             }
-            $total += $value;
+            $items[] = $item;
+            $total += $item['value'];
         }
   
         TemplateRenderer::getInstance()->display('@tender/financialItemList.html.twig', [
@@ -96,20 +116,22 @@ class FinancialItem extends CommonDBTM   {
                 2020 => 2020
             ],
             'types' => [
-                0 => __('Expense'),
-                1 => __('Income'),
+                0 => __('Expense', 'tender'),
+                1 => __('Income', 'tender'),
             ],
             'is_tab' => true,
             'filters' => [],
             'nofilter' => true,
             'columns' => [
-               'year' => __('year'),
-               'type_name' => __('type'),
-               'value' => __('value'),
-               'view_details' => __('View Detail')
+               'year' => __('Year', 'tender'),
+               'type_name' => __('Type', 'tender'),
+               'value' => __('Value', 'tender'),
+               'tender_link' => __('Tender', 'tender'),
+               'view_details' => __('View Detail', 'tender')
            ],
            'formatters' => [
                   'view_details' => 'raw_html',
+                  'tender_link' => 'raw_html',
                   'value' => 'float',
             ],
             'total_number' => count($items),
