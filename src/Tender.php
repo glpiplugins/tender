@@ -77,7 +77,8 @@ class Tender extends CommonDBTM  {
             'field'              => 'name',
             'name'               => __('Name'),
             'datatype'           => 'string',
-            'massiveaction'      => false
+            'massiveaction'      => false,
+            'injectable'    => true,
         ];
   
         $tab[] = [
@@ -86,7 +87,8 @@ class Tender extends CommonDBTM  {
            'field'              => 'tender_subject',
            'name'               => __('Tender Subject'),
            'datatype'           => 'string',
-           'massiveaction'      => false
+           'massiveaction'      => false,
+           'injectable'    => true,
         ];
   
         $tab[] = [

@@ -98,7 +98,8 @@ class Financial extends CommonDBTM   {
             'field'              => 'name',
             'name'               => __('Name'),
             'datatype'           => 'itemlink',
-            'massiveaction'      => false
+            'massiveaction'      => false,
+            'injectable'         => true
         ];
   
         $tab[] = [
@@ -107,7 +108,8 @@ class Financial extends CommonDBTM   {
             'field'              => 'name',
             'name'               => __('Costcenter'),
             'datatype'           => 'dropdown',
-            'massiveaction'      => false
+            'massiveaction'      => false,
+            'injectable'         => true
          ];
 
          $tab[] = [
@@ -116,7 +118,8 @@ class Financial extends CommonDBTM   {
             'field'              => 'name',
             'name'               => __('Account'),
             'datatype'           => 'dropdown',
-            'massiveaction'      => false
+            'massiveaction'      => false,
+            'injectable'         => true
          ];
   
         $tab[] = [
@@ -125,7 +128,8 @@ class Financial extends CommonDBTM   {
            'field'              => 'completename',
            'name'               => Entity::getTypeName(1),
            'datatype'           => 'dropdown',
-           'massiveaction'      => false
+           'massiveaction'      => false,
+           'injectable'         => true
         ];
   
         $tab[] = [

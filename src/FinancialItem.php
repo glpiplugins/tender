@@ -151,4 +151,114 @@ class FinancialItem extends CommonDBTM   {
         return true;
     }
 
+    public function rawSearchOptions() {
+        $tab = parent::rawSearchOptions();
+
+        $tab[] = [
+           'id'                 => '2',
+           'table'              => $this::getTable(),
+           'field'              => 'id',
+           'name'               => __('ID'),
+           'searchtype'         => 'contains',
+           'displaytype'        => 'text',
+           'massiveaction'      => false
+        ];
+    
+        $tab[] = [
+            'id'                 => '3',
+            'table'              => $this::getTable(),
+            'field'              => 'value',
+            'name'               => __('Value'),
+            'datatype'           => 'decimal',
+            'displaytype'        => 'decimal',
+            'massiveaction'      => false,
+            'injectable'         => true
+         ];
+  
+        $tab[] = [
+           'id'                 => '5',
+           'table'              => 'glpi_entities',
+           'field'              => 'completename',
+           'name'               => Entity::getTypeName(1),
+           'datatype'           => 'dropdown',
+           'displaytype'        => 'text',
+           'massiveaction'      => false,
+           'injectable'         => true
+        ];
+  
+        $tab[] = [
+           'id'                 => '6',
+           'table'              => $this::getTable(),
+           'field'              => 'is_recursive',
+           'name'               => __('Recursive'),
+           'datatype'           => 'bool',
+           'displaytype'        => 'bool',
+           'massiveaction'      => true
+        ];
+  
+        $tab[] = [
+           'id'                 => '7',
+           'table'              => $this::getTable(),
+           'field'              => 'year',
+           'name'               => __('Year'),
+           'datatype'           => 'number',
+           'displaytype'        => 'text',
+           'massiveaction'      => true,
+           'injectable'         => true
+        ];
+  
+        $tab[] = [
+            'id'                 => '8',
+            'table'              => $this::getTable(),
+            'field'              => 'type',
+            'name'               => __('Type'),
+            'datatype'           => 'text',
+            'displaytype'        => 'text',
+            'massiveaction'      => true,
+            'injectable'         => true
+         ];
+
+        // $tab[] = [
+        //     'id'            => '9',
+        //     'table'         => 'glpi_plugin_tender_financials',
+        //     'field'         => 'name',
+        //     'name'          => __('Financial'),
+        //     'datatype'      => 'itemlink',
+        //     'itemlink_type' => 'GlpiPlugin\Tender\Financial',
+        //     'massiveaction' => false,
+        //     'joinparams'    => ['jointype' => 'child'],
+        //     'injectable'    => true
+        //  ];
+
+        $tab[] = [
+            'id'                 => '9',
+            'table'              => 'glpi_plugin_tender_financials',
+            'field'              => 'name',
+            'itemlink_type'      => 'GlpiPlugin\Tender\Financial',
+            'linkfield'          => 'plugin_tender_financials_id',
+            'name'               => __('Financial Item'),
+            'displaytype'        => 'dropdown',
+            'relationclass'      => 'GlpiPlugin\Tender\Financial',
+            'storevaluein'       => 'plugin_tender_financials_id',
+            'injectable'    => true,
+        ];
+
+        $tab[] = [
+            'id'            => 34,
+            'table'         => 'glpi_plugin_tender_financials',
+            'field'         => 'name',
+            'name'          => __('Financial', 'tender'),
+            'datatype'      => 'itemlink',
+            'itemlink_type' => 'GlpiPlugin\Tender\Financial',
+            'forcegroupby'  => false,
+            'displaytype'   => 'dropdown',
+            'usehaving'     => true,
+            'massiveaction' => false,
+            'joinparams'    => ['jointype' => 'child']
+         ];
+
+        return $tab;
+
+    }
+
 }

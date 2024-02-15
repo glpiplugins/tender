@@ -10,7 +10,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class CatalogueItemSupplierInjection extends CatalogueItemSupplier implements PluginDatainjectionInjectionInterface {
+class FinancialInjection extends Financial implements PluginDatainjectionInjectionInterface {
 
 
    public function __construct() {
@@ -37,7 +37,7 @@ class CatalogueItemSupplierInjection extends CatalogueItemSupplier implements Pl
 
    public function connectedTo() {
       return [
-         'GlpiPlugin\Tender\CatalogueItem'
+         'GlpiPlugin\Tender\FinancialItem'
       ];
    }
 
@@ -87,26 +87,5 @@ class CatalogueItemSupplierInjection extends CatalogueItemSupplier implements Pl
 //     return $tab;
 //  }
 
-
-    /**
-    * @param $primary_type
-    * @param $values
-   **/
-   function addSpecificNeededFields($primary_type, $values) {
-
-      $fields['plugin_tender_catalogueitems_id'] = $values[$primary_type]['id'];
-      $fields['itemtype'] = $primary_type;
-      return $fields;
-   }
-
-    /**
-    * @param $fields_toinject    array
-    * @param $options            array
-   **/
-   function checkPresent($fields_toinject = [], $options = []) {
-
-      return (" AND `suppliers_id` = ".$fields_toinject['GlpiPlugin\Tender\CatalogueItemSupplier']['suppliers_id']." AND `plugin_tender_catalogueitems_id` = ".$fields_toinject['GlpiPlugin\Tender\CatalogueItem']['id']);
-
-   }
 
 }
