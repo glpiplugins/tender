@@ -75,9 +75,15 @@ function plugin_tender_uninstall()
         "glpi_plugin_tender_financials",
     ];
 
+    // foreach ($tables as $table) {
+    //     $DB->dropTable($table);
+    // }
+
     foreach ($tables as $table) {
-        $DB->dropTable($table);
-    }
+        if ($DB->tableExists($table)) {
+           $DB->queryOrDie("DROP TABLE IF EXISTS `".$table."`", $DB->error());
+        }
+     }
 
     $tables_glpi = ["glpi_logs"];
 

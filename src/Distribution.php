@@ -100,7 +100,7 @@ class Distribution extends CommonDBTM  {
         die();
     }
 
-    static function addDistribution(int $tenderitems_id, int $quantity, int $budgets_id, int $locations_id, int $delivery_locations_id) {
+    static function addDistribution(int $tenderitems_id, int $quantity, int $locations_id, int $delivery_locations_id) {
 
         global $DB;
 
