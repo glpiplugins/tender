@@ -227,7 +227,7 @@ class Delivery extends CommonDBTM   {
         'filters' => [],
         'nofilter' => true,
         'columns' => [
-            'delivery_location_name' => __('Delivery Reference'),
+            'delivery_reference' => __('Delivery Reference'),
             'delivery_date' => __('Delivery date'),
             'view_details' => __('View Details'),
         ],
