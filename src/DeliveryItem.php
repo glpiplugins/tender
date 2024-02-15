@@ -57,4 +57,22 @@ class DeliveryItem extends CommonDBTM   {
         parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
     }
 
+    static function removeAllDeliveryItems(int $delivery_id) {
+
+        global $DB;
+
+        $iterator = $DB->request([
+            'FROM' => 'glpi_plugin_tender_deliveryitems',
+            'WHERE' => [
+                'plugin_tender_deliveries_id' => $delivery_id
+                ]
+        ]);
+                
+        foreach ($iterator as $item) {
+            $deliveryitem = new DeliveryItem();
+            $deliveryitem->delete($item, 1);
+        }
+
+    }
+
 }

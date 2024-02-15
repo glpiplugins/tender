@@ -28,7 +28,9 @@ if (isset($_POST['add'])) {
    foreach ($_POST['item'] as $item) {
       $deliveryitem = new DeliveryItem();
       $item['deliveries_id'] = $newid;
-      $deliveryitem->add($item);
+      if ($_POST['quantity'] > 0) {
+         $deliveryitem->add($item);
+      }
    }
    //$object->check(-1, CREATE, $_POST);
    //Do object creation
