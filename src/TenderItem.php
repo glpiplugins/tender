@@ -65,12 +65,6 @@ class TenderItem extends CommonDBTM   {
                     'glpi_plugin_tender_distributions' => 'delivery_locations_id',
                     'delivery_location' => 'id'
                 ]
-            ],
-            'glpi_budgets' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'budgets_id',
-                    'glpi_budgets' => 'id'
-                ]
             ]
         ],
         'WHERE' => [
