@@ -110,41 +110,10 @@ class Distribution extends CommonDBTM  {
            'quantity' => $quantity,
            'locations_id' => $locations_id,
            'delivery_locations_id' => $delivery_locations_id,
-           'budgets_id' => $budgets_id
            ]);
 
         
         $tenderitem = TenderItem::getByID($tenderitems_id);
-
-        $iterator = $DB->request([
-            'FROM' => 'glpi_infocoms',
-            'WHERE' => [
-                'items_id' => $tenderitem->fields['tenders_id'],
-                'itemtype' => 'GlpiPlugin\Tender\Tender',
-                'budgets_id' => $budgets_id
-                ]
-        ]);
-
-        $infocom = $iterator->current();
-
-        $value = $quantity * $tenderitem->fields['net_price'] * ($tenderitem->fields['tax'] = 0 ? 1 : ($tenderitem->fields['tax'] / 100) + 1 );
-
-        $infocomObj = new TenderInfocom();
-
-
-        if(!$infocom) {
-            $newid = $infocomObj->add([
-                'items_id' => $tenderitem->fields['tenders_id'],
-                'itemtype' => 'GlpiPlugin\Tender\Tender',
-                'budgets_id' => $budgets_id,
-                'value' => $value
-            ], ['disable_unicity_check' => true]);
-        } else {
-            $infocomObj->update([
-                'id' => $infocom['id'],
-                'value' => $infocom['value'] + $value,
-            ]);
-        }
 
     }
 
@@ -167,35 +136,6 @@ class Distribution extends CommonDBTM  {
         ]);
         $tenderitem = $tenderitem->current();
 
-        $value = 0;
-        foreach($distributions as $distribution) {
-            $distributionObj = new Distribution();
-            $value += $distribution['quantity'] * $tenderitem['net_price'] * ($tenderitem['tax'] = 0 ? 1 : ($tenderitem['tax'] / 100) + 1 );
-            $distributionObj->delete(['id' => $distribution['id']]);
-
-            $iterator = $DB->request([
-                'FROM' => 'glpi_infocoms',
-                'WHERE' => [
-                    'items_id' => $tenderitem['tenders_id'],
-                    'itemtype' => 'GlpiPlugin\Tender\Tender',
-                    'budgets_id' => $distribution['budgets_id']
-                    ]
-            ]);
-    
-            $infocom = $iterator->current();
-
-            $newValue = $infocom['value'] - $value;
-            $infocomObj = new Infocom();
-            if($newValue > 0) {
-                $infocomObj->update([
-                    'id' => $infocom['id'],
-                    'value' => $newValue,
-                ]);
-            } else {
-                $infocomObj->delete(['id' => $infocom['id']]);
-            }
-
-        }
     }
 
     static function removeDistribution(int $distributions_id) {
@@ -206,7 +146,6 @@ class Distribution extends CommonDBTM  {
             'SELECT' => [
                 'glpi_plugin_tender_distributions.id',
                 'glpi_plugin_tender_distributions.quantity',
-                'glpi_plugin_tender_distributions.budgets_id',
                 'glpi_plugin_tender_tenderitems.tenders_id',
                 'glpi_plugin_tender_tenderitems.net_price',
                 'glpi_plugin_tender_tenderitems.tax',
@@ -225,34 +164,5 @@ class Distribution extends CommonDBTM  {
                 ]
         ]);
         
-        $value = 0;
-        foreach($distributions as $distribution) {
-            $distributionObj = new Distribution();
-            $value += $distribution['quantity'] * $distribution['net_price'] * ($distribution['tax'] = 0 ? 1 : ($distribution['tax'] / 100) + 1 );
-            $distributionObj->delete(['id' => $distribution['id']]);
-
-            $iterator = $DB->request([
-                'FROM' => 'glpi_infocoms',
-                'WHERE' => [
-                    'items_id' => $distribution['tenders_id'],
-                    'itemtype' => 'GlpiPlugin\Tender\Tender',
-                    'budgets_id' => $distribution['budgets_id']
-                    ]
-            ]);
-    
-            $infocom = $iterator->current();
-            
-            $newValue = $infocom['value'] - $value;
-            $infocomObj = new Infocom();
-            if($newValue > 0) {
-                $infocomObj->update([
-                    'id' => $infocom['id'],
-                    'value' => $newValue,
-                ]);
-            } else {
-                $infocomObj->delete(['id' => $infocom['id']]);
-            }
-
-        }
     }    
 }

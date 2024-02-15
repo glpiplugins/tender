@@ -221,6 +221,7 @@ CREATE TABLE `glpi_plugin_tender_accounts` (
 CREATE TABLE `glpi_plugin_tender_financialitems` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
             `plugin_tender_financials_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tenders_id` int unsigned DEFAULT NULL,
             `type` int unsigned NOT NULL default '0',
             `year` DATE,
             `value` decimal(20,4) NOT NULL DEFAULT '0.0000',
