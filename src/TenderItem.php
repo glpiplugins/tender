@@ -49,8 +49,7 @@ class TenderItem extends CommonDBTM   {
             'glpi_plugin_tender_distributions.id',
             'glpi_plugin_tender_distributions.quantity',
             'location.name as location',
-            'delivery_location.name as delivery_location',
-            'glpi_budgets.name as budget_name'
+            'delivery_location.name as delivery_location'
         ],
         'FROM' => 'glpi_plugin_tender_distributions',
         'LEFT JOIN' => [
@@ -155,7 +154,7 @@ class TenderItem extends CommonDBTM   {
         $item['tax_rate'] = $item['tax'] . ' %';
 
         $item['net_total'] = $item['net_price'] * $item['quantity'];
-        $item['tax'] = $item['net_total'] * ($item['tax'] == 0 ? 1 : ($item['tax'] / 100) );
+        $item['tax'] = ($item['tax'] == 0 ? 0 : ($item['net_total'] * $item['tax'] / 100) );
         $item['gross_total'] = $item['net_total'] + $item['tax'];
         
 

@@ -207,6 +207,7 @@ class Delivery extends CommonDBTM   {
                 ]
             ],
             'GROUPBY' => [
+                'glpi_plugin_tender_tenderitems.id',
                 'glpi_plugin_tender_distributions.locations_id',
                 'glpi_plugin_tender_distributions.delivery_locations_id'
             ]
