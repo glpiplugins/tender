@@ -231,12 +231,12 @@ class Invoice extends CommonDBTM   {
                     'glpi_plugin_tender_deliveryitems' => 'distributions_id'
                 ]
                 ],
-            // 'glpi_plugin_tender_invoiceitems' => [
-            //     'FKEY' => [
-            //         'glpi_plugin_tender_tenderitems' => 'id',
-            //         'glpi_plugin_tender_invoiceitems' => 'plugin_tender_tenderitems_id'
-            //     ]
-            // ]
+            'glpi_plugin_tender_invoiceitems' => [
+                'FKEY' => [
+                    'glpi_plugin_tender_tenderitems' => 'id',
+                    'glpi_plugin_tender_invoiceitems' => 'plugin_tender_tenderitems_id'
+                ]
+            ]
         ],
         'GROUPBY' => [
             'glpi_plugin_tender_distributions.locations_id',
