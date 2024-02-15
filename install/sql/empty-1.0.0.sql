@@ -250,6 +250,7 @@ CREATE TABLE `glpi_plugin_tender_invoiceitems` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
             `plugin_tender_invoices_id` int unsigned DEFAULT NULL,
             `plugin_tender_financialitems_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tenderitems_id` int unsigned DEFAULT NULL,
             `quantity` int unsigned DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
