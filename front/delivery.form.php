@@ -28,7 +28,7 @@ if (isset($_POST['add'])) {
    foreach ($_POST['item'] as $item) {
       $deliveryitem = new DeliveryItem();
       $item['deliveries_id'] = $newid;
-      if ($_POST['quantity'] > 0) {
+      if (intval($item['quantity']) > 0) {
          $deliveryitem->add($item);
       }
    }

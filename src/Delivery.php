@@ -179,7 +179,7 @@ class Delivery extends CommonDBTM   {
                 ]
             ],
             'FROM' => 'glpi_plugin_tender_distributions',
-            'INNER JOIN' => [
+            'LEFT JOIN' => [
                 'glpi_locations AS loc' => [
                     'FKEY' => [
                         'glpi_plugin_tender_distributions' => 'locations_id',
@@ -198,23 +198,15 @@ class Delivery extends CommonDBTM   {
                         'glpi_plugin_tender_distributions' => 'tenderitems_id'
                     ]
                 ],
-            ],
-            'LEFT JOIN' => [
                 'glpi_plugin_tender_deliveryitems' => [
                     'FKEY' => [
                         'glpi_plugin_tender_distributions' => 'id',
                         'glpi_plugin_tender_deliveryitems' => 'distributions_id'
                     ]
-                ],
-                'glpi_plugin_tender_deliveries' => [
-                    'FKEY' => [
-                        'glpi_plugin_tender_deliveries' => 'id',
-                        'glpi_plugin_tender_deliveryitems' => 'deliveries_id'
-                    ]
                 ]
             ],
             'WHERE' => [
-                'glpi_plugin_tender_deliveries.tenders_id' => $tender->getID()
+                'glpi_plugin_tender_tenderitems.tenders_id' => $tender->getID()
             ],
             'GROUPBY' => [
                 'glpi_plugin_tender_tenderitems.id',
