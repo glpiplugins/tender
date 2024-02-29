@@ -60,7 +60,6 @@ class Account extends CommonDropdown  {
             'injectable'    => true,
         ];
 
- 
         return $tab;
      }
   

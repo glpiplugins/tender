@@ -147,7 +147,11 @@ CREATE TABLE `glpi_plugin_tender_deliveryitems` (
             `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             KEY `date_mod` (`date_mod`),
-            KEY `date_creation` (`date_creation`)
+            KEY `date_creation` (`date_creation`),
+            FOREIGN KEY (`deliveries_id`)
+            REFERENCES `glpi_plugin_tender_deliveries`(`id`)
+            ON DELETE CASCADE
+            ON UPDATE NO ACTION
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
         
 
@@ -243,18 +247,26 @@ CREATE TABLE `glpi_plugin_tender_invoices` (
             `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             KEY `date_mod` (`date_mod`),
-            KEY `date_creation` (`date_creation`)
+            KEY `date_creation` (`date_creation`),
+            FOREIGN KEY (`tenders_id`)
+            REFERENCES `glpi_plugin_tender_tenders`(`id`)
+            ON DELETE CASCADE
+            ON UPDATE NO ACTION
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 CREATE TABLE `glpi_plugin_tender_invoiceitems` (
-            `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `plugin_tender_invoices_id` int unsigned DEFAULT NULL,
-            `plugin_tender_financialitems_id` int unsigned DEFAULT NULL,
-            `plugin_tender_tenderitems_id` int unsigned DEFAULT NULL,
-            `quantity` int unsigned DEFAULT NULL,
+            `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            `plugin_tender_invoices_id` INT UNSIGNED DEFAULT NULL,
+            `plugin_tender_financialitems_id` INT UNSIGNED DEFAULT NULL,
+            `plugin_tender_tenderitems_id` INT UNSIGNED DEFAULT NULL,
+            `quantity` INT UNSIGNED DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             KEY `date_mod` (`date_mod`),
-            KEY `date_creation` (`date_creation`)
+            KEY `date_creation` (`date_creation`),
+            FOREIGN KEY (`plugin_tender_invoices_id`)
+            REFERENCES `glpi_plugin_tender_invoices`(`id`)
+            ON DELETE CASCADE
+            ON UPDATE NO ACTION
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;

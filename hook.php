@@ -117,6 +117,8 @@ function plugin_datainjection_populate_tender()
     $INJECTABLE_TYPES['GlpiPlugin\Tender\CatalogueItemSupplierInjection'] = 'Tender';
     $INJECTABLE_TYPES['GlpiPlugin\Tender\FinancialInjection'] = 'Tender';
     $INJECTABLE_TYPES['GlpiPlugin\Tender\FinancialItemInjection'] = 'Tender';
+    $INJECTABLE_TYPES['GlpiPlugin\Tender\AccountInjection'] = 'Tender';
+    $INJECTABLE_TYPES['GlpiPlugin\Tender\CostcenterInjection'] = 'Tender';
 }
 
 // function plugin_tender_MassiveActions($type) {

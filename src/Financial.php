@@ -93,41 +93,53 @@ class Financial extends CommonDBTM   {
         ];
   
         $tab[] = [
-            'id'                 => '4',
+            'id'                 => '3',
             'table'              => $this::getTable(),
             'field'              => 'name',
             'name'               => __('Name'),
             'datatype'           => 'itemlink',
+            'displaytype'        => 'text',
             'massiveaction'      => false,
             'injectable'         => true
         ];
-  
+
+
         $tab[] = [
-            'id'                 => '3',
+         'id'                 => '4',
+         'table'              => 'glpi_plugin_tender_accounts',
+         'field'              => 'name',
+         'datatype'           => 'relation',
+         'itemlink_type'      => 'GlpiPlugin\Tender\Account',
+         'linkfield'          => 'plugin_tender_accounts_id',
+         'name'               => __('Account'),
+         'displaytype'        => 'dropdown',
+         'relationclass'      => 'GlpiPlugin\Tender\Account',
+         'storevaluein'       => 'plugin_tender_accounts_id',
+         'injectable'         => true
+      ];
+        
+         $tab[] = [
+            'id'                 => '8',
             'table'              => 'glpi_plugin_tender_costcenters',
             'field'              => 'name',
+            'datatype'           => 'relation',
+            'itemlink_type'      => 'GlpiPlugin\Tender\Costcenter',
+            'linkfield'          => 'plugin_tender_costcenters_id',
             'name'               => __('Costcenter'),
-            'datatype'           => 'dropdown',
-            'massiveaction'      => false,
+            'displaytype'        => 'dropdown',
+            'relationclass'      => 'GlpiPlugin\Tender\Costcenter',
+            'storevaluein'       => 'plugin_tender_costcenters_id',
             'injectable'         => true
          ];
 
-         $tab[] = [
-            'id'                 => '8',
-            'table'              => 'glpi_plugin_tender_accounts',
-            'field'              => 'name',
-            'name'               => __('Account'),
-            'datatype'           => 'dropdown',
-            'massiveaction'      => false,
-            'injectable'         => true
-         ];
-  
+
         $tab[] = [
            'id'                 => '5',
            'table'              => 'glpi_entities',
            'field'              => 'completename',
            'name'               => Entity::getTypeName(1),
            'datatype'           => 'dropdown',
+           'displaytype'        => 'text',
            'massiveaction'      => false,
            'injectable'         => true
         ];
@@ -137,6 +149,7 @@ class Financial extends CommonDBTM   {
            'table'              => $this::getTable(),
            'field'              => 'is_recursive',
            'name'               => __('Recursive'),
+           'displaytype'        => 'text',
            'datatype'           => 'bool',
            'massiveaction'      => true
         ];
@@ -147,6 +160,7 @@ class Financial extends CommonDBTM   {
            'field'              => 'language',
            'name'               => __('Language'),
            'datatype'           => 'specific',
+           'displaytype'        => 'text',
            'searchtype'         => [
               '0'                  => 'equals'
            ],

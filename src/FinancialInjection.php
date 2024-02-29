@@ -37,7 +37,8 @@ class FinancialInjection extends Financial implements PluginDatainjectionInjecti
 
    public function connectedTo() {
       return [
-         'GlpiPlugin\Tender\FinancialItem'
+         'GlpiPlugin\Tender\Account',
+         'GlpiPlugin\Tender\Costcenter'
       ];
    }
 
@@ -51,6 +52,18 @@ class FinancialInjection extends Financial implements PluginDatainjectionInjecti
    public function getOptions($primary_type = '') {
       return Search::getOptions(get_parent_class($this));
    }
+
+    /**
+    * @param $primary_type
+    * @param $values
+   **/
+  function addSpecificNeededFields($primary_type, $values) {
+
+   // $fields['plugin_tender_accounts_id'] = $values['GlpiPlugin\Tender\Account']['id'];
+   // $fields['plugin_tender_costcenters_id'] = $values['GlpiPlugin\Tender\Costcenter']['id'];
+   
+   return true;
+}
 
 //    /**
 //     * @see plugins/datainjection/inc/PluginDatainjectionInjectionInterface::getOptions()
