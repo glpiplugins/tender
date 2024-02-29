@@ -87,7 +87,10 @@ class TenderItem extends CommonDBTM   {
         ],
         'WHERE' => [
             'tenderitems_id' => $ID
-            ]
+        ],
+        'GROUPBY' => [
+            'glpi_plugin_tender_distributions.id',
+        ]
     ]);
 
     $distributions = [];
