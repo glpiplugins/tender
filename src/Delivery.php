@@ -97,7 +97,6 @@ class Delivery extends CommonDBTM   {
         ],
         'WHERE' => [
             'glpi_plugin_tender_deliveries.id' => $delivery['id'],
-            'glpi_plugin_tender_tenderitems.tenders_id' => 'glpi_plugin_tender_deliveries.tenders_id'
         ],
         'GROUPBY' => [
             'glpi_plugin_tender_distributions.locations_id',
