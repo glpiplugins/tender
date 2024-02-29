@@ -49,7 +49,8 @@ class TenderItem extends CommonDBTM   {
             'glpi_plugin_tender_distributions.id',
             'glpi_plugin_tender_distributions.quantity',
             'location.name as location',
-            'delivery_location.name as delivery_location'
+            'delivery_location.name as delivery_location',
+            'glpi_plugin_tender_financials.name as financial_name'
         ],
         'FROM' => 'glpi_plugin_tender_distributions',
         'LEFT JOIN' => [
@@ -64,7 +65,25 @@ class TenderItem extends CommonDBTM   {
                     'glpi_plugin_tender_distributions' => 'delivery_locations_id',
                     'delivery_location' => 'id'
                 ]
-            ]
+            ],
+            'glpi_plugin_tender_tenderitems' => [
+                'FKEY' => [
+                    'glpi_plugin_tender_tenderitems' => 'id',
+                    'glpi_plugin_tender_distributions' => 'tenderitems_id'
+                ]
+            ],
+            'glpi_plugin_tender_financialitems' => [
+                'FKEY' => [
+                    'glpi_plugin_tender_financialitems' => 'plugin_tender_tenders_id',
+                    'glpi_plugin_tender_tenderitems' => 'tenders_id'
+                ]
+            ],
+            'glpi_plugin_tender_financials' => [
+                'FKEY' => [
+                    'glpi_plugin_tender_financialitems' => 'plugin_tender_financials_id',
+                    'glpi_plugin_tender_financials' => 'id'
+                ]
+            ],
         ],
         'WHERE' => [
             'tenderitems_id' => $ID
@@ -77,6 +96,29 @@ class TenderItem extends CommonDBTM   {
         $distributions[] = $item;
     }
 
+    $iterator = $DB->request([
+        'FROM' => 'glpi_plugin_tender_financialitems',
+        'LEFT JOIN' => [
+            'glpi_plugin_tender_financials' => [
+                'FKEY' => [
+                    'glpi_plugin_tender_financialitems' => 'plugin_tender_financials_id',
+                    'glpi_plugin_tender_financials' => 'id'
+                ]
+            ],
+        ],
+        'WHERE' => [
+            'plugin_tender_tenders_id' => $this->fields['tenders_id']
+        ]
+    ]);
+
+
+    $financials = [];
+
+    foreach ($iterator as $item) {
+       $financials[$item['id']] = $item['name'];
+    }
+
+
     TemplateRenderer::getInstance()->display('@tender/tenderitemForm.html.twig', [
         'item'   => $this,
         'params' => $options,
@@ -87,8 +129,9 @@ class TenderItem extends CommonDBTM   {
             'quantity' => __('Quantity'),
             'location' => __('Distribution'),
             'delivery_location' => __('Delivery Location'),
-            'budget_name' => __('Budget'),
+            'financial_name' => __('Financial'),
         ],
+        'financials' => $financials,
         'total_number' => count($distributions),
         'entries' => $distributions,
         'used' => array_column($distributions, 'id'),
@@ -166,6 +209,28 @@ class TenderItem extends CommonDBTM   {
         $items[] = $item;
     }
 
+    $iterator = $DB->request([
+        'FROM' => 'glpi_plugin_tender_financialitems',
+        'LEFT JOIN' => [
+            'glpi_plugin_tender_financials' => [
+                'FKEY' => [
+                    'glpi_plugin_tender_financialitems' => 'plugin_tender_financials_id',
+                    'glpi_plugin_tender_financials' => 'id'
+                ]
+            ],
+        ],
+        'WHERE' => [
+            'plugin_tender_tenders_id' => $tenderItem->getID()
+        ]
+    ]);
+
+
+    $financials = [];
+
+    foreach ($iterator as $item) {
+       $financials[$item['id']] = $item['name'];
+    }
+
     $suppliers = TenderSupplier::getSuppliers($tenderItem->getID());
     $catalogueitems = CatalogueItem::getCatalogueItemsBySupplier($suppliers);
       TemplateRenderer::getInstance()->display('@tender/tenderitemList.html.twig', [
@@ -180,6 +245,7 @@ class TenderItem extends CommonDBTM   {
                 'gross_total' => $gross_total,
             ]
           ],
+          'financials' => $financials,
           'tax_total',
           'gross_total',
           'is_tab' => true,

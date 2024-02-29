@@ -77,7 +77,7 @@ class Invoice extends CommonDBTM   {
                 ]
             ],
             'FROM' => 'glpi_plugin_tender_distributions',
-            'INNER JOIN' => [
+            'LEFT JOIN' => [
                 'glpi_locations AS loc' => [
                     'FKEY' => [
                         'glpi_plugin_tender_distributions' => 'locations_id',
@@ -96,8 +96,6 @@ class Invoice extends CommonDBTM   {
                         'glpi_plugin_tender_distributions' => 'tenderitems_id'
                     ]
                 ],
-            ],
-            'LEFT JOIN' => [
                 'glpi_plugin_tender_deliveryitems' => [
                     'FKEY' => [
                         'glpi_plugin_tender_distributions' => 'id',
@@ -106,14 +104,14 @@ class Invoice extends CommonDBTM   {
                     ],
                 'glpi_plugin_tender_invoiceitems' => [
                     'FKEY' => [
-                        'glpi_plugin_tender_tenderitems' => 'id',
-                        'glpi_plugin_tender_invoiceitems' => 'plugin_tender_tenderitems_id'
+                        'glpi_plugin_tender_distributions' => 'id',
+                        'glpi_plugin_tender_invoiceitems' => 'plugin_tender_distributions_id'
                     ]
                     ],
                 'glpi_plugin_tender_financials' => [
                     'FKEY' => [
                         'glpi_plugin_tender_financials' => 'id',
-                        'glpi_plugin_tender_invoiceitems' => 'plugin_tender_financialitems_id'
+                        'glpi_plugin_tender_distributions' => 'financials_id'
                     ]
                 ]
             ],
@@ -144,7 +142,8 @@ class Invoice extends CommonDBTM   {
                 'description' => __('Description'),
                 'quantity' => __('Quantity'),
                 'invoiced_quantity' => __('Invoiced Quantity', 'tender'),
-                'financial' => __('Financials', 'tender'),
+                'delivery_location_name' => __('Delivery Location', 'tender'),
+                'location_name' => __('Distribution', 'tender')
             ],
             'formatters' => [
                 'invoice_date' => 'date',
@@ -190,7 +189,7 @@ class Invoice extends CommonDBTM   {
 
     $iterator = $DB->request([
         'SELECT' => [
-            'glpi_plugin_tender_tenderitems.id AS plugin_tender_tenderitems_id',
+            'glpi_plugin_tender_distributions.id AS plugin_tender_distributions_id',
             'glpi_plugin_tender_distributions.quantity AS quantity',
             'loc.name AS location_name',
             'deliv_loc.name AS delivery_location_name',
@@ -231,8 +230,8 @@ class Invoice extends CommonDBTM   {
                 ],
             'glpi_plugin_tender_invoiceitems' => [
                 'FKEY' => [
-                    'glpi_plugin_tender_tenderitems' => 'id',
-                    'glpi_plugin_tender_invoiceitems' => 'plugin_tender_tenderitems_id'
+                    'glpi_plugin_tender_distributions' => 'id',
+                    'glpi_plugin_tender_invoiceitems' => 'plugin_tender_distributions_id'
                 ]
             ]
         ],

@@ -32,7 +32,7 @@ if (isset($_POST['add'])) {
    Distribution::addDistribution(
       $_POST['tenderitems_id'],
       $_POST['quantity'],
-      $_POST['budgets_id'],
+      $_POST['financials_id'],
       $_POST['locations_id'],
       $_POST['delivery_locations_id'],
       );

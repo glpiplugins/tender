@@ -37,6 +37,7 @@
 <script>
    $(document).ready(function() {
       var catalogueitems = catalogueitems;
+      var financials = financials;
       var dom_element = $('#form-content');
       var buttonCatalogue = $('#btn_add_catalogue_item');
       var buttonDiverse = $('#btn_add_diverse_item');
@@ -51,6 +52,7 @@
                      itemtypes: JSON.parse('{{ itemtypes | json_encode | raw }}'),
                      catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}'),
                      item: JSON.parse('{{ item.fields | json_encode | raw }}'),
+                     financials: JSON.parse('{{ financials | json_encode | raw }}'),
                }
             }).done(function(html_data) {
                dom_element.children('.form-field').remove();
@@ -67,6 +69,7 @@
                data: {
                      action: 'get_diverseitem_add_form',
                      item: JSON.parse('{{ item.fields | json_encode | raw }}'),
+                     financials: JSON.parse('{{ financials | json_encode | raw }}'),
                }
             }).done(function(html_data) {
                buttonDiverse.hide();
@@ -91,6 +94,7 @@
                   itemtypes: JSON.parse('{{ itemtypes | json_encode | raw }}'),
                   catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}'),
                   item: JSON.parse('{{ item.fields | json_encode | raw }}'),
+                  financials: JSON.parse('{{ financials | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             buttonDiverse.show();
@@ -111,6 +115,7 @@
             data: {
                   action: 'get_diverseitem_add_form',
                   item: JSON.parse('{{ item.fields | json_encode | raw }}'),
+                  financials: JSON.parse('{{ financials | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             buttonDiverse.hide();
@@ -133,6 +138,7 @@
                   suppliers: suppliers,
                   dom_name: dom_name,
                   item: JSON.parse('{{ item.fields | json_encode | raw }}'),
+                  financials: JSON.parse('{{ financials | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             var parent_dom = $('select[name="'+dom_name+'"]').parent().parent()

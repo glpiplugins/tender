@@ -33,6 +33,7 @@ if (isset($_POST['add'])) {
    Distribution::addDistribution(
       $newid,
       $_POST['quantity'],
+      $_POST['financials_id'],
       $_POST['locations_id'],
       $_POST['delivery_locations_id']
    );
@@ -54,6 +55,7 @@ if (isset($_POST['add'])) {
    Distribution::addDistribution(
       $newid,
       $_POST['quantity'],
+      $_POST['financials_id'],
       $_POST['locations_id'],
       $_POST['delivery_locations_id']
    );

@@ -76,11 +76,11 @@
                   '',
                   __('Delivery place', "tender"),
                ) }}
-               {{ fields.dropdownField(
-                  'Budget',
-                  'budgets_id',
+               {{ fields.dropdownArrayField(
+                  'financials_id',
                   '',
-                  __('Budget'),
+                  financials,
+                  __('Financial', "tender"),
                ) }}
                {{ fields.hiddenField(
                      'tenderitems_id',

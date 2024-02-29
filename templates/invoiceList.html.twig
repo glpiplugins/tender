@@ -36,19 +36,25 @@
                         <tr>
                            <th>{{__('Name')}}</th>
                            <th>{{__('Description')}}</th>
-                           <th>{{__('Quantity', "tender")}}</th>
+                           <th>{{__('Delivered quantity', "tender")}}</th>
                            <th>{{__('Already invoiced', "tender")}}</th>
                            <th>{{__('Invoice Quantity', "tender")}}</th>
                            <th>{{__('Net Price', "tender")}}</th>
                            <th>{{__('Net Total Price', "tender")}}</th>
                            <th>{{__('Tax', "tender")}}</th>
                            <th>{{__('Gross Price', "tender")}}</th>
-                           <th>{{__('Financial', "tender")}}</th>
+                           <th>{{__('Delivery Location', "tender")}}</th>
+                           <th>{{__('Distribution', "tender")}}</th>
                         </tr>
                      </thead>
                      <tbody>
                         {% for item in tenderitems %}
-                        {% set pending_quantity = item.quantity - item.invoiced_quantity %}
+                        {% if item.delivered_quantity is empty %}
+                           {% set delivered_quantity = 0 %}
+                        {% else %}
+                           {% set delivered_quantity = item.delivered_quantity %}
+                        {% endif %}
+                        {% set pending_quantity = delivered_quantity - item.invoiced_quantity %}
                         <tr>
                            <td>
                                  {{ item.name }}
@@ -60,7 +66,7 @@
                                  </span>
                            </td>
                            <td>
-                              {{ item.delivered_quantity }} / {{ item.quantity }}
+                              {{ delivered_quantity }} / {{ item.quantity }}
                            </td>
                            <td>
                               {{ item.invoiced_quantity }}
@@ -98,19 +104,14 @@
                            {% endif %}
                            </td>
                            <td>
-                              {{ fields.dropdownArrayField(
-                                 'plugin_tender_financialitems_id',
-                                 '',
-                                 financials,
-                                 '',
-                                 {
-                                    'no_label': true,
-                                 }
-                              ) }}
+                              {{ item.delivery_location_name }}
+                           </td>
+                           <td>
+                              {{ item.location_name }}
                            </td>
                                  {{ fields.hiddenField(
-                                       'item[' ~ loop.index ~ '][plugin_tender_tenderitems_id]',
-                                       item.plugin_tender_tenderitems_id
+                                       'item[' ~ loop.index ~ '][plugin_tender_distributions_id]',
+                                       item.plugin_tender_distributions_id
                                  ) }}
                         </tr>
                         {% endfor %}

@@ -36,6 +36,13 @@
     __('Delivery Location')
 ) }}
 
+{{ fields.dropdownArrayField(
+    'financials_id',
+    '',
+    financials,
+    __('Financial', "tender"),
+) }}
+
 {{ fields.numberField(
     'net_price',
     '',

@@ -54,6 +54,7 @@ CREATE TABLE `glpi_plugin_tender_distributions` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
             `tenderitems_id` int unsigned DEFAULT NULL,
             `quantity` int unsigned DEFAULT NULL,
+            `financials_id` int unsigned DEFAULT NULL,
             `locations_id` int unsigned DEFAULT NULL,
             `delivery_locations_id` int unsigned DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -257,8 +258,7 @@ CREATE TABLE `glpi_plugin_tender_invoices` (
 CREATE TABLE `glpi_plugin_tender_invoiceitems` (
             `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
             `plugin_tender_invoices_id` INT UNSIGNED DEFAULT NULL,
-            `plugin_tender_financialitems_id` INT UNSIGNED DEFAULT NULL,
-            `plugin_tender_tenderitems_id` INT UNSIGNED DEFAULT NULL,
+            `plugin_tender_distributions_id` INT UNSIGNED DEFAULT NULL,
             `quantity` INT UNSIGNED DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
