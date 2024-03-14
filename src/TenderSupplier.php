@@ -18,7 +18,7 @@ class TenderSupplier extends CommonDBTM   {
      }
 
     static function getTypeName($nb = 0) {
-        return __('Tender Supplier', 'tenderitem');
+        return __('Tender Supplier', 'tender');
     }
 
     public function getTabNameForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
