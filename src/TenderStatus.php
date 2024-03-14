@@ -10,13 +10,13 @@ use Entity;
 use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
 
-class TenderType extends CommonDropdown  {
+class TenderStatus extends CommonDropdown  {
 
     static $rightname = 'networking';
 
     static function getTypeName($nb = 0) {
       
-        return __('Tender Type', 'tender');
+        return __('Tender Status', 'tender');
     }
 
      public function defineTabs($options = []) {
@@ -35,7 +35,7 @@ class TenderType extends CommonDropdown  {
 
         $this->initForm($ID, $options);
         
-        TemplateRenderer::getInstance()->display('@tender/tendertype.html.twig', [
+        TemplateRenderer::getInstance()->display('@tender/tenderstatus.html.twig', [
             'item'   => $this,
             'params' => $options,
         ]);

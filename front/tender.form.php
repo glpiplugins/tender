@@ -19,8 +19,6 @@ if (!$plugin->isInstalled('tender') || !$plugin->isActivated('tender')) {
 
 $object = new Tender();
 
-
-
 if (isset($_POST['add'])) {
    //Check CREATE ACL
    //$object->check(-1, CREATE, $_POST);

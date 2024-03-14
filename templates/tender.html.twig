@@ -27,6 +27,20 @@
                      {}
                   ) }}
 
+                  {{ fields.dropdownArrayField(
+                     'plugin_tender_tendertypes_id',
+                     item.fields['plugin_tender_tendertypes_id'],
+                     tendertypes,
+                     __('Type', "tender"),
+                  ) }}
+
+                  {{ fields.dropdownArrayField(
+                     'plugin_tender_tenderstatuses_id',
+                     item.fields['plugin_tender_tenderstatuses_id'],
+                     tenderstatus,
+                     __('Status', "tender"),
+                  ) }}
+
                   {{ fields.dateField(
                      'start_date',
                      item.fields['start_date'],
@@ -77,7 +91,7 @@
                         'disabled': true
                      }
                   ) }}
-
+                  <input type="hidden" name="id" value="{{ item.fields['id'] }}" />
                   <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
                <div>
                {% if item.fields['id'] is not empty %}

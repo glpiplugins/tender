@@ -4,11 +4,24 @@
 
 {% block more_fields %}
 
-   {{ fields.sliderField(
-      'active',
-      item.fields['active'],
-      __('Active?'),
+   {{ fields.numberField(
+      'min_value',
+      item.fields['min_value'],
+      __('Min Value', "tender"),
+      {
+         'step' : "1",
+         'min': '0'
+      }
    ) }}
 
+   {{ fields.numberField(
+      'max_value',
+      item.fields['max_value'],
+      __('Max Value', "tender"),
+      {
+         'step' : "1",
+         'min': '0'
+      }
+   ) }}
 
 {% endblock %}

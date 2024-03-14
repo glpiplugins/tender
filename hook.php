@@ -96,10 +96,11 @@ function plugin_tender_uninstall()
 
 function plugin_tender_getDropdown() {
     return [
-        'GlpiPlugin\Tender\TenderType' => __("Tender Types", "TenderTypes"),
-        'GlpiPlugin\Tender\CatalogueItem' => __("Catalogue Items", "CatalogueItems"),
-        'GlpiPlugin\Tender\Costcenter' => __("Costcenter", "Costcenter"),
-        'GlpiPlugin\Tender\Account' => __("Accounts", "Accounts"),
+        'GlpiPlugin\Tender\TenderType' => __("Tender Types", "tender"),
+        'GlpiPlugin\Tender\TenderStatus' => __("Tender Status", "tender"),
+        'GlpiPlugin\Tender\CatalogueItem' => __("Catalogue Items", "tender"),
+        'GlpiPlugin\Tender\Costcenter' => __("Costcenter", "tender"),
+        'GlpiPlugin\Tender\Account' => __("Accounts", "tender"),
     ];
  }
 

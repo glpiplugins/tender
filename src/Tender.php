@@ -45,18 +45,43 @@ class Tender extends CommonDBTM  {
         return "fas fa-shopping-cart";
      }
 
-    public function showForm($ID, array $options = []) {
-        global $CFG_GLPI;
+   public function showForm($ID, array $options = []) {
+      global $CFG_GLPI;
+      global $DB;
 
-        $this->initForm($ID, $options);
-        
-        TemplateRenderer::getInstance()->display('@tender/tender.html.twig', [
-            'item'   => $this,
-            'params' => $options,
-        ]);
+      $this->initForm($ID, $options);
 
-        return true;
-     }
+      $iterator = $DB->request([
+            'FROM' => 'glpi_plugin_tender_tendertypes'
+      ]);
+   
+
+      $tendertypes = [];
+
+      foreach ($iterator as $item) {
+         $tendertypes[$item['id']] = $item['name'];
+      }
+   
+      $iterator = $DB->request([
+         'FROM' => 'glpi_plugin_tender_tenderstatuses'
+      ]);
+
+
+      $tenderstatus = [];
+
+      foreach ($iterator as $item) {
+         $tenderstatus[$item['id']] = $item['name'];
+      }
+
+      TemplateRenderer::getInstance()->display('@tender/tender.html.twig', [
+         'item'   => $this,
+         'params' => $options,
+         'tendertypes' => $tendertypes,
+         'tenderstatus' => $tenderstatus
+      ]);
+
+      return true;
+   }
 
 
     public function rawSearchOptions() {
@@ -121,7 +146,33 @@ class Tender extends CommonDBTM  {
            'massiveaction'      => true
         ];
   
-        return $tab;
+      $tab[] = [
+         'id'                 => '8',
+         'table'              => 'glpi_plugin_tender_tenderstatuses',
+         'field'              => 'name',
+         'itemlink_type'      => 'GlpiPlugin\Tender\TenderStatus',
+         'linkfield'          => 'plugin_tender_tenderstatuses_id',
+         'name'               => __('Status'),
+         'displaytype'        => 'dropdown',
+         'relationclass'      => 'glpi_plugin_tender_tenderstatuses',
+         'storevaluein'       => 'plugin_tender_tenderstatuses_id',
+         'injectable'    => true,
+      ]; 
+
+      $tab[] = [
+         'id'                 => '9',
+         'table'              => 'glpi_plugin_tender_tendertypes',
+         'field'              => 'name',
+         'itemlink_type'      => 'GlpiPlugin\Tender\TenderType',
+         'linkfield'          => 'plugin_tender_tendertypes_id',
+         'name'               => __('Type'),
+         'displaytype'        => 'dropdown',
+         'relationclass'      => 'glpi_plugin_tender_tendertypes',
+         'storevaluein'       => 'plugin_tender_tendertypes_id',
+         'injectable'    => true,
+      ]; 
+
+      return $tab;
 
     }
 
