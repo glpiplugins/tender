@@ -41,9 +41,13 @@ function plugin_tender_install()
 {
 
     global $DB;
-    $migration = new Migration(100);
+    $migration = new Migration(PLUGIN_TENDER_VERSION);
     if (!$DB->tableExists("glpi_plugin_tender_tenders")) {
         $DB->runFile(Plugin::getPhpDir('tender')."/install/sql/empty-1.0.0.sql");
+    } else {
+        require_once(__DIR__ . '/install/upgrade_to_1.0.1.php');
+        $upgrade = new PluginTenderUpgradeTo1_0_1();
+        $migration = $upgrade->upgrade($migration);
     }
     $migration->executeMigration();
     return true;
@@ -138,3 +142,23 @@ function plugin_datainjection_populate_tender()
 //     // }
 //     return $actions;
 //  }
+
+function plugin_tender_upgrade_1_0_1(Migration $migration) {
+    global $DB;
+ 
+    $migration->setVersion('1.0.1');
+ 
+    if ($DB->tableExists('glpi_plugin_tender_tenders')) {
+       if ($DB->fieldExists('glpi_plugin_datainjection_profiles', 'ID')) {
+          $migration->changeField('glpi_plugin_datainjection_profiles', 'ID', 'id', 'autoincrement');
+          $migration->migrationOneTable('glpi_plugin_datainjection_profiles');
+       }
+ 
+        PluginDatainjectionProfile::migrateProfiles();
+ 
+       //Drop profile table : no use anymore !
+       $migration->dropTable('glpi_plugin_datainjection_profiles');
+    }
+ 
+    $migration->executeMigration();
+ }

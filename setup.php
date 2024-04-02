@@ -38,7 +38,7 @@ use GlpiPlugin\Tender\Distribution;
 use GlpiPlugin\Tender\Financial;
 use Glpi\Plugin\Hooks;
 
-define('PLUGIN_TENDER_VERSION', '1.0');
+define('PLUGIN_TENDER_VERSION', '1.0.1');
 
 // Minimal GLPI version, inclusive
 define("PLUGIN_TENDER_MIN_GLPI_VERSION", "10.0.0");

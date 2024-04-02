@@ -167,6 +167,17 @@ class Financial extends CommonDBTM   {
            'massiveaction'      => true
         ];
   
+        $tab[] = [
+         'id'                 => '9',
+         'table'              => $this::getTable(),
+         'field'              => 'reference',
+         'name'               => __('Reference', 'tender'),
+         'datatype'           => 'text',
+         'displaytype'        => 'text',
+         'massiveaction'      => false,
+         'injectable'         => true
+     ];
+
         return $tab;
 
     }
@@ -190,7 +201,10 @@ class Financial extends CommonDBTM   {
   
       $iterator = $DB->request([
          'SELECT' => [
-            'glpi_plugin_tender_financials' => 'name as name',
+            'glpi_plugin_tender_financials' => [
+               'name as name',
+               'reference as reference'
+            ],
             'glpi_plugin_tender_costcenters' => 'name as costcenter',
             'glpi_plugin_tender_accounts' => 'name as account',
             'glpi_plugin_tender_financialitems' => [
@@ -264,6 +278,7 @@ class Financial extends CommonDBTM   {
                'year' => __('Year', 'tender'),
                'costcenter' => __('Costcenter', 'tender'),
                'account' => __('Account', 'tender'),
+               'reference' => __('Reference', 'tender'),
                'value' => __('Value', 'tender'),
          ],
          'formatters' => [

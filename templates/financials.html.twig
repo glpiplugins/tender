@@ -32,11 +32,17 @@
    ) }}
 
    {{ fields.textField(
+      'reference',
+      item.fields['reference'],
+      __('Reference', "tender")
+   ) }}
+
+   {{ fields.textField(
       'total',
       total|number_format(2, ',', '.'),
       __('Total', "tender"),
       {
-         'disabled': false
+         'disabled': true
       }
    ) }}
 {% endblock %}
