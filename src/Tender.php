@@ -43,6 +43,7 @@ class Tender extends CommonDBTM  {
       if ($delivery->find(['tenders_id' => $this->fields['id']])) {
       $this->addStandardTab('GlpiPlugin\Tender\Invoice', $ong, $options);
       }
+      $invoice = new Invoice();
       return $ong;
    }
        

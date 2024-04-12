@@ -8,6 +8,7 @@ use Html;
 use Entity;
 use MassiveAction;
 use Session;
+use DateTime;
 use Glpi\Application\View\TemplateRenderer;
 
 class Invoice extends CommonDBTM   {
@@ -70,11 +71,32 @@ class Invoice extends CommonDBTM   {
                 'deliv_loc.name AS delivery_location_name',
                 'glpi_plugin_tender_tenderitems.name',
                 'glpi_plugin_tender_tenderitems.description',
+                'glpi_plugin_tender_tenderitems.net_price',
+                'glpi_plugin_tender_tenderitems.tax',
                 'glpi_plugin_tender_financials.name as financial',
-                'SUM' => [
-                    'glpi_plugin_tender_deliveryitems.quantity AS delivered_quantity',
-                    'glpi_plugin_tender_invoiceitems.quantity AS invoiced_quantity',
-                ]
+                'glpi_plugin_tender_financials.reference as reference',
+                'glpi_plugin_tender_costcenters.name as costcenter',
+                'glpi_plugin_tender_accounts.name as account',
+                new \QuerySubQuery([
+                    'SELECT' => [
+                        'SUM' => [
+                            'glpi_plugin_tender_deliveryitems.quantity']
+                        ],
+                    'FROM' => 'glpi_plugin_tender_deliveryitems',
+                    'WHERE' => [
+                        'distributions_id' => new \QueryExpression($DB->quoteName('glpi_plugin_tender_distributions.id'))
+                    ]
+                    ], 'delivered_quantity'),
+                new \QuerySubQuery([
+                    'SELECT' => [
+                        'SUM' => [
+                            'glpi_plugin_tender_invoiceitems.quantity']
+                        ],
+                    'FROM' => 'glpi_plugin_tender_invoiceitems',
+                    'WHERE' => [
+                        'plugin_tender_distributions_id' => new \QueryExpression($DB->quoteName('glpi_plugin_tender_distributions.id'))
+                    ]
+                    ], 'invoiced_quantity')
             ],
             'FROM' => 'glpi_plugin_tender_distributions',
             'LEFT JOIN' => [
@@ -101,17 +123,29 @@ class Invoice extends CommonDBTM   {
                         'glpi_plugin_tender_distributions' => 'id',
                         'glpi_plugin_tender_deliveryitems' => 'distributions_id'
                     ]
-                    ],
+                ],
                 'glpi_plugin_tender_invoiceitems' => [
                     'FKEY' => [
                         'glpi_plugin_tender_distributions' => 'id',
                         'glpi_plugin_tender_invoiceitems' => 'plugin_tender_distributions_id'
                     ]
-                    ],
+                ],
                 'glpi_plugin_tender_financials' => [
                     'FKEY' => [
                         'glpi_plugin_tender_financials' => 'id',
                         'glpi_plugin_tender_distributions' => 'financials_id'
+                    ]
+                ],
+                'glpi_plugin_tender_accounts' => [
+                    'FKEY' => [
+                        'glpi_plugin_tender_accounts' => 'id',
+                        'glpi_plugin_tender_financials' => 'plugin_tender_accounts_id'
+                    ]
+                ],
+                'glpi_plugin_tender_costcenters' => [
+                    'FKEY' => [
+                        'glpi_plugin_tender_costcenters' => 'id',
+                        'glpi_plugin_tender_financials' => 'plugin_tender_costcenters_id'
                     ]
                 ]
             ],
@@ -125,25 +159,46 @@ class Invoice extends CommonDBTM   {
         ]);
         
         $invoiceitems = [];
+        $total = 0;
+        $i = 0;
         foreach($iterator as $item) {
             if($item['invoiced_quantity'] > 0) {
                 $item['itemtype'] = "GlpiPlugin\Tender\InvoiceItem";
+                $price = $item['tax'] > 0 ? $item['invoiced_quantity'] * ($item['net_price'] * (($item['tax'] / 100) + 1)) : $item['invoiced_quantity'] * $item['net_price'];
+                $total += $price;
+                $costs['Kosten'][$i]['PSK'] = $item['costcenter'] . '.' . $item['account'];
+                $costs['Kosten'][$i]['Auftrag'] = $item['reference'];
+                $costs['Kosten'][$i]['Betrag'] = number_format($price, 2, ',', '.');
                 $invoiceitems[] = $item;
+                $i++;
             }
         }
+
+        $totalFormatted = number_format($total, 2, ',', '.');
+        $invoiceName = $invoice['name'];
+        $invoicePostingText = $invoice['posting_text'];
+        $invoiceDueDate = new DateTime($invoice['due_date']);
+        $invoiceDueDate = $invoiceDueDate->format('d.m.Y');
+        $accountDocumentString = "/plugins/tender/ajax/accountingDocument.php?sum=$totalFormatted&Haushaltsjahr=2024&Fachbereich=5&Abteilung=56&Aufwand=X&Ansatz=X&Rechnungsnummer=$invoiceName&Buchungstext=$invoicePostingText&Faelligkeit=$invoiceDueDate&" . http_build_query($costs);
+        
+
         TemplateRenderer::getInstance()->display('@tender/invoiceForm.html.twig', [
             'item'   => $this,
             'invoice'   => $invoice,
             'is_tab' => true,
             'filters' => [],
             'nofilter' => true,
+            'total' => $total,
+            'accountDocumentString' => $accountDocumentString,
             'columns' => [
                 'name' => __('Name'),
                 'description' => __('Description'),
                 'quantity' => __('Quantity'),
                 'invoiced_quantity' => __('Invoiced Quantity', 'tender'),
                 'delivery_location_name' => __('Delivery Location', 'tender'),
-                'location_name' => __('Distribution', 'tender')
+                'location_name' => __('Distribution', 'tender'),
+                'financial' => __('Financial', 'tender'),
+                'reference' => __('Reference', 'tender'),
             ],
             'formatters' => [
                 'invoice_date' => 'date',
@@ -189,58 +244,87 @@ class Invoice extends CommonDBTM   {
 
     $iterator = $DB->request([
         'SELECT' => [
-            'glpi_plugin_tender_distributions.id AS plugin_tender_distributions_id',
-            'glpi_plugin_tender_distributions.quantity AS quantity',
+            'dis.id AS plugin_tender_distributions_id',
+            'dis.quantity AS quantity',
             'loc.name AS location_name',
             'deliv_loc.name AS delivery_location_name',
             'glpi_plugin_tender_tenderitems.name',
             'glpi_plugin_tender_tenderitems.description',
             'glpi_plugin_tender_tenderitems.net_price',
             'glpi_plugin_tender_tenderitems.tax',
-            'SUM' => [
-                'glpi_plugin_tender_deliveryitems.quantity AS delivered_quantity',
-                'glpi_plugin_tender_invoiceitems.quantity AS invoiced_quantity',
-            ]
+            'glpi_plugin_tender_financials.name as financial',
+            'glpi_plugin_tender_financials.reference as reference',
+            new \QuerySubQuery([
+                'SELECT' => [
+                    'SUM' => [
+                        'glpi_plugin_tender_deliveryitems.quantity']
+                    ],
+                'FROM' => 'glpi_plugin_tender_deliveryitems',
+                'WHERE' => [
+                    'distributions_id' => new \QueryExpression($DB->quoteName('dis.id'))
+                ]
+                ], 'delivered_quantity'),
+            new \QuerySubQuery([
+                'SELECT' => [
+                    'SUM' => [
+                        'glpi_plugin_tender_invoiceitems.quantity']
+                    ],
+                'FROM' => 'glpi_plugin_tender_invoiceitems',
+                'WHERE' => [
+                    'plugin_tender_distributions_id' => new \QueryExpression($DB->quoteName('dis.id'))
+                ]
+                ], 'invoiced_quantity')
         ],
-        'FROM' => 'glpi_plugin_tender_distributions',
+        'FROM' => 'glpi_plugin_tender_distributions as dis',
         'LEFT JOIN' => [
             'glpi_locations AS loc' => [
                 'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'locations_id',
+                    'dis' => 'locations_id',
                     'loc' => 'id'
                 ]
             ],
             'glpi_locations AS deliv_loc' => [
                 'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'delivery_locations_id',
+                    'dis' => 'delivery_locations_id',
                     'deliv_loc' => 'id'
                 ]
             ],
             'glpi_plugin_tender_tenderitems' => [
                 'FKEY' => [
                     'glpi_plugin_tender_tenderitems' => 'id',
-                    'glpi_plugin_tender_distributions' => 'tenderitems_id'
+                    'dis' => 'tenderitems_id'
                 ]
             ],
             'glpi_plugin_tender_deliveryitems' => [
                 'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'id',
+                    'dis' => 'id',
                     'glpi_plugin_tender_deliveryitems' => 'distributions_id'
                 ]
                 ],
             'glpi_plugin_tender_invoiceitems' => [
                 'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'id',
+                    'dis' => 'id',
                     'glpi_plugin_tender_invoiceitems' => 'plugin_tender_distributions_id'
                 ]
-            ]
+                ],
+            'glpi_plugin_tender_financials' => [
+                'FKEY' => [
+                    'glpi_plugin_tender_financials' => 'id',
+                    'dis' => 'financials_id'
+                ]
+            ],
         ],
         'WHERE' => [
             'glpi_plugin_tender_tenderitems.tenders_id' => $tender->getID()
         ],
         'GROUPBY' => [
-            'glpi_plugin_tender_distributions.locations_id',
-            'glpi_plugin_tender_distributions.delivery_locations_id'
+            'dis.locations_id',
+            'dis.delivery_locations_id',
+            'glpi_plugin_tender_tenderitems.id',
+        ],
+        'ORDERBY' => [
+            'glpi_plugin_tender_tenderitems.id',
+            'glpi_plugin_tender_financials.name',
         ]
     ]);
 
@@ -276,6 +360,7 @@ class Invoice extends CommonDBTM   {
         'tenderitems' => $tenderitems,
         'tenders_id' => $tender->getID(),
         'financials' => $financials,
+        'tender' => $tender->fields,
         'is_tab' => true,
         'filters' => [],
         'nofilter' => true,

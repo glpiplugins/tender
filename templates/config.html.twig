@@ -1,0 +1,32 @@
+{{ include('components/form/header.html.twig') }}
+
+{% import 'components/form/fields_macros.html.twig' as fields %}
+<div class="card-body d-flex flex-wrap">
+   <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
+      <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+         <div class="row flex-row align-items-start flex-grow-1">
+            <div class="row flex-row">
+
+               <div class="form-field row col-12 col-sm-6  mb-2">
+                  <label class="col-form-label col-xxl-5 text-xxl-end">{{__('Accounting template', "tender")}}</label>
+                  <div class="col-xxl-7  field-container">
+                     {{ configValues['accounting_template_name']}} <a href="#"><i class="fas fa-trash red"></i></a>
+                  </div>
+               </div>
+               {{ fields.fileField(
+                  'new_accounting_template',
+                  null,
+                  ''
+               ) }}        
+               <div>
+                  <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+                  <button class="btn btn-primary me-2" type="submit" name="update" value="1">
+                     <i class="fas fa-save"></i>
+                     <span>{{ _x('button', 'Save') }}</span>
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

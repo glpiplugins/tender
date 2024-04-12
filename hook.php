@@ -43,13 +43,29 @@ function plugin_tender_install()
     global $DB;
     $migration = new Migration(PLUGIN_TENDER_VERSION);
     if (!$DB->tableExists("glpi_plugin_tender_tenders")) {
-        $DB->runFile(Plugin::getPhpDir('tender')."/install/sql/empty-1.0.0.sql");
+        $DB->runFile(Plugin::getPhpDir('tender')."/install/sql/empty-1.0.2.sql");
     } else {
-        require_once(__DIR__ . '/install/upgrade_to_1.0.1.php');
-        $upgrade = new PluginTenderUpgradeTo1_0_1();
+        require_once(__DIR__ . '/install/upgrade_to_1.0.2.php');
+        $upgrade = new PluginTenderUpgradeTo1_0_2();
         $migration = $upgrade->upgrade($migration);
     }
     $migration->executeMigration();
+
+    $directories = [
+        GLPI_PLUGIN_DOC_DIR . "/tender/docx/",
+    ];
+
+    foreach ($directories as $new_directory) {
+        if (!is_dir($new_directory)) {
+                  @mkdir($new_directory, 0755, true)
+                     or die(sprintf(
+                         __('%1$s %2$s'),
+                         __("Can't create folder", 'tender'),
+                         $new_directory
+                     ));
+        }
+    }
+
     return true;
 }
 
@@ -63,37 +79,37 @@ function plugin_tender_uninstall()
 
     global $DB;
 
-    $tables = [
-        "glpi_plugin_tender_tenders",
-        "glpi_plugin_tender_tendersuppliers",
-        "glpi_plugin_tender_tenderitems",
-        "glpi_plugin_tender_distributions",
-        "glpi_plugin_tender_catalogueitems",
-        "glpi_plugin_tender_catalogueitemsuppliers",
-        "glpi_plugin_tender_offeritems",
-        "glpi_plugin_tender_orders",
-        "glpi_plugin_tender_deliveries",
-        "glpi_plugin_tender_deliveryitems",
-        "glpi_plugin_tender_tendertypes",
-        "glpi_plugin_tender_tendertypeoptions",
-        "glpi_plugin_tender_financials",
-    ];
+    // $tables = [
+    //     "glpi_plugin_tender_tenders",
+    //     "glpi_plugin_tender_tendersuppliers",
+    //     "glpi_plugin_tender_tenderitems",
+    //     "glpi_plugin_tender_distributions",
+    //     "glpi_plugin_tender_catalogueitems",
+    //     "glpi_plugin_tender_catalogueitemsuppliers",
+    //     "glpi_plugin_tender_offeritems",
+    //     "glpi_plugin_tender_orders",
+    //     "glpi_plugin_tender_deliveries",
+    //     "glpi_plugin_tender_deliveryitems",
+    //     "glpi_plugin_tender_tendertypes",
+    //     "glpi_plugin_tender_tendertypeoptions",
+    //     "glpi_plugin_tender_financials",
+    // ];
+
+    // // foreach ($tables as $table) {
+    // //     $DB->dropTable($table);
+    // // }
 
     // foreach ($tables as $table) {
-    //     $DB->dropTable($table);
+    //     if ($DB->tableExists($table)) {
+    //        $DB->queryOrDie("DROP TABLE IF EXISTS `".$table."`", $DB->error());
+    //     }
+    //  }
+
+    // $tables_glpi = ["glpi_logs"];
+
+    // foreach ($tables_glpi as $table_glpi) {
+    //     $DB->delete($table_glpi, ['itemtype' => 'PluginTender']);
     // }
-
-    foreach ($tables as $table) {
-        if ($DB->tableExists($table)) {
-           $DB->queryOrDie("DROP TABLE IF EXISTS `".$table."`", $DB->error());
-        }
-     }
-
-    $tables_glpi = ["glpi_logs"];
-
-    foreach ($tables_glpi as $table_glpi) {
-        $DB->delete($table_glpi, ['itemtype' => 'PluginTender']);
-    }
 
     return true;
 }
@@ -105,6 +121,7 @@ function plugin_tender_getDropdown() {
         'GlpiPlugin\Tender\CatalogueItem' => __("Catalogue Items", "tender"),
         'GlpiPlugin\Tender\Costcenter' => __("Costcenter", "tender"),
         'GlpiPlugin\Tender\Account' => __("Accounts", "tender"),
+        'GlpiPlugin\Tender\FileTemplate' => __("File Templates", "tender"),
     ];
  }
 

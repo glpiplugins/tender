@@ -16,7 +16,7 @@ class Account extends CommonDropdown  {
 
     static function getTypeName($nb = 0) {
       
-        return __('Accounts', 'Accounts');
+        return __('Accounts', 'tender');
     }
        
      static function getIcon() {

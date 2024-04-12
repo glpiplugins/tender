@@ -36,9 +36,11 @@ use GlpiPlugin\Tender\Tender;
 use GlpiPlugin\Tender\TenderItem;
 use GlpiPlugin\Tender\Distribution;
 use GlpiPlugin\Tender\Financial;
+use GlpiPlugin\Tender\FileTemplate;
+use GlpiPlugin\Tender\Config;
 use Glpi\Plugin\Hooks;
 
-define('PLUGIN_TENDER_VERSION', '1.0.1');
+define('PLUGIN_TENDER_VERSION', '1.0.2');
 
 // Minimal GLPI version, inclusive
 define("PLUGIN_TENDER_MIN_GLPI_VERSION", "10.0.0");
@@ -57,10 +59,15 @@ function plugin_init_tender()
 
     $PLUGIN_HOOKS['csrf_compliant']['tender'] = true;
 
+    // Plugin::registerClass(Config::class, ['addtabon' => 'Config']);
+    Plugin::registerClass(FileTemplate::class, []);
     // $PLUGIN_HOOKS['use_massive_action']['tender'] = 1;
     // $PLUGIN_HOOKS['assign_to_ticket']['tender'] = true;
     $PLUGIN_HOOKS["menu_toadd"]['tender'] = ['management' => [Tender::class, Financial::class]];
-
+    Plugin::registerClass(Config::class, ['addtabon' => 'Config']);
+    if (Session::haveRight('config', UPDATE)) {
+        $PLUGIN_HOOKS['config_page']['tender'] = 'front/config.php';
+     }
     // $PLUGIN_HOOKS['itemtype']['tender'] = ['TenderItem'];
     // $PLUGIN_HOOKS['add_tab']['tender'] = ['TenderItem' => 'plugin_tender_add_tab'];
 
@@ -91,6 +98,10 @@ function plugin_init_tender()
     if (Plugin::isPluginActive('datainjection')) {
         $PLUGIN_HOOKS['plugin_datainjection_populate']['tender'] = "plugin_datainjection_populate_tender";
     }
+
+    $PLUGIN_HOOKS[]['tender'] = [FileTemplate::class => [
+        FileTemplate::class, 'preItemAdd'
+    ]];
 
 }
 

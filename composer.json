@@ -1,6 +1,7 @@
 {
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "phpoffice/phpword": "^1.2"
     },
     "require-dev": {
         "glpi-project/tools": "^0.4"

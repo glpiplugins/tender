@@ -68,9 +68,16 @@ class Delivery extends CommonDBTM   {
             'glpi_plugin_tender_distributions.quantity AS quantity',
             'glpi_plugin_tender_tenderitems.name',
             'glpi_plugin_tender_tenderitems.description',
-            'SUM' => [
-                'glpi_plugin_tender_deliveryitems.quantity AS delivered_quantity'
-            ]
+            new \QuerySubQuery([
+                'SELECT' => [
+                    'SUM' => [
+                        'glpi_plugin_tender_deliveryitems.quantity']
+                    ],
+                'FROM' => 'glpi_plugin_tender_deliveryitems',
+                'WHERE' => [
+                    'distributions_id' => new \QueryExpression($DB->quoteName('glpi_plugin_tender_distributions.id'))
+                ]
+                ], 'delivered_quantity'),
         ],
         'FROM' => 'glpi_plugin_tender_distributions',
         'INNER JOIN' => [
@@ -173,9 +180,16 @@ class Delivery extends CommonDBTM   {
                 'deliv_loc.name AS delivery_location_name',
                 'glpi_plugin_tender_tenderitems.name',
                 'glpi_plugin_tender_tenderitems.description',
-                'SUM' => [
-                    'glpi_plugin_tender_deliveryitems.quantity AS delivered_quantity'
-                ]
+                new \QuerySubQuery([
+                    'SELECT' => [
+                        'SUM' => [
+                            'glpi_plugin_tender_deliveryitems.quantity']
+                        ],
+                    'FROM' => 'glpi_plugin_tender_deliveryitems',
+                    'WHERE' => [
+                        'distributions_id' => new \QueryExpression($DB->quoteName('glpi_plugin_tender_distributions.id'))
+                    ]
+                    ], 'delivered_quantity'),
             ],
             'FROM' => 'glpi_plugin_tender_distributions',
             'LEFT JOIN' => [
