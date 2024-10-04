@@ -27,18 +27,24 @@
                      {}
                   ) }}
 
-                  {{ fields.dropdownArrayField(
+                  {{ fields.dropdownField(
+                     'GlpiPlugin\\Tender\\TenderType',
                      'plugin_tender_tendertypes_id',
                      item.fields['plugin_tender_tendertypes_id'],
-                     tendertypes,
-                     __('Type', "tender"),
+                     __('Tender Type', 'tender'),
+                     {
+                        'to_add': tendertypes,
+                     }
                   ) }}
 
-                  {{ fields.dropdownArrayField(
-                     'plugin_tender_tenderstatuses_id',
-                     item.fields['plugin_tender_tenderstatuses_id'],
-                     tenderstatus,
-                     __('Status', "tender"),
+                  {{ fields.dropdownField(
+                     'GlpiPlugin\\Tender\\TenderStatus',
+                     'plugin_tender_statuses_id',
+                     item.fields['plugin_tender_statuses_id'],
+                     __('Status', 'tender'),
+                     {
+                        'to_add': tenderstatus,
+                     }
                   ) }}
 
                   {{ fields.dateField(
@@ -91,10 +97,11 @@
                         'disabled': true
                      }
                   ) }}
-                  <input type="hidden" name="id" value="{{ item.fields['id'] }}" />
+                  
                   <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
                <div>
                {% if item.fields['id'] is not empty %}
+                  <input type="hidden" name="id" value="{{ item.fields['id'] }}" />
                   <button class="btn btn-primary me-2" type="submit" name="update" value="1">
                      <i class="fas fa-save"></i>
                      <span>{{ _x('button', 'Save') }}</span>

@@ -13,11 +13,10 @@ class Tender extends CommonDBTM  {
     static $rightname = 'networking';
 
     static function getTypeName($nb = 0) {
-      
         return __('Tenders', 'tender');
     }
 
-     public function defineTabs($options = []) {
+   public function defineTabs($options = []) {
       $ong = [];
       //add main tab for current object
       $this->addDefaultFormTab($ong);
@@ -47,43 +46,19 @@ class Tender extends CommonDBTM  {
       return $ong;
    }
        
-     static function getIcon() {
-        return "fas fa-shopping-cart";
-     }
+   static function getIcon() {
+      return "fas fa-shopping-cart";
+   }
 
    public function showForm($ID, array $options = []) {
-      global $CFG_GLPI;
-      global $DB;
 
       $this->initForm($ID, $options);
-
-      $iterator = $DB->request([
-            'FROM' => 'glpi_plugin_tender_tendertypes'
-      ]);
-   
-
-      $tendertypes = [];
-
-      foreach ($iterator as $item) {
-         $tendertypes[$item['id']] = $item['name'];
-      }
-   
-      $iterator = $DB->request([
-         'FROM' => 'glpi_plugin_tender_tenderstatuses'
-      ]);
-
-
-      $tenderstatus = [];
-
-      foreach ($iterator as $item) {
-         $tenderstatus[$item['id']] = $item['name'];
-      }
 
       TemplateRenderer::getInstance()->display('@tender/tender.html.twig', [
          'item'   => $this,
          'params' => $options,
-         'tendertypes' => $tendertypes,
-         'tenderstatus' => $tenderstatus
+         'tendertypes' => TenderTypeModel::all()->pluck('name', 'id')->toArray(),
+         'tenderstatus' => TenderStatusModel::all()->pluck('name', 'id')->toArray()
       ]);
 
       return true;
@@ -94,13 +69,13 @@ class Tender extends CommonDBTM  {
         $tab = parent::rawSearchOptions();
 
         $tab[] = [
-           'id'                 => '2',
-           'table'              => $this::getTable(),
-           'field'              => 'id',
-           'name'               => __('ID'),
-           'searchtype'         => 'contains',
-           'massiveaction'      => false
-        ];
+         'id'                 => '2',
+         'table'              => $this->getTable(),
+         'field'              => 'id',
+         'name'               => __('ID'),
+         'massiveaction'      => false, // implicit field is id
+         'datatype'           => 'number'
+         ];
   
         $tab[] = [
             'id'                 => '3',
@@ -177,6 +152,36 @@ class Tender extends CommonDBTM  {
          'storevaluein'       => 'plugin_tender_tendertypes_id',
          'injectable'    => true,
       ]; 
+
+      $tab[] = [
+         'id'                 => '10',
+         'table'              => $this::getTable(),
+         'field'              => 'start_date',
+         'name'               => __('Start Date', 'tender'),
+         'datatype'           => 'date',
+         'massiveaction'      => false,
+         'injectable'    => true,
+      ];
+
+      $tab[] = [
+         'id'                 => '11',
+         'table'              => $this::getTable(),
+         'field'              => 'submission_date',
+         'name'               => __('Submission Date', 'tender'),
+         'datatype'           => 'date',
+         'massiveaction'      => false,
+         'injectable'    => true,
+      ];
+
+      $tab[] = [
+         'id'                 => '12',
+         'table'              => $this::getTable(),
+         'field'              => 'end_date',
+         'name'               => __('End Date', 'tender'),
+         'datatype'           => 'date',
+         'massiveaction'      => false,
+         'injectable'    => true,
+      ];
 
       return $tab;
 

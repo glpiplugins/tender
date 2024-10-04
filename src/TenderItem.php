@@ -44,60 +44,97 @@ class TenderItem extends CommonDBTM   {
 
     $this->initForm($ID, $options);
 
-    $iterator = $DB->request([
-        'SELECT' => [
-            'glpi_plugin_tender_distributions.id',
-            'glpi_plugin_tender_distributions.quantity',
-            'location.name as location',
-            'delivery_location.name as delivery_location',
-            'glpi_plugin_tender_financials.name as financial_name'
-        ],
-        'FROM' => 'glpi_plugin_tender_distributions',
-        'LEFT JOIN' => [
-            'glpi_locations as location' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'locations_id',
-                    'location' => 'id'
-                ]
-            ],
-            'glpi_locations as delivery_location' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'delivery_locations_id',
-                    'delivery_location' => 'id'
-                ]
-            ],
-            'glpi_plugin_tender_tenderitems' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_tenderitems' => 'id',
-                    'glpi_plugin_tender_distributions' => 'tenderitems_id'
-                ]
-            ],
-            'glpi_plugin_tender_financialitems' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_financialitems' => 'plugin_tender_tenders_id',
-                    'glpi_plugin_tender_tenderitems' => 'tenders_id'
-                ]
-            ],
-            'glpi_plugin_tender_financials' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_financialitems' => 'plugin_tender_financials_id',
-                    'glpi_plugin_tender_financials' => 'id'
-                ]
-            ],
-        ],
-        'WHERE' => [
-            'tenderitems_id' => $ID
-        ],
-        'GROUPBY' => [
-            'glpi_plugin_tender_distributions.id',
-        ]
-    ]);
+    $tenderitem = TenderItemModel::find($ID)->calculateDistributions();
+    // echo '<pre>';
+    // print_r($tenderitem);
+    // echo '</pre>';
+    // $tenderItem = Distribution::with([
+    //     'distributions.financial.costcenter' => function($query) use ($tenderitemsId) {
+    //         $query->with(['measureitems' => function($query) use ($tenderitemsId) {
+    //             $query->where('plugin_tender_measures_id', function($query) use ($tenderitemsId) {
+    //                 $query->select('plugin_tender_measures_id')
+    //                       ->from('glpi_plugin_tender_tenderitems')
+    //                       ->where('id', $tenderitemsId)
+    //                       ->limit(1);
+    //             });
+    //         }]);
+    //     },
+    //     'measure.measureitems'
+    // ])->where('id', $tenderitemsId)->first();
 
-    $distributions = [];
-    foreach ($iterator as $item) {
-        $item['itemtype'] = "GlpiPlugin\Tender\Distribution";
-        $distributions[] = $item;
-    }
+    // $iterator = $DB->request([
+    //     'SELECT' => [
+    //         'glpi_plugin_tender_distributions.id',
+    //         'glpi_plugin_tender_distributions.quantity',
+    //         'glpi_plugin_tender_distributions.percentage',
+    //         'glpi_plugin_tender_tenderitems.quantity as tenderitem_quantity',
+    //         'glpi_plugin_tender_tenderitems.net_price',
+    //         'glpi_plugin_tender_tenderitems.tax',
+    //         'location.name as location',
+    //         'delivery_location.name as delivery_location',
+    //         'glpi_plugin_tender_financials.name as financial_name'
+    //     ],
+    //     'FROM' => 'glpi_plugin_tender_distributions',
+    //     'LEFT JOIN' => [
+    //         'glpi_locations as location' => [
+    //             'FKEY' => [
+    //                 'glpi_plugin_tender_distributions' => 'locations_id',
+    //                 'location' => 'id'
+    //             ]
+    //         ],
+    //         'glpi_locations as delivery_location' => [
+    //             'FKEY' => [
+    //                 'glpi_plugin_tender_distributions' => 'delivery_locations_id',
+    //                 'delivery_location' => 'id'
+    //             ]
+    //         ],
+    //         'glpi_plugin_tender_tenderitems' => [
+    //             'FKEY' => [
+    //                 'glpi_plugin_tender_tenderitems' => 'id',
+    //                 'glpi_plugin_tender_distributions' => 'tenderitems_id'
+    //             ]
+    //         ],
+    //         'glpi_plugin_tender_financialitems' => [
+    //             'FKEY' => [
+    //                 'glpi_plugin_tender_financialitems' => 'plugin_tender_tenders_id',
+    //                 'glpi_plugin_tender_tenderitems' => 'tenders_id'
+    //             ]
+    //         ],
+    //         'glpi_plugin_tender_financials' => [
+    //             'FKEY' => [
+    //                 'glpi_plugin_tender_distributions' => 'financials_id',
+    //                 'glpi_plugin_tender_financials' => 'id'
+    //             ]
+    //         ],
+    //     ],
+    //     'WHERE' => [
+    //         'tenderitems_id' => $ID
+    //     ],
+    //     'GROUPBY' => [
+    //         'glpi_plugin_tender_distributions.id',
+    //     ]
+    // ]);
+
+    // $percentage_total = 0;
+    // $net_total = 0;
+    // $tax_total = 0;
+    // $gross_total = 0;
+
+    // $distributions = [];
+    // foreach ($iterator as $item) {
+    //     $item['itemtype'] = "GlpiPlugin\Tender\Distribution";
+    //     $item['tax_rate'] = $item['tax'] . ' %';
+    //     $item['net_total'] = $item['net_price'] * $item['quantity'];
+    //     $item['net_total'] = $item['percentage'] == 100 ? $item['net_total'] : $item['net_total'] * ($item['percentage'] / 100);
+    //     $item['tax'] = ($item['tax'] == 0 ? 0 : ($item['net_total'] * $item['tax'] / 100) );
+    //     $item['gross_total'] = $item['net_total'] + $item['tax'];
+        
+    //     $percentage_total += $item['percentage'];
+    //     $net_total += $item['net_total'];
+    //     $tax_total += $item['tax'];
+    //     $gross_total += $item['gross_total'];
+    //     $distributions[] = $item;
+    // }
 
     $iterator = $DB->request([
         'FROM' => 'glpi_plugin_tender_financialitems',
@@ -121,7 +158,6 @@ class TenderItem extends CommonDBTM   {
        $financials[$item['id']] = $item['name'];
     }
 
-
     TemplateRenderer::getInstance()->display('@tender/tenderitemForm.html.twig', [
         'item'   => $this,
         'params' => $options,
@@ -129,18 +165,40 @@ class TenderItem extends CommonDBTM   {
         'filters' => [],
         'nofilter' => true,
         'columns' => [
-            'quantity' => __('Quantity'),
-            'location' => __('Distribution'),
-            'delivery_location' => __('Delivery Location'),
-            'financial_name' => __('Financial'),
+            'quantity' => __('Quantity', 'tender'),
+            'percentage' => __('Percentage', 'tender'),
+            'net_price' => __('net price', 'tender'),
+            'net_price_calculated' => __('net total', 'tender'),
+            'tax_rate' => __('tax rate', 'tender'),
+            'tax' => __('tax', 'tender'),
+            'gross_price_calculated' => __('gross price', 'tender'),
+            'percentage' => __('Percentage', 'tender'),
+            'location_name' => __('Distribution', 'tender'),
+            'delivery_location_name' => __('Delivery Location', 'tender'),
+            'financial_name' => __('Financial', 'tender'),
         ],
+        'footer_entries' => [
+            0 => [
+                'percentage' => $tenderitem->total_percentage,
+                'net_price_calculated' => $tenderitem->total_net_price,
+                'tax' => $tenderitem->total_tax,
+                'gross_price_calculated' => $tenderitem->total_gross_price,
+            ]
+          ],
+        'formatters' => [
+            'net_price_calculated' => 'float',
+            'tax' => 'float',
+            'net_total' => 'float',
+            'gross_price_calculated' => 'float',
+        ],
+        'measures'=> Measure::getAllMeasuresDropdown(),
         'financials' => $financials,
-        'total_number' => count($distributions),
-        'entries' => $distributions,
-        'used' => array_column($distributions, 'id'),
+        'total_number' => count($tenderitem->distributions),
+        'entries' => $tenderitem->distributions->toArray(),
+        'used' => $tenderitem->financialIds,
         'showmassiveactions'    => true,
         'massiveactionparams' => [
-            'num_displayed'    => min($_SESSION['glpilist_limit'], count($distributions)),
+            'num_displayed'    => min($_SESSION['glpilist_limit'], count($tenderitem->distributions)),
             'container'        => 'massGlpiPluginTenderDistribution' . mt_rand(),
             'specific_actions' => [
                 // 'delete' => __('Delete permanently'),
@@ -236,6 +294,8 @@ class TenderItem extends CommonDBTM   {
 
     $suppliers = TenderSupplier::getSuppliers($tenderItem->getID());
     $catalogueitems = CatalogueItem::getCatalogueItemsBySupplier($suppliers);
+    $measures = Measure::getAllMeasuresDropdown();
+
       TemplateRenderer::getInstance()->display('@tender/tenderitemList.html.twig', [
           'item'   => $tenderItem,
           'suppliers' => $suppliers,
@@ -249,6 +309,7 @@ class TenderItem extends CommonDBTM   {
             ]
           ],
           'financials' => $financials,
+          'measures' => $measures,
           'tax_total',
           'gross_total',
           'is_tab' => true,
@@ -343,6 +404,10 @@ class TenderItem extends CommonDBTM   {
         
         return $items;
 
+    }
+
+    static function update_tenderitem(TenderItem $item) {
+        Distribution::updateDistributionPercentages($item->getID());
     }
 
 }

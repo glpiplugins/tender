@@ -17,6 +17,7 @@ switch ($action) {
             'catalogueitems' => CatalogueItem::getCatalogueItemsBySupplier($_POST['suppliers'], [$_POST['itemtype']]),
             'item' => $_POST['item'],
             'financials' => $_POST['financials'],
+            'measures' => $_POST['measures'],
         ]);
         break;
     case 'get_catalogueitem_add_form':
@@ -24,13 +25,15 @@ switch ($action) {
             'itemtypes' => $_POST['itemtypes'],
             'catalogueitems' => $_POST['catalogueitems'],
             'item' => $_POST['item'],
-            'financials' => $_POST['financials']
+            'financials' => $_POST['financials'],
+            'measures' => $_POST['measures'],
         ]);
         break;
     case 'get_diverseitem_add_form':
         TemplateRenderer::getInstance()->display('@tender/tenderitem/diverseitemAdd.html.twig', [
             'item' => $_POST['item'],
-            'financials' => $_POST['financials']
+            'financials' => $_POST['financials'],
+            'measures' => $_POST['measures'],
         ]);
         break;        
 }

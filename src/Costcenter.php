@@ -86,4 +86,23 @@ class Costcenter extends CommonDropdown  {
         return $costcenters;
      }
 
+     public static function getCostcenters() {
+
+        global $DB;
+
+        $iterator = $DB->request([
+            'FROM' => 'glpi_plugin_tender_costcenters'
+        ]);
+    
+    
+        $items = [];
+    
+        foreach ($iterator as $item) {
+           $items[$item['id']] = $item['name'];
+        }
+
+        return $items;
+    
+     }
+
 }

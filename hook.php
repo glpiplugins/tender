@@ -43,10 +43,10 @@ function plugin_tender_install()
     global $DB;
     $migration = new Migration(PLUGIN_TENDER_VERSION);
     if (!$DB->tableExists("glpi_plugin_tender_tenders")) {
-        $DB->runFile(Plugin::getPhpDir('tender')."/install/sql/empty-1.0.2.sql");
+        $DB->runFile(Plugin::getPhpDir('tender')."/install/sql/empty-1.0.3.sql");
     } else {
-        require_once(__DIR__ . '/install/upgrade_to_1.0.2.php');
-        $upgrade = new PluginTenderUpgradeTo1_0_2();
+        require_once(__DIR__ . '/install/upgrade_to_1.0.3.php');
+        $upgrade = new PluginTenderUpgradeTo1_0_3();
         $migration = $upgrade->upgrade($migration);
     }
     $migration->executeMigration();
@@ -122,6 +122,7 @@ function plugin_tender_getDropdown() {
         'GlpiPlugin\Tender\Costcenter' => __("Costcenter", "tender"),
         'GlpiPlugin\Tender\Account' => __("Accounts", "tender"),
         'GlpiPlugin\Tender\FileTemplate' => __("File Templates", "tender"),
+        'GlpiPlugin\Tender\Measure' => __("Measures", "tender"),
     ];
  }
 
@@ -142,40 +143,3 @@ function plugin_datainjection_populate_tender()
     $INJECTABLE_TYPES['GlpiPlugin\Tender\AccountInjection'] = 'Tender';
     $INJECTABLE_TYPES['GlpiPlugin\Tender\CostcenterInjection'] = 'Tender';
 }
-
-// function plugin_tender_MassiveActions($type) {
-//     $actions = [
-//         TenderSupplier::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete'    => _x('button', 'delete'),
-//     ];
-//     // switch ($type) {
-//     // //    case 'TenderSupplier' :
-//     //       $myclass      = 'TenderSupplier';
-//     //       $action_key   = 'delete';
-//     //       $action_label = __("plugin_tender_delete", 'delete');
-//     //       $actions[$myclass.MassiveAction::CLASS_ACTION_SEPARATOR.$action_key]
-//     //          = $action_label;
- 
-//     //       break;
-//     // }
-//     return $actions;
-//  }
-
-function plugin_tender_upgrade_1_0_1(Migration $migration) {
-    global $DB;
- 
-    $migration->setVersion('1.0.1');
- 
-    if ($DB->tableExists('glpi_plugin_tender_tenders')) {
-       if ($DB->fieldExists('glpi_plugin_datainjection_profiles', 'ID')) {
-          $migration->changeField('glpi_plugin_datainjection_profiles', 'ID', 'id', 'autoincrement');
-          $migration->migrationOneTable('glpi_plugin_datainjection_profiles');
-       }
- 
-        PluginDatainjectionProfile::migrateProfiles();
- 
-       //Drop profile table : no use anymore !
-       $migration->dropTable('glpi_plugin_datainjection_profiles');
-    }
- 
-    $migration->executeMigration();
- }

@@ -27,15 +27,13 @@ if (isset($_POST['add'])) {
    //Do object creation
    $tenderItemObj = new TenderItem();
    $tenderItem = $tenderItemObj->getByID($_POST['tenderitems_id'])->fields;
-   $tenderItem['quantity'] = $tenderItem['quantity'] + $_POST['quantity'];
+   if($tenderItem['plugin_tender_measures_id'] == 0) {
+      $tenderItem['quantity'] = $tenderItem['quantity'] + $_POST['quantity'];
+   }
    $tenderItemObj->update($tenderItem);
-   Distribution::addDistribution(
-      $_POST['tenderitems_id'],
-      $_POST['quantity'],
-      $_POST['financials_id'],
-      $_POST['locations_id'],
-      $_POST['delivery_locations_id'],
-      );
+   $tenderItemObj->input = $_POST;
+   Distribution::addDistribution($tenderItemObj);
+
    Tender::calculateEstimatedNetTotal($tenderItem['tenders_id']);
    //Redirect to newly created object form
    Html::back();

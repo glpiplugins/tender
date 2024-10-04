@@ -2,8 +2,8 @@
 
 namespace GlpiPlugin\Tender;
 
-use CommonDBTM;
 use CommonGLPI;
+use CommonDBTM;
 use Html;
 use Entity;
 use MassiveAction;
@@ -95,47 +95,119 @@ class Distribution extends CommonDBTM  {
 
     }
 
-    public function item_add_distribution(Distribution $item) {
-        print_r($item);
-        die();
+    static function item_add_tenderitem(TenderItem $item) {
+        self::addDistribution($item);
     }
 
-    static function addDistribution(int $tenderitems_id, int $quantity, int $financials_id, int $locations_id, int $delivery_locations_id) {
+    static function pre_item_add_tenderitem(TenderItem $item) {
+        if (isset($item->fields['add_catalogue'])) {
+            $catalogueItem = CatalogueItem::getByID($item->fields['plugin_tender_catalogueitems_id']);
+            $item->fields['name'] = $catalogueItem->fields['name'];
+            $item->fields['description'] = $catalogueItem->fields['description'];
+        }
+    }
+
+
+
+    static function update_distribution(Distribution $item) {
+        $tenderitem = TenderItemModel::find($item->fields['tenderitems_id']);
+        $tenderitem->updateQuantity();
+    }
+
+    static function addDistribution(array|TenderItem $item) {
+        foreach ($item->input['financials'] as $financial) {
+            $item->input['financials_id'] = $financial;
+            $distributionObj = new self();
+            $distributionObj->add([
+                'tenderitems_id' => $item->fields['id'],
+                'quantity' => $item->input['quantity'],
+                'financials_id' => $item->input['financials_id'],
+                'locations_id' => $item->input['locations_id'],
+                'delivery_locations_id' => $item->input['delivery_locations_id'],
+                'percentage' => 100
+            ]);
+        }
+
+        $tenderitem = TenderItemModel::find($item->getID());
+        $tenderitem->updateQuantity();
+
+        self::updateDistributionPercentages($item->fields['id']);
+
+    }
+
+    // static function item_add_distribution(Distribution $item) {
+    //     self::updateDistributionPercentages($item->fields['tenderitems_id']);
+    // }
+
+    static function updateDistributionPercentages(int $tenderitemsId) {
+
+        $tenderItem = TenderItemModel::with([
+            'distributions.financial.costcenter' => function($query) use ($tenderitemsId) {
+                $query->with(['measureitems' => function($query) use ($tenderitemsId) {
+                    $query->where('plugin_tender_measures_id', function($query) use ($tenderitemsId) {
+                        $query->select('plugin_tender_measures_id')
+                              ->from('glpi_plugin_tender_tenderitems')
+                              ->where('id', $tenderitemsId)
+                              ->limit(1);
+                    });
+                }]);
+            },
+            'measure.measureitems'
+        ])->where('id', $tenderitemsId)->first();
+
+        $measures = Measure::getMeasuresByDistribution($tenderItem);
+
+        foreach ($measures as $distribution) {
+            $distributionObj = new Distribution();
+            $distribution['distribution']->percentage = $distribution['percentage'];
+            $distributionObj->update($distribution['distribution']->toArray());
+        }
+
+    }
+
+    static function updateDistributionQuantities(int $tenderitemsId) {
 
         global $DB;
 
-        $distribution = new self();
-        $distribution->add([
-           'tenderitems_id' => $tenderitems_id,
-           'quantity' => $quantity,
-           'financials_id' => $financials_id,
-           'locations_id' => $locations_id,
-           'delivery_locations_id' => $delivery_locations_id,
-           ]);
-
-        
-        $tenderitem = TenderItem::getByID($tenderitems_id);
+        $distributions = $DB->request([
+            'SELECT' => [
+                'glpi_plugin_tender_distributions.*',
+                'glpi_plugin_tender_distributions.plugin_tender_measures_id'
+            ],
+            'FROM' => 'glpi_plugin_tender_distributions',
+            'LEFT JOIN' => [
+                'glpi_plugin_tender_tenderitems' => [
+                    'FKEY' => [
+                        'glpi_plugin_tender_distributions' => 'tenderitems_id',
+                        'glpi_plugin_tender_tenderitems' => 'id'
+                    ]
+                ],
+            ],
+            'WHERE' => [
+                'tenderitems_id' => $tenderitemsId
+                ]
+        ]);
 
     }
 
-    static function removeAllDistributions(int $tenderitems_id) {
+    static function removeAllDistributions(int $tenderitemsId) {
 
         global $DB;
 
         $distributions = $DB->request([
             'FROM' => 'glpi_plugin_tender_distributions',
             'WHERE' => [
-                'tenderitems_id' => $tenderitems_id
+                'tenderitems_id' => $tenderitemsId
                 ]
         ]);
 
-        $tenderitem = $DB->request([
-            'FROM' => 'glpi_plugin_tender_tenderitems',
-            'WHERE' => [
-                'id' => $tenderitems_id
-                ]
-        ]);
-        $tenderitem = $tenderitem->current();
+        foreach ($distributions as $distribution) {
+            $object = new Distribution();
+            $object->delete($distribution);
+        }
+
+        $tenderitem = TenderItemModel::find($tenderitemsId);
+        $tenderitem->updateQuantity();
 
     }
 
@@ -165,5 +237,14 @@ class Distribution extends CommonDBTM  {
                 ]
         ]);
         
+        foreach ($distributions as $distribution) {
+            $object = new Distribution();
+            $object->delete($distribution);
+        }
+
+        $tenderitem = TenderItemModel::find($tenderitemsId);
+        $tenderitem->updateQuantity();
+
+
     }    
 }

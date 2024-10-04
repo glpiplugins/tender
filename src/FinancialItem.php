@@ -107,13 +107,13 @@ class FinancialItem extends CommonDBTM   {
               ]
             ],
             'years' => [
-                2026 => 2026,
-                2025 => 2025,
-                2024 => 2024,
-                2023 => 2023,
-                2022 => 2022,
-                2021 => 2021,
-                2020 => 2020
+                '2026-01-01' => 2026,
+                '2025-01-01' => 2025,
+                '2024-01-01' => '2024-01-01',
+                '2023-01-01' => 2023,
+                '2022-01-01' => 2022,
+                '2021-01-01' => 2021,
+                '2020-01-01' => 2020
             ],
             'types' => [
                 0 => __('Expense', 'tender'),
@@ -201,7 +201,7 @@ class FinancialItem extends CommonDBTM   {
            'table'              => $this::getTable(),
            'field'              => 'year',
            'name'               => __('Year'),
-           'datatype'           => 'number',
+           'datatype'           => 'date',
            'displaytype'        => 'text',
            'massiveaction'      => true,
            'injectable'         => true

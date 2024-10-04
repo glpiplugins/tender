@@ -1,6 +1,7 @@
 {
     "require": {
         "php": ">=7.4",
+        "illuminate/database": "^8.83",
         "phpoffice/phpword": "^1.2"
     },
     "require-dev": {

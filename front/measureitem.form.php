@@ -1,6 +1,6 @@
 <?php
 
-use GlpiPlugin\Tender\FinancialItem;
+use GlpiPlugin\Tender\MeasureItem;
 
 include ("../../../inc/includes.php");
 
@@ -17,17 +17,17 @@ if (!$plugin->isInstalled('tender') || !$plugin->isActivated('tender')) {
    Html::displayNotFoundError();
 }
 
-$object = new FinancialItem();
+$object = new MeasureItem();
 
 if (isset($_POST['add'])) {
    //Check CREATE ACL
    //$object->check(-1, CREATE, $_POST);
-   $_POST = array_filter($_POST);
-      
    //Do object creation
    $newid = $object->add($_POST);
+
    //Redirect to newly created object form
    Html::back();
+
 } else if (isset($_POST['update'])) {
    //Check UPDATE ACL
    //$object->check($_POST['id'], UPDATE);
@@ -37,8 +37,7 @@ if (isset($_POST['add'])) {
    Html::back();
 } else if (isset($_POST['delete'])) {
    //Check DELETE ACL
-   //$object->check($_POST['id'], DELETE);
-   //Put object in dustbin
+
    $object->delete($_POST);
    //Redirect to objects list
    $object->redirectToList();
@@ -48,9 +47,9 @@ if (isset($_POST['add'])) {
    //Do object purge
    $object->delete($_POST, 1);
    //Redirect to objects list
-   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/financial.php");
+   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/measures.php");
 } else {
-    Html::header(FinancialItem::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\FinancialItem");
+    Html::header(TenderItem::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Tender", "tender");
     //per default, display object
     $object->display(
             $_GET

@@ -1,14 +1,18 @@
 {% import 'components/form/fields_macros.html.twig' as fields %}
+
 {{ fields.textField(
     'name',
     '',
     __('Name'),
 ) }}
+
 {{ fields.numberField(
     'quantity',
     '',
-    __('Quantity'),
+    __('Quantity', 'tender'),
 ) }}
+
+
 {{ fields.textareaField(
     'description',
     '',
@@ -18,31 +22,14 @@
     }
 ) }}
 
-{{ fields.dropdownField(
-    'Location',
-    'locations_id',
-    item['default_locations_id'],
-    __('Location')
-) }}
-
-{{ fields.dropdownField(
-    'Location',
-    'delivery_locations_id',
-    item['default_delivery_locations_id'],
-    __('Delivery Location')
-) }}
-
-{{ fields.dropdownArrayField(
-    'financials_id',
-    '',
-    financials,
-    __('Financial', "tender"),
-) }}
+{{ fields.smallTitle( 
+    __('Price', 'tender'),
+)}}
 
 {{ fields.numberField(
     'net_price',
     '',
-    __('Net Price'),
+    __('Net Price', 'tender'),
     {
         'step' : ".0001"
     }
@@ -51,5 +38,50 @@
 {{ fields.numberField(
     'tax',
     19,
-    __('Tax'),
+    __('Tax', 'tender'),
 ) }}
+
+{{ fields.smallTitle( 
+    __('Financial', 'tender'),
+)}}
+
+{{ fields.dropdownField(
+    'GlpiPlugin\\Tender\\Measure',
+    'plugin_tender_measures_id',
+    '',
+    __('Measure', 'tender'),
+    {
+        'to_add': measures
+    }
+) }}
+
+{{ fields.dropdownField(
+    'GlpiPlugin\\Tender\\Financial',
+    'financials',
+    [],
+    __('Financial', 'tender'),
+    {
+        'to_add': financials,
+         'multiple': true
+    }
+) }}
+
+{{ fields.smallTitle( 
+    __('Location'),
+)}}
+
+{{ fields.dropdownField(
+    'Location',
+    'locations_id',
+    item['default_locations_id'],
+    __('Distribution', 'tender')
+) }}
+
+{{ fields.dropdownField(
+    'Location',
+    'delivery_locations_id',
+    item['default_delivery_locations_id'],
+    __('Delivery Location', 'tender')
+) }}
+
+

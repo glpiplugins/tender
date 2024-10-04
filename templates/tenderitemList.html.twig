@@ -38,6 +38,7 @@
    $(document).ready(function() {
       var catalogueitems = catalogueitems;
       var financials = financials;
+      var measures = measures;
       var dom_element = $('#form-content');
       var buttonCatalogue = $('#btn_add_catalogue_item');
       var buttonDiverse = $('#btn_add_diverse_item');
@@ -53,6 +54,7 @@
                      catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}'),
                      item: JSON.parse('{{ item.fields | json_encode | raw }}'),
                      financials: JSON.parse('{{ financials | json_encode | raw }}'),
+                     measures: JSON.parse('{{ measures | json_encode | raw }}'),
                }
             }).done(function(html_data) {
                dom_element.children('.form-field').remove();
@@ -70,6 +72,7 @@
                      action: 'get_diverseitem_add_form',
                      item: JSON.parse('{{ item.fields | json_encode | raw }}'),
                      financials: JSON.parse('{{ financials | json_encode | raw }}'),
+                     measures: JSON.parse('{{ measures | json_encode | raw }}'),
                }
             }).done(function(html_data) {
                buttonDiverse.hide();
@@ -95,6 +98,7 @@
                   catalogueitems: JSON.parse('{{ catalogueitems | json_encode | raw }}'),
                   item: JSON.parse('{{ item.fields | json_encode | raw }}'),
                   financials: JSON.parse('{{ financials | json_encode | raw }}'),
+                  measures: JSON.parse('{{ measures | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             buttonDiverse.show();
@@ -116,6 +120,7 @@
                   action: 'get_diverseitem_add_form',
                   item: JSON.parse('{{ item.fields | json_encode | raw }}'),
                   financials: JSON.parse('{{ financials | json_encode | raw }}'),
+                  measures: JSON.parse('{{ measures | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             buttonDiverse.hide();
@@ -139,6 +144,7 @@
                   dom_name: dom_name,
                   item: JSON.parse('{{ item.fields | json_encode | raw }}'),
                   financials: JSON.parse('{{ financials | json_encode | raw }}'),
+                  measures: JSON.parse('{{ measures | json_encode | raw }}'),
             }
          }).done(function(html_data) {
             var parent_dom = $('select[name="'+dom_name+'"]').parent().parent()

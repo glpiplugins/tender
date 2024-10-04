@@ -17,9 +17,6 @@ class PluginTenderUpgradeTo1_0_2 {
       $migration->addField($table, 'posting_text', 'varchar(255)');
       $migration->addField($table, 'due_date', 'DATE');
 
-      // Create table glpi_plugin_tender_filetemplates
-      $table = 'glpi_plugin_tender_invoices';
-
       return $migration;
    }
 

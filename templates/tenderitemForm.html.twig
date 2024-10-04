@@ -6,6 +6,7 @@
       <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
          <div class="row flex-row align-items-start flex-grow-1">
             <div class="row flex-row" id="form-content">
+            <div><a href="/plugins/tender/front/tender.form.php?id={{item.fields['tenders_id']}}">{{__('Back')}}</a></div>
                   {{ fields.textField(
                      'name',
                      item.fields['name'],
@@ -15,7 +16,7 @@
                   {{ fields.numberField(
                      'quantity',
                      item.fields['quantity'],
-                     __('Quantity'),
+                     __('Quantity', 'tender'),
                      {
                         'disabled': true
                      }
@@ -27,6 +28,16 @@
                      __('Description'),
                      {
                         enable_richtext: true
+                     }
+                  ) }}
+
+                  {{ fields.dropdownField(
+                     'GlpiPlugin\\Tender\\Measure',
+                     'plugin_tender_measures_id',
+                     item.fields['plugin_tender_measures_id'],
+                     __('Measure', 'tender'),
+                     {
+                        'to_add': measures
                      }
                   ) }}
 
@@ -62,26 +73,35 @@
                {{ fields.numberField(
                   'quantity',
                   0,
-                  __('Quantity'),
+                  __('Quantity', 'tender'),
                ) }}
+
                {{ fields.dropdownField(
                   'Location',
                   'locations_id',
                   '',
-                  __('Distribution', "tender"),
+                  __('Distribution', 'tender'),
                ) }}
+
                {{ fields.dropdownField(
                   'Location',
                   'delivery_locations_id',
                   '',
-                  __('Delivery place', "tender"),
+                  __('Delivery Location', 'tender'),
                ) }}
-               {{ fields.dropdownArrayField(
-                  'financials_id',
-                  '',
-                  financials,
-                  __('Financial', "tender"),
+
+               {{ fields.dropdownField(
+                  'GlpiPlugin\\Tender\\Financial',
+                  'financials',
+                  [],
+                  __('Financial', 'tender'),
+                  {
+                     'to_add': financials,
+                     'multiple': true,
+                     'used' : used
+                  }
                ) }}
+
                {{ fields.hiddenField(
                      'tenderitems_id',
                      item.fields['id']

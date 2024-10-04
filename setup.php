@@ -39,8 +39,10 @@ use GlpiPlugin\Tender\Financial;
 use GlpiPlugin\Tender\FileTemplate;
 use GlpiPlugin\Tender\Config;
 use Glpi\Plugin\Hooks;
+use GlpiPlugin\Tender\DBmysqlProxy;
+use Illuminate\Database\Migrations\Migration;
 
-define('PLUGIN_TENDER_VERSION', '1.0.2');
+define('PLUGIN_TENDER_VERSION', '1.0.3');
 
 // Minimal GLPI version, inclusive
 define("PLUGIN_TENDER_MIN_GLPI_VERSION", "10.0.0");
@@ -55,7 +57,7 @@ define("PLUGIN_TENDER_MAX_GLPI_VERSION", "10.1.99");
  */
 function plugin_init_tender()
 {
-    global $PLUGIN_HOOKS, $CFG_GLPI, $ITEM_TYPES;
+    global $PLUGIN_HOOKS, $CFG_GLPI, $ITEM_TYPES, $DB;
 
     $PLUGIN_HOOKS['csrf_compliant']['tender'] = true;
 
@@ -70,6 +72,8 @@ function plugin_init_tender()
      }
     // $PLUGIN_HOOKS['itemtype']['tender'] = ['TenderItem'];
     // $PLUGIN_HOOKS['add_tab']['tender'] = ['TenderItem' => 'plugin_tender_add_tab'];
+
+    $CFG_GLPI['unicity_types'][] = 'GlpiPlugin\\Tender\\Tender';
 
     $TENDER_TYPES = [
         'CartridgeItem',
@@ -91,8 +95,20 @@ function plugin_init_tender()
 
      $CFG_GLPI['plugin_tender_types'] = $TENDER_TYPES;
 
-     $PLUGIN_HOOKS[Hooks::ITEM_ADD]['tender']        = [Distribution::class => [Distribution::class,
-     'item_add_distribution']];
+     $PLUGIN_HOOKS[Hooks::ITEM_ADD]['tender'] = [
+        TenderItem::class => [Distribution::class, 'item_add_tenderitem'],
+        Distribution::class => [Distribution::class, 'item_add_distribution']
+    ];
+
+     $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['tender']        = [TenderItem::class => [Distribution::class,
+     'pre_item_add_tenderitem']];
+
+     $PLUGIN_HOOKS[hooks::ITEM_UPDATE]['tender']     = [
+        Distribution::class => [Distribution::class, 'update_distribution'],
+        TenderItem::class => [TenderItem::class, 'update_tenderitem']];
+
+    //  $PLUGIN_HOOKS[Hooks::ITEM_ADD]['tender']        = [Distribution::class => [Distribution::class,
+    //  'item_add_distribution']];
 
     // Add Fields to Datainjection
     if (Plugin::isPluginActive('datainjection')) {
@@ -102,6 +118,8 @@ function plugin_init_tender()
     $PLUGIN_HOOKS[]['tender'] = [FileTemplate::class => [
         FileTemplate::class, 'preItemAdd'
     ]];
+
+    $DBmysqlProxy = new DBmysqlProxy($DB);
 
 }
 

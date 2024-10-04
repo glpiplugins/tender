@@ -4,6 +4,7 @@ use GlpiPlugin\Tender\Tender;
 use GlpiPlugin\Tender\TenderItem;
 use GlpiPlugin\Tender\CatalogueItem;
 use GlpiPlugin\Tender\Distribution;
+use GlpiPlugin\Tender\Measure;
 
 include ("../../../inc/includes.php");
 
@@ -26,39 +27,21 @@ if (isset($_POST['add'])) {
    //Check CREATE ACL
    //$object->check(-1, CREATE, $_POST);
    //Do object creation
+  
    $newid = $object->add($_POST);
 
    Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
-
-   Distribution::addDistribution(
-      $newid,
-      $_POST['quantity'],
-      $_POST['financials_id'],
-      $_POST['locations_id'],
-      $_POST['delivery_locations_id']
-   );
 
    //Redirect to newly created object form
    Html::back();
 } else if (isset($_POST['add_catalogue'])) {
    //Check UPDATE ACL
    //$object->check($_POST['id'], UPDATE);
-   $catalogueItem = CatalogueItem::getByID($_POST['plugin_tender_catalogueitems_id']);
-   $_POST['name'] = $catalogueItem->fields['name'];
-   $_POST['description'] = $catalogueItem->fields['description'];
-   //Do object creation
 
    $newid = $object->add($_POST);
    
    Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
 
-   Distribution::addDistribution(
-      $newid,
-      $_POST['quantity'],
-      $_POST['financials_id'],
-      $_POST['locations_id'],
-      $_POST['delivery_locations_id']
-   );
    //Redirect to object form
    Html::back();
 } else if (isset($_POST['update'])) {
