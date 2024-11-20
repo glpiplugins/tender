@@ -47,6 +47,20 @@
                      }
                   ) }}
 
+                  {{ fields.dropdownField(
+                     'Supplier',
+                     'suppliers_id',
+                     item.fields['plugin_tender_suppliers_id'],
+                     __('Suppliers', 'tender'),
+                     {
+                           'multiple': true
+                     }
+                  ) }}
+
+                  {{ fields.smallTitle( 
+                     __('Events', 'tender'),
+                  )}}
+
                   {{ fields.dateField(
                      'start_date',
                      item.fields['start_date'],
@@ -68,6 +82,10 @@
                      {}
                   ) }}
 
+                  {{ fields.smallTitle( 
+                     __('Locations', 'tender'),
+                  )}}
+
                   {{ fields.dropdownField(
                      'Location',
                      'default_locations_id',
@@ -82,20 +100,37 @@
                      __('Default Delivery Location', "tender")
                   ) }}
 
+                  {{ fields.smallTitle( 
+                     __('Locations', 'tender'),
+                  )}}
+
+                  {{ fields.textField(
+                     'estimated_net_total',
+                     item.totalNetValue()|number_format(2, ',', '.'),
+                     __('Estimated Net Total', "tender"),
+                     {
+                        'disabled': true
+                     }
+                  ) }}
+
+                  {{ fields.textField(
+                     'estimated_gross_total',
+                     item.totalGrossValue()|number_format(2, ',', '.'),
+                     __('Estimated Gross Total', "tender"),
+                     {
+                        'disabled': true
+                     }
+                  ) }}
+
+                  {{ fields.smallTitle( 
+                     __('Misc'),
+                  )}}
+
                   {{ fields.textareaField(
                      'comment',
                      item.fields['comment'],
                      __('Comments'),
                      {}
-                  ) }}
-
-                  {{ fields.textField(
-                     'estimated_net_total',
-                     item.fields['estimated_net_total']|number_format(2, ',', '.'),
-                     __('Estimated Net Total', "tender"),
-                     {
-                        'disabled': true
-                     }
                   ) }}
                   
                   <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />

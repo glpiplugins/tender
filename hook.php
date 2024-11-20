@@ -123,6 +123,8 @@ function plugin_tender_getDropdown() {
         'GlpiPlugin\Tender\Account' => __("Accounts", "tender"),
         'GlpiPlugin\Tender\FileTemplate' => __("File Templates", "tender"),
         'GlpiPlugin\Tender\Measure' => __("Measures", "tender"),
+        'GlpiPlugin\Tender\TenderSubject' => __("Tender Subjects", "tender"),
+        'GlpiPlugin\Tender\DocumentTemplate' => __("Document Template", "tender")
     ];
  }
 

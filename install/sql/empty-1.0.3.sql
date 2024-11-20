@@ -24,7 +24,7 @@ CREATE TABLE `glpi_plugin_tender_tenders` (
 
 CREATE TABLE `glpi_plugin_tender_tendersuppliers` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `tenders_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tenders_id` int unsigned DEFAULT NULL,
             `suppliers_id` int unsigned DEFAULT NULL,
             `offer_date` DATE,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -41,7 +41,7 @@ CREATE TABLE `glpi_plugin_tender_tenderitems` (
             `quantity` int unsigned DEFAULT NULL,
             `net_price` decimal(20,4) NOT NULL DEFAULT '0.0000',
             `tax` int unsigned DEFAULT NULL,
-            `tenders_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tenders_id` int unsigned DEFAULT NULL,
             `plugin_tender_catalogueitems_id` int unsigned DEFAULT NULL,
             `plugin_tender_measures_id` int unsigned DEFAULT NULL,
             `entities_id` int unsigned NOT NULL default '0',
@@ -55,10 +55,10 @@ CREATE TABLE `glpi_plugin_tender_tenderitems` (
 
 CREATE TABLE `glpi_plugin_tender_distributions` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `tenderitems_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tenderitems_id` int unsigned DEFAULT NULL,
             `quantity` int unsigned DEFAULT NULL,
             `percentage` decimal(20,4) NOT NULL DEFAULT '0.0000',
-            `financials_id` int unsigned DEFAULT NULL,
+            `plugin_tender_financials_id` int unsigned DEFAULT NULL,
             `locations_id` int unsigned DEFAULT NULL,
             `delivery_locations_id` int unsigned DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -102,8 +102,8 @@ CREATE TABLE `glpi_plugin_tender_catalogueitemsuppliers` (
 
 CREATE TABLE `glpi_plugin_tender_offeritems` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `tendersuppliers_id` int unsigned DEFAULT NULL,
-            `tenderitems_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tendersuppliers_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tenderitems_id` int unsigned DEFAULT NULL,
             `net_price` decimal(20,4) NOT NULL DEFAULT '0.0000',
             `tax` int unsigned DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -115,8 +115,8 @@ CREATE TABLE `glpi_plugin_tender_offeritems` (
 
 CREATE TABLE `glpi_plugin_tender_orders` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `tendersuppliers_id` int unsigned DEFAULT NULL,
-            `tenders_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tendersuppliers_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tenders_id` int unsigned DEFAULT NULL,
             `contacts_id` int unsigned DEFAULT NULL,
             `users_id` int unsigned DEFAULT NULL,
             `order_date` DATE,
@@ -131,9 +131,9 @@ CREATE TABLE `glpi_plugin_tender_orders` (
 
 CREATE TABLE `glpi_plugin_tender_deliveries` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `tenders_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tenders_id` int unsigned DEFAULT NULL,
             `delivery_date` DATE,
-            `delivery_reference` varchar(255) DEFAULT NULL,
+            `name` varchar(255) DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
@@ -143,11 +143,9 @@ CREATE TABLE `glpi_plugin_tender_deliveries` (
 
 CREATE TABLE `glpi_plugin_tender_deliveryitems` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `deliveries_id` int unsigned DEFAULT NULL,
-            `distributions_id` int unsigned DEFAULT NULL,
+            `plugin_tender_deliveries_id` int unsigned DEFAULT NULL,
+            `plugin_tender_distributions_id` int unsigned DEFAULT NULL,
             `quantity` int unsigned DEFAULT NULL,
-            `delivery_date` DATE,
-            `delivery_reference` varchar(255) DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
@@ -176,7 +174,7 @@ CREATE TABLE `glpi_plugin_tender_tendertypes` (
 
 CREATE TABLE `glpi_plugin_tender_tendertypeoptions` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `tendertypes_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tendertypes_id` int unsigned DEFAULT NULL,
             `stage` int unsigned DEFAULT NULL,
             `name` VARCHAR(255) DEFAULT NULL,
             `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -246,9 +244,9 @@ CREATE TABLE `glpi_plugin_tender_financialitems` (
 
 CREATE TABLE `glpi_plugin_tender_invoices` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,
-            `tenders_id` int unsigned DEFAULT NULL,
+            `plugin_tender_tenders_id` int unsigned DEFAULT NULL,
             `invoice_date` DATE,
-            `invoice_reference` varchar(255) DEFAULT NULL,
+            `name` varchar(255) DEFAULT NULL,
             `internal_reference` varchar(255) DEFAULT NULL,
             `posting_text` VARCHAR(255) DEFAULT NULL,
             `due_date` DATE,
@@ -325,4 +323,100 @@ CREATE TABLE `glpi_plugin_tender_measureitems` (
         PRIMARY KEY (`id`),
         KEY `date_mod` (`date_mod`),
         KEY `date_creation` (`date_creation`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `glpi_plugin_tender_tendersubjects` (
+            `id` int unsigned NOT NULL AUTO_INCREMENT,
+            `name` VARCHAR(255) DEFAULT NULL,
+            `description` VARCHAR(255) DEFAULT NULL,
+            `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `name` (`name`),
+            KEY `date_mod` (`date_mod`),
+            KEY `date_creation` (`date_creation`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;   
+
+CREATE TABLE `glpi_plugin_tender_documenttemplates` (
+        `id` int unsigned NOT NULL AUTO_INCREMENT,
+        `name` VARCHAR(255) DEFAULT NULL,
+        `itemtype` VARCHAR(255) DEFAULT NULL,
+        `template_path` VARCHAR(255) DEFAULT NULL,
+        `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        KEY `name` (`name`),
+        KEY `date_mod` (`date_mod`),
+        KEY `date_creation` (`date_creation`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;  
+
+CREATE TABLE `glpi_plugin_tender_documenttemplate_parameters` (
+        `id` int unsigned NOT NULL AUTO_INCREMENT,
+        `plugin_tender_documenttemplates_id` INT UNSIGNED DEFAULT NULL,
+        `name` VARCHAR(255) DEFAULT NULL,
+        `type` VARCHAR(255) DEFAULT NULL,
+        `value` VARCHAR(255) DEFAULT NULL,
+        `date_mod` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        `date_creation` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        KEY `name` (`name`),
+        KEY `date_mod` (`date_mod`),
+        KEY `date_creation` (`date_creation`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;  
+
+
+INSERT INTO `glpi_fieldunicities` 
+    (
+        `name`,
+        `itemtype`,
+        `fields`,
+        `is_active`,
+        `action_refuse`,
+        `action_notify`
+    ) VALUES (
+        'Tender name',
+        'GlpiPlugin\\Tender\\Tender',
+        'name',
+        1,
+        1,
+        1
+    );
+
+INSERT INTO `glpi_displaypreferences` 
+    (
+        `itemtype`,
+        `num`,
+        `rank`,
+        `users_id`
+    ) VALUES (
+        'GlpiPlugin\\Tender\\Tender',
+        4,
+        1,
+        0
+    ), (
+        'GlpiPlugin\\Tender\\Tender',
+        8,
+        2,
+        0
+    ), (
+        'GlpiPlugin\\Tender\\Tender',
+        9,
+        3,
+        0
+    ), (
+        'GlpiPlugin\\Tender\\Tender',
+        10,
+        4,
+        0
+    );
+
+INSERT INTO `glpi_plugin_tender_documenttemplates` 
+    (
+        `id`,
+        `name`,
+        `itemtype`
+    ) VALUES (
+        1,
+        'Invoice',
+        'invoice'
+    );

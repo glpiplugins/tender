@@ -53,7 +53,7 @@ class TenderSupplier extends CommonDBTM   {
                 ]
             ],
             'WHERE' => [
-                'tenders_id' => $item->getID()
+                'plugin_tender_tenders_id' => $item->getID()
                 ]
         ]);
 
@@ -88,7 +88,7 @@ class TenderSupplier extends CommonDBTM   {
                 'container'        => 'massGlpiPluginTenderTenderSupplier' . mt_rand(),
                 'specific_actions' => [
                     // 'delete' => __('Delete permanently'),
-                    TenderSupplier::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect'),
+                    TenderSupplier::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect', 'tender'),
                 ]
             ],
         ]);
@@ -139,7 +139,7 @@ class TenderSupplier extends CommonDBTM   {
         $iterator = $DB->request([
             'FROM' => 'glpi_plugin_tender_tendersuppliers',
             'WHERE' => [
-                'tenders_id' => $tenders_id
+                'plugin_tender_tenders_id' => $tenders_id
                 ]
         ]);
   
@@ -159,7 +159,7 @@ class TenderSupplier extends CommonDBTM   {
         $iterator = $DB->request([
             'FROM' => 'glpi_plugin_tender_tendersuppliers',
             'WHERE' => [
-                'tenders_id' => $tenders_id,
+                'plugin_tender_tenders_id' => $tenders_id,
                 'suppliers_id' => $suppliers_id
                 ]
         ]);

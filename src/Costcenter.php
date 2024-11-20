@@ -20,7 +20,7 @@ class Costcenter extends CommonDropdown  {
     }
        
      static function getIcon() {
-        return "fas fa-shopping-cart";
+        return "fas fa-building";
      }
 
     public function showForm($ID, array $options = []) {

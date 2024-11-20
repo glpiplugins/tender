@@ -21,12 +21,42 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
     const CREATED_AT = 'date_creation';
     const UPDATED_AT = 'date_mod';
 
+    protected $fillable = [
+        'plugin_tender_tenders_id',
+        'entities_id',
+        'name',
+        'quantity',
+        'net_price',
+        'tax',
+        'plugin_tender_catalogueitems_id',
+        'plugin_tender_measures_id'
+    ];
+
+    protected $financialIds = [];
+    protected $locationsId = null;
+    protected $deliveryLocationsId = null;
+
+    protected static function boot()
+    {
+
+        parent::boot();
+
+        static::updated(function (TenderItemModel $tenderItem) {
+            // $tenderItem->updateFinancialItemValue();
+        });
+
+        static::deleted(function (DistributionModel $distribution) {
+            $distribution->tender_item?->updateQuantity();
+            $distribution->updateFinancialItemValue();
+        });
+    }
+
     /**
      * Get the tender that owns the tenderitem.
      */
     public function tender(): BelongsTo
     {
-        return $this->belongsTo(TenderModel::class, 'tenders_id', 'id');
+        return $this->belongsTo(TenderModel::class, 'plugin_tender_tenders_id', 'id');
     }
 
     /**
@@ -42,7 +72,15 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
      */
     public function distributions(): HasMany
     {
-        return $this->hasMany(DistributionModel::class, 'tenderitems_id', 'id');
+        return $this->hasMany(DistributionModel::class, 'plugin_tender_tenderitems_id', 'id');
+    }
+
+    /**
+     * Get the offer_items for the tender_item.
+     */
+    public function offer_items(): HasMany
+    {
+        return $this->hasMany(OfferItemModel::class, 'plugin_tender_tenderitems_id', 'id');
     }
 
     public function totalQuantities() {
@@ -55,6 +93,11 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
 
     public function totalNetValue() {
         return $this->quantity * $this->net_price;
+    }
+
+    public function totalGrossValue() {
+        $tax = $this->tax == 0 ? 1 : (1 + ($this->tax / 100));
+        return $this->quantity * $this->net_price * $tax;
     }
 
     public function totalMeasureValue() {
@@ -71,10 +114,29 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
         ->sum('value');
     }
 
+    public static function create(array $attributes = [])
+    {
+        $financialIds = $attributes['financials'] ?? [];
+        unset($attributes['financials']);
+        
+        $locationsId = $attributes['locations_id'] ?? [];
+        unset($attributes['locations_id']);
+
+        $deliveryLocationsId = $attributes['delivery_locations_id'] ?? [];
+        unset($attributes['delivery_locations_id']);
+
+        $tenderItem = static::query()->create($attributes);
+        $tenderItem->financialIds = $financialIds;
+        $tenderItem->locationsId = $locationsId;
+        $tenderItem->deliveryLocationsId = $deliveryLocationsId;
+        $tenderItem->saveDistributions();
+
+        return $tenderItem;
+    }
 
     public function calculateDistributions()
     {
-        $this->load(['distributions.financial', 'distributions.location', 'distributions.deliveryLocation']);
+        $this->load(['distributions.financial', 'distributions.location', 'distributions.delivery_location']);
         $tenderItem = $this;
 
         $totalNetPrice = 0;
@@ -110,7 +172,7 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
             $totalGrossPrice += $distribution->gross_price_calculated;
         });
 
-        // Korrektur der Summenwerte, um Rundungsfehler zu vermeiden
+
         $expectedNetPrice = round($tenderItem->net_price * $tenderItem->quantity, 2);
         $expectedTax = round($expectedNetPrice * ($tenderItem->tax / 100), 2);
         $expectedGrossPrice = round($expectedNetPrice * (1 + $tenderItem->tax / 100), 2);
@@ -138,4 +200,23 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
         $this->quantity = $this->distributions->sum('quantity');
         $this->save();
     }
+
+    public function saveDistributions()
+    {
+        if (!empty($this->financialIds)) {
+            foreach ($this->financialIds as $financialId) {
+                DistributionModel::create([
+                    'plugin_tender_tenderitems_id' => $this->id,
+                    'plugin_tender_financials_id'  => $financialId,
+                    'quantity'                     => $this->quantity,
+                    'locations_id'                 => $this->locationsId,
+                    'delivery_locations_id'        => $this->deliveryLocationsId,
+                    'percentage'                   => 100,
+                ]);
+            }
+        }
+
+        $this->tender->updateFinancialItemValue();
+    }
+
 }

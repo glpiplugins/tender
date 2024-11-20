@@ -87,7 +87,7 @@ class CatalogueItemSupplier extends CommonDBTM   {
                 'container'        => 'massGlpiPluginTenderCatalogueItemSupplier' . mt_rand(),
                 'specific_actions' => [
                     // 'delete' => __('Delete permanently'),
-                    CatalogueItemSupplier::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect'),
+                    CatalogueItemSupplier::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect', 'tender'),
                 ]
             ],
         ]);

@@ -5,6 +5,7 @@
          <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
             <div class="row flex-row align-items-start flex-grow-1">
                <div class="row flex-row">
+               <div><a href="/plugins/tender/front/tender.form.php?id={{item.fields['plugin_tender_tenders_id']}}&glpi_tab=GlpiPlugin\Tender\Invoice">{{__('Back')}}</a></div>
 
                      {{ fields.textField(
                         'name',
@@ -27,6 +28,12 @@
                            }
                      ) }}
 
+                     {{ fields.textField(
+                        'posting_text',
+                        invoice.posting_text,
+                        __('Posting Text', "tender"),
+                     ) }}
+
                      {{ fields.dateField(
                            'due_date',
                            invoice.due_date,
@@ -37,22 +44,16 @@
                      ) }}
 
                      {{ fields.textField(
-                        'posting_text',
-                        invoice.posting_text,
-                        __('Posting Text', "tender"),
-                     ) }}
-
-                     {{ fields.textField(
-                        'total',
-                        total|number_format(2, ',', '.'),
+                        'total_gross',
+                        invoice.total_gross|number_format(2, ',', '.'),
                         __('Total', "tender"),
                         {
                            'disabled': true
                         }
                      ) }}
                      {{ fields.hiddenField(
-                           'tenders_id',
-                           invoice.tenders_id
+                           'plugin_tender_tenders_id',
+                           invoice.plugin_tender_tenders_id
                      ) }}                   
                      {{ fields.hiddenField(
                            'id',
@@ -71,7 +72,7 @@
                      <i class="fas fa-trash"></i>
                      <span>{{ _x('button', 'Delete permanently') }}</span>
                   </button>
-                  <a href="{{accountDocumentString}}" class="btn btn-secondary me-2">Download Kontierung</a>
+                  <a href="/plugins/tender/ajax/makeDocument.php?itemtype=invoice&id={{invoice.id}}" class="btn btn-secondary me-2">Download Kontierung</a>
                {% endif %}
                </div>
          </div>

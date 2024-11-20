@@ -1,331 +1,736 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: tender\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-23 17:38+0000\n"
-"PO-Revision-Date: 2024-01-24 08:52+0100\n"
+"Project-Id-Version: Tender Plugin\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Roy Brannath\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.2\n"
-"X-Poedit-Basepath: ../Downloads/tender-main/tender-main/src\n"
-"X-Poedit-SearchPath-0: .\n"
+"X-Generator: Poedit 3.5\n"
 
-#: hook.php:93
-msgid "Tender Types"
-msgstr "Vergabarten"
-
-#: hook.php:94
-msgid "Catalogue Items"
-msgstr "Katalogartikel"
-
-#: hook.php:95 src/Costcenter.php:19 src/Financial.php:108 src/Financial.php:234
-#: src/Financial.php:232
-#: templates/financials.html.twig
-msgid "Costcenter"
-msgstr "Kostenstelle"
-
-#: hook.php:96 src/Account.php:19
-#: templates/financials.html.twig
-msgid "Accounts"
-msgstr "Konten"
-
-#: setup.php:146
-msgid "Installed / not configured"
-msgstr "Installiert / nicht konfiguriert"
-
-#: src/Account.php:57 src/CatalogueItem.php:113
-#: src/CatalogueItemSupplier.php:73 src/Costcenter.php:57 src/Delivery.php:109
-#: src/Financial.php:99 src/Invoice.php:109 src/Tender.php:78
-#: src/TenderType.php:65
-#: src/Financial.php:231 src/OfferItem.php:130 src/Order.php:94
-#: src/TenderItem.php:196 src/TenderSupplier.php:74
-msgid "Name"
-msgstr "Name"
-
-#: src/CatalogueItem.php:19 src/CatalogueItemSupplier.php:216
-msgid "Catalogue Item"
-msgstr "Katalogartikel"
-
-#: src/CatalogueItem.php:123 src/CatalogueItem.php:133
-msgid "Itemtype"
-msgstr "Elemententyp"
-
-#: src/CatalogueItem.php:143
-msgid "Manufacturer"
-msgstr "Hersteller"
-
-#: src/CatalogueItem.php:154
-#: templates/catalogueitems.html.twig
-msgid "Manufacturers Reference"
-msgstr "Hersteller-Referenz"
-
-#: src/CatalogueItem.php:294 src/CatalogueItemSupplier.php:26
-#: src/CatalogueItemSupplier.php:199 src/TenderSupplier.php:26
-msgid "Supplier"
-msgstr "Lieferant"
-
-#: src/CatalogueItemSupplier.php:21
-msgid "Catalogue Item Supplier"
-msgstr "Katalogartikel Lieferant"
-
-#: src/CatalogueItemSupplier.php:72 src/CatalogueItemSupplier.php:141
-#: src/Financial.php:90 src/Tender.php:69 src/TenderSupplier.php:73
-#: src/TenderType.php:56
-msgid "ID"
-msgstr "ID"
-
-#: src/CatalogueItemSupplier.php:74
-msgid "Supplier Reference"
-msgstr "Lieferanten-Referenz"
-
-#: src/CatalogueItemSupplier.php:75 src/CatalogueItemSupplier.php:160
-msgid "Net Price"
-msgstr "Nettopreis"
-
-#: src/CatalogueItemSupplier.php:90 src/Delivery.php:126 src/Delivery.php:233
-#: src/Invoice.php:126 src/Invoice.php:233 src/OfferItem.php:150
-#: src/TenderItem.php:108 src/TenderItem.php:222 src/TenderSupplier.php:91
-msgid "Disconnect"
-msgstr "Verbindung aufheben"
-
-#: src/CatalogueItemSupplier.php:102 src/Delivery.php:245
-#: src/DeliveryItem.php:29 src/Distribution.php:27 src/Invoice.php:245
-#: src/OfferItem.php:162 src/TenderItem.php:234 src/TenderSupplier.php:103
-msgid "Post"
-msgstr "Abschicken"
-
-#: src/CatalogueItemSupplier.php:124 src/Delivery.php:267
-#: src/DeliveryItem.php:51 src/Distribution.php:70 src/Invoice.php:267
-#: src/OfferItem.php:196 src/TenderItem.php:257 src/TenderSupplier.php:125
-msgid "Something went wrong"
-msgstr "Da ist etwas schief gelaufen"
-
-#: src/CatalogueItemSupplier.php:171
-#: templates/catalogueitemsuppliers.html.twig
-msgid "Suppliers Reference"
-msgstr "Lieferanten-Referenz"
-
-#: src/Delivery.php:18 src/Delivery.php:26
-msgid "Delivery"
-msgstr "Lieferung"
-
-#: src/Delivery.php:110 src/Invoice.php:110
-msgid "Description"
-msgstr "Beschreibung"
-
-#: src/Delivery.php:111 src/Invoice.php:111 src/TenderItem.php:94
-msgid "Quantity"
-msgstr "Menge"
-
-#: src/Delivery.php:112 src/Invoice.php:112
-#: templates/deliveryList.html.twig
-msgid "Delivered Quantity"
-msgstr "Gelieferte Menge"
-
-#: src/Delivery.php:152 src/Delivery.php:219 src/FinancialItem.php:70
-#: src/Invoice.php:152 src/Invoice.php:219 src/TenderItem.php:135
-msgid "View Details"
-msgstr "Siehe Details"
-
-#: src/Delivery.php:217 src/Invoice.php:217
-#: templates/deliveryForm.html.twig
-msgid "Delivery Reference"
-msgstr "Lieferscheinnummer"
-
-#: src/Delivery.php:218 src/Invoice.php:218
-#: templates/deliveryForm.html.twig templates/deliveryList.html.twig
-msgid "Delivery date"
-msgstr "Lieferdatum"
-
-#: src/DeliveryItem.php:22
-msgid "Delivery Item"
-msgstr "Gelieferter Artikel"
-
-#: src/Distribution.php:20 src/TenderItem.php:95
-msgid "Distribution"
-msgstr "Verteilung"
-
-#: src/Financial.php:16 src/Financial.php:27
-msgid "Financial"
-msgstr "Finanzen"
-
-#: src/Financial.php:117
-#: src/Financial.php:233
+#: ../src/Financial.php:116 ../src/Financial.php:299
+#: ../templates/financials.html.twig:28
 msgid "Account"
 msgstr "Konto"
 
-#: src/Financial.php:135 src/Tender.php:105 src/TenderType.php:74
-msgid "Recursive"
-msgstr "Rekursiv"
+#: ../templates/config.html.twig:11
+msgid "Accounting template"
+msgstr "Buchhaltungsvorlage"
 
-#: src/Financial.php:144 src/Tender.php:114 src/TenderType.php:83
-msgid "Language"
-msgstr "Sprache"
+#: ../src/Account.php:19
+msgid "Accounts"
+msgstr "Konten"
 
-#: src/Financial.php:234 src/FinancialItem.php:108
-#: templates/financialItemList.html.twig
-msgid "Value"
-msgstr "Wert"
+#: ../src/CatalogueItem.php:259
+msgid "Active"
+msgstr "Aktiv"
 
-#: src/FinancialItem.php:16 src/FinancialItem.php:27
-msgid "Financial Item"
-msgstr "Buchung"
+#: ../templates/order.html.twig:43
+msgid "Approx. Deliverydate"
+msgstr "Ungefähres Lieferdatum"
 
-#: src/FinancialItem.php:71 src/FinancialItem.php:99
-msgid "Expense"
-msgstr "Ausgabe"
+#: ../templates/deliveryForm.html.twig:8 ../templates/invoiceForm.html.twig:8
+#: ../templates/offeritemForm.html.twig:9
+#: ../templates/tenderitemForm.html.twig:9
+msgid "Back"
+msgstr "Zurück"
 
-#: src/FinancialItem.php:71 src/FinancialItem.php:100
-msgid "Income"
-msgstr "Einnahme"
+#: ../src/CatalogueItem.php:165 ../src/CatalogueItem.php:19
+#: ../src/CatalogueItemSupplier.php:216 ../src/CatalogueItemSupplier.php:227
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:21
+#: ../templates/tenderitem/catalogueitemDropdown.html.twig:7
+msgid "Catalogue Item"
+msgstr "Katalogartikel"
 
-#: src/FinancialItem.php:106
-#: templates/financialItemList.html.twig
-msgid "Year"
-msgstr "Jahr"
+#: ../src/CatalogueItemSupplier.php:21
+msgid "Catalogue Item Supplier"
+msgstr "Katalogartikel Lieferant"
 
-#: src/FinancialItem.php:107
-msgid "Type"
-msgstr "Typ"
+#: ../templates/components/table.html.twig:55
+msgid "Check all"
+msgstr "Alle markieren"
 
-#: src/FinancialItem.php:109 src/TenderItem.php:203
-msgid "View Detail"
-msgstr "Siehe Details"
+#: ../src/CatalogueItem.php:331 ../src/CatalogueItemSupplier.php:256
+msgid "Child entities"
+msgstr "Unterentitäten"
 
-#: src/Invoice.php:18 src/Invoice.php:26
-msgid "Invoice"
-msgstr "Rechnung"
+#: ../src/CatalogueItem.php:177 ../templates/tender.html.twig:141
+msgid "Comments"
+msgstr "Kommentare"
 
-#: src/Tender.php:17
-msgid "Tenders"
-msgstr "Vergaben"
+#: ../src/Config.php:20
+msgid "Config"
+msgstr "Konfiguration"
 
-#: src/Menu.php:19 
-msgid "Tender"
-msgstr "Vergabe"
+#: ../src/Costcenter.php:19 ../src/Financial.php:130 ../src/Financial.php:298
+#: ../templates/financials.html.twig:18
+msgid "Costcenter"
+msgstr "Kostenstelle"
 
-#: src/OfferItem.php:22
-msgid "Offer Item"
-msgstr "Angebotsartikel"
+#: ../templates/tender.html.twig:100
+msgid "Default Delivery Location"
+msgstr "Standard-Lieferort"
 
-#: src/OfferItem.php:30
-msgid "Offers"
-msgstr "Angebote"
+#: ../templates/tender.html.twig:93
+msgid "Default Target Location"
+msgstr "Standard-Zielort"
 
-#: src/OfferItem.php:118 src/OfferItem.php:133
-msgid "View Offer"
-msgstr "Angebote ansehen"
+#: ../src/CatalogueItemSupplier.php:89 ../src/Delivery.php:102
+#: ../src/Delivery.php:182 ../src/DocumentTemplateParameter.php:88
+#: ../src/Financial.php:317 ../src/FinancialItem.php:147 ../src/Invoice.php:263
+#: ../src/Invoice.php:434 ../src/MeasureItem.php:103 ../src/OfferItem.php:122
+#: ../src/TenderItem.php:204 ../src/TenderItem.php:323
+#: ../src/TenderSupplier.php:90
+msgid "Delete permanently"
+msgstr "Endgültig löschen"
 
-#: src/OfferItem.php:131 src/Order.php:95
-msgid "Offer date"
-msgstr "Angebotsdatum"
+#: ../src/Delivery.php:89 ../templates/deliveryList.html.twig:35
+#: ../templates/invoiceList.html.twig:68
+msgid "Delivered Quantity"
+msgstr "Geliefert"
 
-#: src/OfferItem.php:132 src/Order.php:96
-msgid "Total"
-msgstr "Gesamt"
+#: ../src/Delivery.php:18 ../src/Delivery.php:29
+msgid "Delivery"
+msgstr "Lieferung"
 
-#: src/Order.php:18 src/Order.php:26
-msgid "Order"
-msgstr "Auftrag"
+#: ../src/Delivery.php:168 ../templates/deliveryForm.html.twig:19
+#: ../templates/deliveryList.html.twig:18
+msgid "Delivery Date"
+msgstr "Lieferdatum"
 
-#: src/Order.php:77 src/Order.php:97
-msgid "Select Offer"
-msgstr "Angebot annehmen"
+#: ../src/DeliveryItem.php:22
+msgid "Delivery Item"
+msgstr "Lieferartikel"
 
-#: src/OtherItem.php:17
-msgid "Other Item"
-msgstr "Anderes Element"
-
-#: src/Tender.php:87
-msgid "Tender Subject"
-msgstr "Vergabenummer"
-
-#: src/TenderItem.php:21 src/TenderItem.php:29
-msgid "Tender Item"
-msgstr "Artikel"
-
-#: src/TenderItem.php:96
+#: ../src/Delivery.php:86 ../src/Invoice.php:236 ../src/TenderItem.php:177
+#: ../templates/deliveryList.html.twig:32 ../templates/invoiceList.html.twig:76
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:80
+#: ../templates/tenderitem/diverseitemAdd.html.twig:85
+#: ../templates/tenderitemForm.html.twig:90
 msgid "Delivery Location"
 msgstr "Lieferort"
 
-#: src/TenderItem.php:97
-msgid "Budget"
-msgstr "Budget"
+#: ../src/Delivery.php:167 ../templates/deliveryForm.html.twig:13
+#: ../templates/deliveryList.html.twig:12
+msgid "Delivery Reference"
+msgstr "Lieferschein-Nr."
 
-#: src/TenderItem.php:197
-#: templates/deliveryList.html.twig
-msgid "quantity"
+#: ../src/TenderSubject.php:71 ../templates/accounts.html.twig:10
+#: ../templates/catalogueitems.html.twig:41
+#: ../templates/costcenters.html.twig:10 ../templates/measures.html.twig:10
+#: ../templates/offeritemForm.html.twig:62
+#: ../templates/tenderitem/diverseitemAdd.html.twig:19
+#: ../templates/tenderitemForm.html.twig:28
+#: ../templates/tendersubject.html.twig:10
+msgid "Description"
+msgstr "Beschreibung"
+
+#: ../src/OfferItem.php:101
+msgid "Details"
+msgstr "Details"
+
+#: ../src/CatalogueItemSupplier.php:90 ../src/Delivery.php:103
+#: ../src/Delivery.php:183 ../src/DocumentTemplateParameter.php:89
+#: ../src/FinancialItem.php:148 ../src/Invoice.php:264 ../src/Invoice.php:435
+#: ../src/MeasureItem.php:104 ../src/OfferItem.php:123
+#: ../src/TenderItem.php:205 ../src/TenderItem.php:324
+#: ../src/TenderSupplier.php:91
+msgid "Disconnect"
+msgstr "Entfernen"
+
+#: ../src/Financial.php:318
+msgid "Disconnect1"
+msgstr "Entfernen"
+
+#: ../src/Distribution.php:20 ../src/Invoice.php:237 ../src/TenderItem.php:176
+#: ../templates/invoiceList.html.twig:77
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:73
+#: ../templates/tenderitemForm.html.twig:83
+msgid "Distribution"
+msgstr "Aufteilung"
+
+#: ../templates/tenderitemForm.html.twig:67
+msgid "Distributions"
+msgstr "Aufteilungen"
+
+#: ../src/DocumentTemplate.php:19
+msgid "Document Template"
+msgstr "Dokumentenvorlage"
+
+#: ../src/DocumentTemplateParameter.php:18
+msgid "Document Template Parameter"
+msgstr "Dokumentenvorlagenparameter"
+
+#: ../templates/invoiceForm.html.twig:40 ../templates/invoiceList.html.twig:40
+#: ../templates/invoiceList.html.twig:46
+msgid "Due Date"
+msgstr "Fällig am"
+
+#: ../templates/invoiceList.html.twig:55
+msgid "Due Date In"
+msgstr "Fällig in"
+
+#: ../src/Tender.php:232
+msgid "End Date"
+msgstr "Endedatum"
+
+#: ../templates/tender.html.twig:81
+msgid "Enddate"
+msgstr "Endedatum"
+
+#: ../templates/deliveryList.html.twig:36 ../templates/invoiceList.html.twig:70
+msgid "Enter Quantity"
+msgstr "Eingabe"
+
+#: ../src/CatalogueItem.php:322 ../src/CatalogueItemSupplier.php:247
+#: ../templates/financials.html.twig:11
+msgid "Entity"
+msgstr "Entität"
+
+#: ../templates/tender.html.twig:119
+msgid "Estimated Gross Total"
+msgstr "Geschätztes Gesamtbrutto"
+
+#: ../templates/tender.html.twig:110
+msgid "Estimated Net Total"
+msgstr "Geschätztes Gesamtnetto"
+
+#: ../templates/tender.html.twig:61
+msgid "Events"
+msgstr "Ereignisse"
+
+#: ../src/FinancialItem.php:121
+msgid "Expense"
+msgstr "Ausgabe"
+
+#: ../templates/components/table.html.twig:88
+msgid "Export"
+msgstr "Export"
+
+#: ../templates/components/table.html.twig:82
+msgid "Filter"
+msgstr "Filter"
+
+#: ../src/Financial.php:18 ../src/Financial.php:29 ../src/FinancialItem.php:227
+#: ../src/FinancialItem.php:252 ../src/Invoice.php:238
+#: ../src/TenderItem.php:178 ../templates/invoiceList.html.twig:78
+#: ../templates/measureItemList.html.twig:24
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:44
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:62
+#: ../templates/tenderitem/diverseitemAdd.html.twig:46
+#: ../templates/tenderitem/diverseitemAdd.html.twig:63
+#: ../templates/tenderitemForm.html.twig:97
+msgid "Financial"
+msgstr "Finanzen"
+
+#: ../src/FinancialItem.php:18 ../src/FinancialItem.php:241
+#: ../src/FinancialItem.php:29
+msgid "Financial Item"
+msgstr "Buchung"
+
+#: ../src/Invoice.php:235 ../templates/invoiceList.html.twig:75
+#: ../templates/offeritemForm.html.twig:66
+msgid "Gross Price"
+msgstr "Brutto"
+
+#: ../src/Account.php:48 ../src/CatalogueItem.php:104
+#: ../src/CatalogueItem.php:250 ../src/CatalogueItem.php:57
+#: ../src/CatalogueItemSupplier.php:141 ../src/CatalogueItemSupplier.php:72
+#: ../src/Costcenter.php:48 ../src/DocumentTemplate.php:58
+#: ../src/DocumentTemplateParameter.php:104 ../src/Financial.php:92
+#: ../src/FinancialItem.php:163 ../src/Measure.php:58 ../src/Tender.php:117
+#: ../src/TenderStatus.php:53 ../src/TenderSubject.php:53
+#: ../src/TenderSupplier.php:73 ../src/TenderType.php:53
+msgid "ID"
+msgstr "ID"
+
+#: ../src/FinancialItem.php:122 ../src/FinancialItem.php:94
+msgid "Income"
+msgstr "Einnahme"
+
+#: ../src/Invoice.php:419 ../templates/invoiceForm.html.twig:19
+#: ../templates/invoiceList.html.twig:18
+msgid "Internal Reference"
+msgstr "Interne Referenz"
+
+#: ../src/CatalogueItemInjection.php:81
+#: ../src/CatalogueItemSupplierInjection.php:81
+#: ../src/FinancialInjection.php:94 ../src/FinancialItemInjection.php:81
+msgid "Inventory number"
+msgstr "Inventarnummer"
+
+#: ../src/Invoice.php:19 ../src/Invoice.php:26
+msgid "Invoice"
+msgstr "Rechnung"
+
+#: ../templates/invoiceForm.html.twig:25 ../templates/invoiceList.html.twig:24
+msgid "Invoice Date"
+msgstr "Rechnungsdatum"
+
+#: ../src/InvoiceItem.php:22
+msgid "Invoice Item"
+msgstr "Rechnungsartikel"
+
+#: ../src/Invoice.php:418 ../templates/invoiceForm.html.twig:13
+#: ../templates/invoiceList.html.twig:12
+msgid "Invoice Reference"
+msgstr "Rechnungs-Nr."
+
+#: ../src/Invoice.php:420
+msgid "Invoice date"
+msgstr "Rechnungsdatum"
+
+#: ../src/Invoice.php:230 ../templates/invoiceList.html.twig:69
+msgid "Invoiced Quantity"
+msgstr "Berechnet"
+
+#: ../src/CatalogueItem.php:188
+msgid "Item type"
+msgstr "Elementtyp"
+
+#: ../src/CatalogueItem.php:123 ../src/CatalogueItem.php:133
+#: ../templates/catalogueitems.html.twig:16
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:5
+msgid "Itemtype"
+msgstr "Elementtyp"
+
+#: ../src/CatalogueItem.php:84 ../src/Financial.php:163 ../src/Tender.php:169
+#: ../src/TenderStatus.php:80 ../src/TenderSubject.php:89
+#: ../src/TenderType.php:80
+msgid "Language"
+msgstr "Sprache"
+
+#: ../src/CatalogueItem.php:313 ../src/CatalogueItemSupplier.php:238
+msgid "Last update"
+msgstr "Letzte Aktualisierung"
+
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:66
+#: ../templates/tenderitem/diverseitemAdd.html.twig:71
+msgid "Location"
+msgstr "Standort"
+
+#: ../templates/tender.html.twig:104 ../templates/tender.html.twig:86
+msgid "Locations"
+msgstr "Standorte"
+
+#: ../templates/catalogueitems.html.twig:10
+msgid "Manfacturers Reference"
+msgstr "Herstellerreferenz"
+
+#: ../src/CatalogueItem.php:143
+msgid "Manufacturer"
+msgstr "Hersteller"
+
+#: ../src/CatalogueItem.php:242
+msgid "Manufacturer reference"
+msgstr "Herstellerreferenz"
+
+msgid "Manufacturer\t../src/CatalogueItem.php:283"
+msgstr "Hersteller"
+
+#: ../src/CatalogueItem.php:154
+msgid "Manufacturers Reference"
+msgstr "Herstellerreferenz"
+
+#: ../templates/tendertype.html.twig:20
+msgid "Max Value"
+msgstr "Max Wert"
+
+#: ../templates/tenderitem/diverseitemAdd.html.twig:53
+#: ../templates/tenderitemForm.html.twig:38
+msgid "Measure"
+msgstr "Maßgröße"
+
+#: ../src/MeasureItem.php:18 ../src/MeasureItem.php:24
+msgid "Measure Item"
+msgstr "Maßgrößenelement"
+
+#: ../src/Measure.php:19
+msgid "Measures"
+msgstr "Maßgrößen"
+
+#: ../templates/tendertype.html.twig:10
+msgid "Min Value"
+msgstr "Min Wert"
+
+#: ../templates/tender.html.twig:135
+msgid "Misc"
+msgstr "Misc"
+
+#: ../src/CatalogueItem.php:201 ../templates/catalogueitems.html.twig:34
+msgid "Model"
+msgstr "Model"
+
+#: ../src/Account.php:57 ../src/CatalogueItem.php:113
+#: ../src/CatalogueItem.php:66 ../src/CatalogueItemInjection.php:63
+#: ../src/CatalogueItemInjection.php:72 ../src/CatalogueItemSupplier.php:150
+#: ../src/CatalogueItemSupplier.php:73
+#: ../src/CatalogueItemSupplierInjection.php:63
+#: ../src/CatalogueItemSupplierInjection.php:72 ../src/Costcenter.php:57
+#: ../src/Delivery.php:85 ../src/DocumentTemplate.php:67
+#: ../src/DocumentTemplateParameter.php:72 ../src/Financial.php:101
+#: ../src/FinancialInjection.php:76 ../src/FinancialInjection.php:85
+#: ../src/FinancialItemInjection.php:63 ../src/FinancialItemInjection.php:72
+#: ../src/Invoice.php:228 ../src/Measure.php:67 ../src/OfferItem.php:98
+#: ../src/Order.php:93 ../src/Tender.php:127 ../src/TenderStatus.php:62
+#: ../src/TenderSubject.php:62 ../src/TenderType.php:62
+#: ../templates/deliveryList.html.twig:31
+#: ../templates/documenttemplateparamterList.html.twig:13
+#: ../templates/invoiceList.html.twig:66
+#: ../templates/offeritemForm.html.twig:61 ../templates/tender.html.twig:12
+#: ../templates/tenderitem/diverseitemAdd.html.twig:6
+#: ../templates/tenderitemForm.html.twig:13
+msgid "Name"
+msgstr "Name"
+
+#: ../src/CatalogueItemSupplier.php:160 ../src/CatalogueItemSupplier.php:75
+#: ../src/Invoice.php:231 ../templates/catalogueitemsuppliers.html.twig:23
+#: ../templates/invoiceList.html.twig:71
+#: ../templates/offeritemForm.html.twig:64
+#: ../templates/offeritemForm.html.twig:97
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:31
+#: ../templates/tenderitem/diverseitemAdd.html.twig:33
+msgid "Net Price"
+msgstr "Netto"
+
+#: ../src/Invoice.php:232 ../templates/invoiceList.html.twig:72
+msgid "Net Total Price"
+msgstr "Gesamt Netto"
+
+#: ../templates/components/table.html.twig:35
+msgid "No data"
+msgstr "Keine Daten"
+
+#: ../src/OfferItem.php:18
+msgid "Offer Item"
+msgstr "Angebotsartikel"
+
+#: ../src/OfferItem.php:99 ../src/Order.php:94
+msgid "Offer date"
+msgstr "Angebotsdatum"
+
+#: ../templates/offeritemForm.html.twig:23
+#: ../templates/offeritemList.html.twig:22
+msgid "Offerdate"
+msgstr "Angebotsdatum"
+
+#: ../src/OfferItem.php:29
+msgid "Offers"
+msgstr "Angebote"
+
+#: ../src/Order.php:18 ../src/Order.php:26
+msgid "Order"
+msgstr "Auftrag"
+
+#: ../templates/order.html.twig:37
+msgid "Order Reference"
+msgstr "Auftrags-Nr."
+
+#: ../templates/order.html.twig:28
+msgid "Orderdate"
+msgstr "Auftragsdatum"
+
+#: ../src/Invoice.php:229 ../templates/deliveryList.html.twig:34
+#: ../templates/invoiceList.html.twig:67
+msgid "Ordered Quantity"
+msgstr "Bestellt"
+
+#: ../src/OtherItem.php:17
+msgid "Other Item"
+msgstr "Anderes Element"
+
+#: ../src/DocumentTemplateParameter.php:29
+#: ../templates/documenttemplate.html.twig:10
+msgid "Parameter"
+msgstr "Parameter"
+
+#: ../src/MeasureItem.php:87 ../src/TenderItem.php:169
+#: ../src/TenderItem.php:175
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:50
+msgid "Percentage"
+msgstr "Prozent"
+
+#: ../templates/offeritemForm.html.twig:60
+msgid "Position"
+msgstr "Position"
+
+#: ../src/CatalogueItemSupplier.php:102 ../src/Delivery.php:195
+#: ../src/DeliveryItem.php:29 ../src/Distribution.php:27
+#: ../src/DocumentTemplateParameter.php:141 ../src/Financial.php:330
+#: ../src/FinancialItem.php:270 ../src/Invoice.php:447
+#: ../src/InvoiceItem.php:29 ../src/MeasureItem.php:116
+#: ../src/OfferItem.php:135 ../src/TenderItem.php:336
+#: ../src/TenderSupplier.php:103
+msgid "Post"
+msgstr "Absenden"
+
+#: ../templates/invoiceForm.html.twig:34 ../templates/invoiceList.html.twig:33
+msgid "Posting Text"
+msgstr "Buchungstext"
+
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:25
+#: ../templates/tenderitem/diverseitemAdd.html.twig:27
+msgid "Price"
+msgstr "Preis"
+
+#: ../src/Delivery.php:88 ../src/TenderItem.php:168
+#: ../templates/offeritemForm.html.twig:63
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:14
+#: ../templates/tenderitem/diverseitemAdd.html.twig:12
+#: ../templates/tenderitemForm.html.twig:19
+#: ../templates/tenderitemForm.html.twig:76
+msgid "Quantity"
 msgstr "Menge"
 
-#: src/TenderItem.php:198
-#: templates/catalogueitemsuppliers.html.twig
-msgid "net price"
-msgstr "Nettopreis"
+#: ../src/CatalogueItem.php:75 ../src/Financial.php:153
+#: ../src/FinancialItem.php:195 ../src/Tender.php:159
+#: ../src/TenderStatus.php:71 ../src/TenderSubject.php:80
+#: ../src/TenderType.php:71
+msgid "Recursive"
+msgstr "Rekursiv"
 
-#: src/TenderItem.php:199
-msgid "net total"
-msgstr "Netto Gesamt"
+#: ../src/Financial.php:176 ../src/Financial.php:300 ../src/Invoice.php:239
+#: ../templates/financials.html.twig:37 ../templates/invoiceList.html.twig:79
+msgid "Reference"
+msgstr "Auftrags-Nr."
 
-#: src/TenderItem.php:200
-msgid "tax rate"
-msgstr "Steuerrate"
+#: ../templates/order.html.twig:51
+msgid "Responsible User"
+msgstr "Verantwortlich"
 
-#: src/TenderItem.php:201
-msgid "tax"
+#: ../src/Order.php:76 ../src/Order.php:96
+msgid "Select Offer"
+msgstr "Angebot annehmen"
+
+#: ../templates/components/table.html.twig:254
+msgid "Show %s entries"
+msgstr "Zeige %s Einträge"
+
+#: ../src/CatalogueItemSupplier.php:124 ../src/Delivery.php:217
+#: ../src/DeliveryItem.php:51 ../src/Distribution.php:70
+#: ../src/DocumentTemplateParameter.php:164 ../src/Financial.php:353
+#: ../src/FinancialItem.php:293 ../src/Invoice.php:469
+#: ../src/InvoiceItem.php:51 ../src/MeasureItem.php:136
+#: ../src/OfferItem.php:169 ../src/TenderItem.php:359
+#: ../src/TenderSupplier.php:125
+msgid "Something went wrong"
+msgstr "Etwas ist schief gelaufen"
+
+#: ../src/Tender.php:210
+msgid "Start Date"
+msgstr "Startdatum"
+
+#: ../templates/tender.html.twig:67
+msgid "Startdate"
+msgstr "Startdatum"
+
+#: ../src/Tender.php:184 ../templates/tender.html.twig:44
+msgid "Status"
+msgstr "Status"
+
+#: ../src/Tender.php:221 ../templates/tender.html.twig:74
+msgid "Submission Date"
+msgstr "Submissionsdatum"
+
+#: ../src/CatalogueItem.php:294 ../src/CatalogueItemSupplier.php:181
+#: ../src/CatalogueItemSupplier.php:199 ../src/CatalogueItemSupplier.php:26
+#: ../src/TenderSupplier.php:26 ../templates/offeritemForm.html.twig:14
+msgid "Supplier"
+msgstr "Lieferant"
+
+#: ../templates/order.html.twig:22
+msgid "Supplier Contact"
+msgstr "Lieferantenkontakt"
+
+#: ../src/CatalogueItemSupplier.php:74
+msgid "Supplier Reference"
+msgstr "Lieferantenartikelnummer"
+
+#: ../src/Tender.php:243 ../templates/catalogueitemsuppliers.html.twig:12
+#: ../templates/offeritemList.html.twig:12 ../templates/order.html.twig:14
+#: ../templates/tender.html.twig:54 ../templates/tendersuppliers.html.twig:12
+msgid "Suppliers"
+msgstr "Lieferanten"
+
+#: ../src/CatalogueItemSupplier.php:171
+#: ../templates/catalogueitemsuppliers.html.twig:18
+msgid "Suppliers Reference"
+msgstr "Lieferantenartikelnummer"
+
+#: ../src/Delivery.php:87 ../templates/deliveryList.html.twig:33
+#: ../templates/tenderitem/diverseitemAdd.html.twig:78
+msgid "Target Location"
+msgstr "Zielort"
+
+#: ../src/Invoice.php:233 ../templates/invoiceList.html.twig:73
+#: ../templates/offeritemForm.html.twig:108
+#: ../templates/offeritemForm.html.twig:65
+#: ../templates/tenderitem/catalogueitemAdd.html.twig:40
+#: ../templates/tenderitem/diverseitemAdd.html.twig:42
+msgid "Tax"
 msgstr "Steuer"
 
-#: src/TenderItem.php:202
-msgid "gross total"
-msgstr "Brutto Gesamt"
+#: ../src/Invoice.php:234 ../templates/invoiceList.html.twig:74
+msgid "Tax Total"
+msgstr "Gesamtsteuer"
 
-#: src/TenderSupplier.php:21
+#: ../src/CatalogueItem.php:229
+msgid "Template name"
+msgstr "Vorlagenname"
+
+#: ../src/FinancialItem.php:131 ../src/Menu.php:19
+msgid "Tender"
+msgstr "Veragbe"
+
+#: ../src/TenderItem.php:21 ../src/TenderItem.php:29
+msgid "Tender Item"
+msgstr "Artikel"
+
+#: ../src/TenderStatus.php:19
+msgid "Tender Status"
+msgstr "Status"
+
+#: ../src/Tender.php:138 ../src/TenderSubject.php:19
+#: ../templates/tender.html.twig:26
+msgid "Tender Subject"
+msgstr "Vergabenummer"
+
+#: ../src/TenderSupplier.php:21
 msgid "Tender Supplier"
 msgstr "Lieferant"
 
-#: src/TenderSupplier.php:75
-msgid "address"
-msgstr "Adresse"
-
-#: src/TenderSupplier.php:76
-msgid "phone"
-msgstr "Telefon"
-
-#: src/TenderSupplier.php:77
-msgid "website"
-msgstr "Website"
-
-#: src/TenderType.php:19
+#: ../src/TenderType.php:19 ../templates/tender.html.twig:34
 msgid "Tender Type"
 msgstr "Vergabeart"
 
-#: templates/deliveryList.html.twig
-msgid "Already delivered"
-msgstr "Bereits geliefert"
+#: ../src/Config.php:27
+msgid "Tender plugin"
+msgstr "Vergabe-Plugin"
 
-#: templates/tender.html.twig
-msgid "Default Delivery Location"
-msgstr "Standard Lieferort"
+#: ../src/Tender.php:27
+msgid "Tenders"
+msgstr "Vergaben"
 
-#: templates/tender.html.twig
-msgid "Default Location"
-msgstr "Standard Zielstandort"
+#: ../src/Financial.php:302 ../src/OfferItem.php:100 ../src/Order.php:95
+#: ../templates/financials.html.twig:43 ../templates/invoiceForm.html.twig:49
+msgid "Total"
+msgstr "Gesamt"
 
-#: templates/tender.html.twig
-msgid "Startdate"
-msgstr "Starttermin"
+#: ../templates/offeritemForm.html.twig:135
+msgid "Total Gross Price"
+msgstr "Gesamt Brutto"
 
-#: templates/tender.html.twig
-msgid "Enddate"
-msgstr "Endtermin"
+#: ../templates/offeritemForm.html.twig:125
+msgid "Total Net Price"
+msgstr "Gesamt Netto"
 
-#: templates/tender.html.twig
-msgid "Submission Date"
-msgstr "Submissionstermin"
+#: ../templates/offeritemForm.html.twig:130
+msgid "Total Tax"
+msgstr "Gesamt Steuer"
 
-#: templates/tender.html.twig
-msgid "Estimated Net Total"
-msgstr "Geschätzter Nettowert"
+#: ../templates/tender.html.twig:128
+msgid "Total available"
+msgstr "Gesamt verfügbar"
+
+#: ../src/CatalogueItem.php:216 ../src/DocumentTemplateParameter.php:114
+#: ../src/DocumentTemplateParameter.php:73 ../src/FinancialItem.php:129
+#: ../src/FinancialItem.php:216 ../src/Tender.php:198
+#: ../templates/catalogueitems.html.twig:26
+#: ../templates/documenttemplateparamterList.html.twig:22
+#: ../templates/financialItemList.html.twig:19
+msgid "Type"
+msgstr "Typ"
+
+#: ../src/CatalogueItem.php:271
+msgid "Unit price tax free"
+msgstr "Einheitspreis Netto"
+
+#: ../templates/tender.html.twig:20
+msgid "User"
+msgstr "Benutzer"
+
+#: ../src/DocumentTemplateParameter.php:126
+#: ../src/DocumentTemplateParameter.php:74 ../src/Financial.php:301
+#: ../src/FinancialItem.php:130 ../src/FinancialItem.php:173
+#: ../src/MeasureItem.php:86
+#: ../templates/documenttemplateparamterList.html.twig:28
+#: ../templates/financialItemList.html.twig:24
+#: ../templates/measureItemList.html.twig:13
+msgid "Value"
+msgstr "Wert"
+
+#: ../src/DocumentTemplateParameter.php:75 ../src/FinancialItem.php:132
+#: ../src/MeasureItem.php:88 ../src/TenderItem.php:298
+msgid "View Detail"
+msgstr "Siehe Details"
+
+#: ../src/Delivery.php:130 ../src/Delivery.php:154 ../src/Delivery.php:169
+#: ../src/FinancialItem.php:93 ../src/Invoice.php:291 ../src/Invoice.php:421
+#: ../src/MeasureItem.php:64 ../src/TenderItem.php:232
+msgid "View Details"
+msgstr "Siehe Details"
+
+#: ../src/OfferItem.php:86
+msgid "View Offer"
+msgstr "Angebot ansehen"
+
+#: ../src/Financial.php:297 ../src/FinancialItem.php:128
+#: ../src/FinancialItem.php:205 ../templates/financialItemList.html.twig:13
+msgid "Year"
+msgstr "Jahr"
+
+#: ../src/TenderSupplier.php:75
+msgid "address"
+msgstr "Adresse"
+
+#: ../src/DocumentTemplateParameter.php:66
+msgid "checkbox"
+msgstr "Checkbox"
+
+#: ../src/TenderItem.php:174
+msgid "gross price"
+msgstr "Brutto"
+
+#: ../src/TenderItem.php:297
+msgid "gross total"
+msgstr "Gesamt Brutto"
+
+#: ../src/Financial.php:296 ../src/MeasureItem.php:85 ../src/TenderItem.php:291
+#: ../src/TenderSupplier.php:74
+msgid "name"
+msgstr "Name"
+
+#: ../src/TenderItem.php:170 ../src/TenderItem.php:293
+msgid "net price"
+msgstr "Netto"
+
+#: ../src/TenderItem.php:171 ../src/TenderItem.php:294
+msgid "net total"
+msgstr "Gesamt Netto"
+
+#: ../src/TenderSupplier.php:76
+msgid "phone"
+msgstr "Telefon"
+
+#: ../src/TenderItem.php:292
+msgid "quantity"
+msgstr "Menge"
+
+#: ../src/DocumentTemplateParameter.php:65
+msgid "string"
+msgstr "String"
+
+#: ../src/TenderItem.php:173 ../src/TenderItem.php:296
+msgid "tax"
+msgstr "Steuer"
+
+#: ../src/TenderItem.php:172 ../src/TenderItem.php:295
+msgid "tax rate"
+msgstr "Steuersatz"
+
+#: ../src/TenderSupplier.php:77
+msgid "website"
+msgstr "Website"

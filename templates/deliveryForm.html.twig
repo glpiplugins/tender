@@ -5,17 +5,18 @@
          <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
             <div class="row flex-row align-items-start flex-grow-1">
                <div class="row flex-row">
+               <div><a href="/plugins/tender/front/tender.form.php?id={{item.fields['plugin_tender_tenders_id']}}&glpi_tab=GlpiPlugin\Tender\Delivery">{{__('Back')}}</a></div>
 
                      {{ fields.textField(
-                        'delivery_reference',
-                        delivery.delivery_reference,
-                        __('Delivery Reference', "tender"),
+                        'name',
+                        delivery.name,
+                        __('Delivery Reference', 'tender'),
                      ) }}
 
                      {{ fields.dateField(
                            'delivery_date',
                            delivery.delivery_date,
-                           __('Delivery Date', "tender"),
+                           __('Delivery Date', 'tender'),
                            {
                               'required': true
                            }
@@ -30,7 +31,6 @@
                      ) }}         
                <div>
                   <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
-               {% if delivery is not empty %}
                   <button class="btn btn-primary me-2" type="submit" name="update" value="1">
                      <i class="fas fa-save"></i>
                      <span>{{ _x('button', 'Save') }}</span>
@@ -39,7 +39,6 @@
                      <i class="fas fa-trash"></i>
                      <span>{{ _x('button', 'Delete permanently') }}</span>
                   </button>
-               {% endif %}
                </div>
          </div>
       </div>

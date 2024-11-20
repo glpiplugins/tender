@@ -147,7 +147,7 @@ class TenderItem extends CommonDBTM   {
             ],
         ],
         'WHERE' => [
-            'plugin_tender_tenders_id' => $this->fields['tenders_id']
+            'plugin_tender_tenders_id' => $this->fields['plugin_tender_tenders_id']
         ]
     ]);
 
@@ -202,7 +202,7 @@ class TenderItem extends CommonDBTM   {
             'container'        => 'massGlpiPluginTenderDistribution' . mt_rand(),
             'specific_actions' => [
                 // 'delete' => __('Delete permanently'),
-                Distribution::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect'),
+                Distribution::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect', 'tender'),
             ]
         ],
     ]);
@@ -218,7 +218,7 @@ class TenderItem extends CommonDBTM   {
     $iterator = $DB->request([
         'FROM' => 'glpi_plugin_tender_tenderitems',
         'WHERE' => [
-            'tenders_id' => $tenderItem->getID()
+            'plugin_tender_tenders_id' => $tenderItem->getID()
             ]
     ]);
 
@@ -229,7 +229,7 @@ class TenderItem extends CommonDBTM   {
     $items = [];
     foreach ($iterator as $item) {
         $item['itemtype'] = "GlpiPlugin\Tender\TenderItem";
-        $item['view_details'] = '<a href="/plugins/tender/front/tenderitem.form.php?id=' . $item['id'] . '">' . __('View Details'). '</a>';
+        $item['view_details'] = '<a href="/plugins/tender/front/tenderitem.form.php?id=' . $item['id'] . '">' . __('View Details', 'tender'). '</a>';
 
         $iterator2 = $DB->request([
             'SELECT' => [
@@ -246,7 +246,7 @@ class TenderItem extends CommonDBTM   {
                 ],
             ],
             'WHERE' => [
-                'tenderitems_id' => $item['id']
+                'plugin_tender_tenderitems_id' => $item['id']
                 ]
         ]);
 
@@ -269,29 +269,7 @@ class TenderItem extends CommonDBTM   {
         $item['quantity'] = $distributions;
         $items[] = $item;
     }
-
-    $iterator = $DB->request([
-        'FROM' => 'glpi_plugin_tender_financialitems',
-        'LEFT JOIN' => [
-            'glpi_plugin_tender_financials' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_financialitems' => 'plugin_tender_financials_id',
-                    'glpi_plugin_tender_financials' => 'id'
-                ]
-            ],
-        ],
-        'WHERE' => [
-            'plugin_tender_tenders_id' => $tenderItem->getID()
-        ]
-    ]);
-
-
-    $financials = [];
-
-    foreach ($iterator as $item) {
-       $financials[$item['id']] = $item['name'];
-    }
-
+   
     $suppliers = TenderSupplier::getSuppliers($tenderItem->getID());
     $catalogueitems = CatalogueItem::getCatalogueItemsBySupplier($suppliers);
     $measures = Measure::getAllMeasuresDropdown();
@@ -301,14 +279,8 @@ class TenderItem extends CommonDBTM   {
           'suppliers' => $suppliers,
           'catalogueitems' => $catalogueitems,
           'itemtypes' => $CFG_GLPI['plugin_tender_types'],
-          'footer_entries' => [
-            0 => [
-                'net_total' => $net_total,
-                'tax' => $tax_total,
-                'gross_total' => $gross_total,
-            ]
-          ],
-          'financials' => $financials,
+
+          'financials' => FinancialModel::orderBy('name')->pluck('name', 'id')->toArray(),
           'measures' => $measures,
           'tax_total',
           'gross_total',
@@ -316,14 +288,14 @@ class TenderItem extends CommonDBTM   {
           'filters' => [],
           'nofilter' => true,
           'columns' => [
-              'name' => __('name'),
-              'quantity' => __('quantity'),
-              'net_price' => __('net price'),
-              'net_total' => __('net total'),
-              'tax_rate' => __('tax rate'),
-              'tax' => __('tax'),
-              'gross_total' => __('gross total'),
-              'view_details' => __('View Detail'),
+              'name' => __('Name', 'tender'),
+              'quantity' => __('Quantity', 'tender'),
+              'net_price' => __('Net Price', 'tender'),
+              'net_total' => __('net total', 'tender'),
+              'tax_rate' => __('tax rate', 'tender'),
+              'tax' => __('Tax', 'tender'),
+              'gross_total' => __('Gross Total', 'tender'),
+              'view_details' => __('View Detail', 'tender'),
           ],
           'formatters' => [
                 'quantity' => 'raw_html',
@@ -332,6 +304,13 @@ class TenderItem extends CommonDBTM   {
                 'tax' => 'float',
                 'net_total' => 'float',
                 'gross_total' => 'float',
+          ],
+          'footer_entries' => [
+            0 => [
+                'net_total' => $net_total,
+                'tax' => $tax_total,
+                'gross_total' => $gross_total,
+            ]
           ],
           'total_number' => count($items),
           'entries' => $items,
@@ -342,7 +321,7 @@ class TenderItem extends CommonDBTM   {
               'container'        => 'massGlpiPluginTenderTenderItem' . mt_rand(),
               'specific_actions' => [
                   // 'delete' => __('Delete permanently'),
-                  TenderItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect'),
+                  TenderItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect', 'tender'),
               ]
           ],
       ]);
@@ -373,7 +352,7 @@ class TenderItem extends CommonDBTM   {
                     Distribution::removeAllDistributions($id);
                     if ($item->getFromDB($id)
                         && $item->deleteFromDB()) {
-                    Tender::calculateEstimatedNetTotal($item->fields['tenders_id']);
+                    
                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                     } else {
                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
@@ -393,7 +372,7 @@ class TenderItem extends CommonDBTM   {
         $iterator = $DB->request([
             'FROM' => 'glpi_plugin_tender_tenderitems',
             'WHERE' => [
-                'tenders_id' => $tenders_id
+                'plugin_tender_tenders_id' => $tenders_id
                 ]
         ]);
 

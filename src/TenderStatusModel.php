@@ -18,10 +18,10 @@ class TenderStatusModel extends \Illuminate\Database\Eloquent\Model {
     protected $table = 'glpi_plugin_tender_tenderstatuses';
 
     /**
-     * Get the tenderitems for the tender.
+     * Get the tender items for the tender.
      */
-    public function tenderitems(): HasMany
+    public function tender_items(): HasMany
     {
-        return $this->hasMany(TenderItemModel::class, 'tenders_id', 'id');
+        return $this->hasMany(TenderItemModel::class, 'plugin_tender_tenders_id', 'id');
     }
 }

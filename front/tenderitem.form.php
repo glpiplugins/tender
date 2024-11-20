@@ -2,6 +2,7 @@
 
 use GlpiPlugin\Tender\Tender;
 use GlpiPlugin\Tender\TenderItem;
+use GlpiPlugin\Tender\TenderItemModel;
 use GlpiPlugin\Tender\CatalogueItem;
 use GlpiPlugin\Tender\Distribution;
 use GlpiPlugin\Tender\Measure;
@@ -27,10 +28,8 @@ if (isset($_POST['add'])) {
    //Check CREATE ACL
    //$object->check(-1, CREATE, $_POST);
    //Do object creation
-  
-   $newid = $object->add($_POST);
-
-   Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
+   TenderItemModel::create($_POST);
+   //$newid = $object->add($_POST);
 
    //Redirect to newly created object form
    Html::back();
@@ -40,8 +39,6 @@ if (isset($_POST['add'])) {
 
    $newid = $object->add($_POST);
    
-   Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
-
    //Redirect to object form
    Html::back();
 } else if (isset($_POST['update'])) {
@@ -49,7 +46,7 @@ if (isset($_POST['add'])) {
    //$object->check($_POST['id'], UPDATE);
    //Do object update
    $object->update($_POST);
-   Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
+   
    //Redirect to object form
    Html::back();
 } else if (isset($_POST['delete'])) {
@@ -64,7 +61,6 @@ if (isset($_POST['add'])) {
    //$object->check($_POST['id'], DELETE);
    //Put object in dustbin
    $object->delete($_POST);
-   Tender::calculateEstimatedNetTotal($_POST['tenders_id']);
    //Redirect to objects list
    $object->redirectToList();
 } else if (isset($_POST['purge'])) {

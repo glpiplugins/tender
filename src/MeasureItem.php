@@ -101,7 +101,7 @@ class MeasureItem extends CommonDBTM   {
         'container'        => 'massGlpiPluginTenderMeasureItem' . mt_rand(),
         'specific_actions' => [
             // 'delete' => __('Delete permanently'),
-            MeasureItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect'),
+            MeasureItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect', 'tender'),
         ]
     ],
     ]);

@@ -20,7 +20,7 @@ class Account extends CommonDropdown  {
     }
        
      static function getIcon() {
-        return "fas fa-shopping-cart";
+        return "fas fa-calculator";
      }
 
     public function showForm($ID, array $options = []) {

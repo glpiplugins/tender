@@ -6,6 +6,8 @@ namespace GlpiPlugin\Tender;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Container\Container;
 
 class DBmysqlProxy {
 
@@ -24,15 +26,15 @@ class DBmysqlProxy {
         // print_r($DB);
         $capsule->addConnection([
             'driver' => 'mysql',
-            'host' => 'ddev-glpi-db',
-            'database' => 'db',
-            'username' => 'db', //$this->dbInstance->dbuser,
-            'password' =>'db', // $this->dbInstance->dbpassword,
+            'host' => $this->dbInstance->dbhost,
+            'database' => $this->dbInstance->dbdefault,
+            'username' => $this->dbInstance->dbuser,
+            'password' => $this->dbInstance->dbpassword,
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
         ]);
-
+        $capsule->setEventDispatcher(new Dispatcher(new Container));
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
     
@@ -41,7 +43,7 @@ class DBmysqlProxy {
     }
 
     public function getCapsule() {
-        return Capsule;
+        return $this->capsule;
     }
 
 }

@@ -2,6 +2,8 @@
 
 use GlpiPlugin\Tender\Invoice;
 use GlpiPlugin\Tender\InvoiceItem;
+use GlpiPlugin\Tender\InvoiceModel;
+use GlpiPlugin\Tender\InvoiceItemModel;
 
 include ("../../../inc/includes.php");
 
@@ -22,12 +24,14 @@ $object = new Invoice();
 
 if (isset($_POST['add'])) {
 
-   $newid = $object->add($_POST);
+   // $newid = $object->add($_POST);
    //Check CREATE ACL
+   $newid = InvoiceModel::create($_POST);
 
    foreach ($_POST['item'] as $item) {
       $invoiceitem = new InvoiceItem();
-      $item['plugin_tender_invoices_id'] = $newid;
+      $item['plugin_tender_distributions_id'] = $item['id'];
+      $item['plugin_tender_invoices_id'] = $newid->id;
       $invoiceitem->add($item);
    }
    //$object->check(-1, CREATE, $_POST);
@@ -57,7 +61,7 @@ if (isset($_POST['add'])) {
    //Redirect to objects list
    Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/invoice.php");
 } else {
-    Html::header(Invoice::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Invoice");
+    Html::header(Invoice::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Tender", "tender");
     //per default, display object
     $object->display(
             $_GET

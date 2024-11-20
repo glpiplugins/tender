@@ -5,7 +5,7 @@
  #
  # http://glpi-project.org
  #
- # @copyright 2015-2023 Teclib' and contributors.
+ # @copyright 2015-2023 Teclib and contributors.
  # @copyright 2003-2014 by the INDEPNET Development Team.
  # @licence   https://www.gnu.org/licenses/gpl-3.0.html
  #
@@ -30,7 +30,6 @@
  #
  # ---------------------------------------------------------------------
  #}
-
 {% if total_number < 1 %}
    <div class="alert alert-info">
       {{ __('No data') }}
@@ -38,7 +37,7 @@
 {% else %}
 
     {{ include('components/pager.html.twig', {
-        'count': filtered_number,
+        'count': total_number,
         'additional_params': additional_params ~ '&sort=' ~ sort ~ '&order=' ~ order
     }) }}
 
@@ -201,7 +200,9 @@
             <tfooter>
                 {% for footer_entry in footer_entries %}
                 <tr>
+                    {% if showmassiveactions %}
                     <td></td>
+                    {% endif %}
                     {% for colkey, colum in columns %}
                         <td>
                             {% if colkey in footer_entry|keys %}
@@ -259,3 +260,23 @@
     });
     </script>
 {% endif %}
+
+
+<style>
+.table-input-tender td {
+  position: relative;
+}
+
+.table-input-tender td input {
+  position: absolute;
+  display: block;
+  top:0;
+  left:0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+
+  padding: 10px;
+  box-sizing: border-box;
+}
+</style>

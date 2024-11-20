@@ -51,84 +51,42 @@ class Delivery extends CommonDBTM   {
     global $DB;
 
     $this->initForm($ID, $options);
+   
+    $deliveryitems = DistributionModel::whereHas('delivery_items.delivery', function($query) use ($ID) {
+        $query->where('id', $ID);
+    })
+    ->with(['tender_item'])
+    ->withSum('delivery_items as delivered_quantity', 'quantity')
+    ->get()
+    ->filter(function($item) {
+        return $item->delivered_quantity > 0;
+    })
+    ->map(function($item) {
+        return [
+            'id'                                => $item->delivery_items->first()->id ?? null,
+            'plugin_tender_distributions_id'    => $item->id,
+            'quantity'                          => $item->quantity,
+            'name'                              => $item->tender_item->name,
+            'location_name'                     => $item->location->name ?? null,
+            'delivery_location_name'            => $item->delivery_location->name ?? null,
+            'delivered_quantity'                => $item->delivered_quantity,
+            'itemtype'                          => "GlpiPlugin\Tender\DeliveryItem",
+        ];
+    })
+    ->toArray();
 
-    $iterator = $DB->request([
-        'FROM' => 'glpi_plugin_tender_deliveries',
-        'WHERE' => [
-            'glpi_plugin_tender_deliveries.id' => $ID
-        ]
-    ]);
-    
-    $delivery = $iterator->current();
-
-    $iterator = $DB->request([
-        'SELECT' => [
-            'glpi_plugin_tender_deliveryitems.id AS id',
-            'glpi_plugin_tender_distributions.id AS distributions_id',
-            'glpi_plugin_tender_distributions.quantity AS quantity',
-            'glpi_plugin_tender_tenderitems.name',
-            'glpi_plugin_tender_tenderitems.description',
-            new \QuerySubQuery([
-                'SELECT' => [
-                    'SUM' => [
-                        'glpi_plugin_tender_deliveryitems.quantity']
-                    ],
-                'FROM' => 'glpi_plugin_tender_deliveryitems',
-                'WHERE' => [
-                    'distributions_id' => new \QueryExpression($DB->quoteName('glpi_plugin_tender_distributions.id'))
-                ]
-                ], 'delivered_quantity'),
-        ],
-        'FROM' => 'glpi_plugin_tender_distributions',
-        'INNER JOIN' => [
-            'glpi_plugin_tender_tenderitems' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_tenderitems' => 'id',
-                    'glpi_plugin_tender_distributions' => 'tenderitems_id'
-                ]
-            ],
-        ],
-        'LEFT JOIN' => [
-            'glpi_plugin_tender_deliveryitems' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_distributions' => 'id',
-                    'glpi_plugin_tender_deliveryitems' => 'distributions_id'
-                ]
-            ],
-            'glpi_plugin_tender_deliveries' => [
-                'FKEY' => [
-                    'glpi_plugin_tender_deliveries' => 'id',
-                    'glpi_plugin_tender_deliveryitems' => 'deliveries_id'
-                ]
-            ],            
-        ],
-        'WHERE' => [
-            'glpi_plugin_tender_deliveries.id' => $delivery['id'],
-        ],
-        'GROUPBY' => [
-            'glpi_plugin_tender_distributions.locations_id',
-            'glpi_plugin_tender_distributions.delivery_locations_id'
-        ]
-    ]);
-    
-    $deliveryitems = [];
-    foreach($iterator as $item) {
-        if($item['delivered_quantity'] > 0) {
-            $item['itemtype'] = "GlpiPlugin\Tender\DeliveryItem";
-            $deliveryitems[] = $item;
-        }
-    }
     TemplateRenderer::getInstance()->display('@tender/deliveryForm.html.twig', [
         'item'   => $this,
-        'delivery'   => $delivery,
+        'delivery'   => DeliveryModel::find($ID),
         'is_tab' => true,
         'filters' => [],
         'nofilter' => true,
         'columns' => [
-            'name' => __('Name'),
-            'description' => __('Description'),
-            'quantity' => __('Quantity'),
-            'delivered_quantity' => __('Delivered Quantity'),
+            'name' => __('Name', 'tender'),
+            'delivery_location_name' => __('Delivery Location', 'tender'),
+            'location_name' => __('Target Location', 'tender'),
+            'quantity' => __('Quantity', 'tender'),
+            'delivered_quantity' => __('Delivered Quantity', 'tender'),
         ],
         'formatters' => [
             'delivery_date' => 'date',
@@ -142,7 +100,7 @@ class Delivery extends CommonDBTM   {
             'container'        => 'massGlpiPluginTenderDeliveryItem' . mt_rand(),
             'specific_actions' => [
                 // 'delete' => __('Delete permanently'),
-                DeliveryItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect'),
+                DeliveryItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect', 'tender'),
             ]
         ],
     ]);
@@ -158,81 +116,45 @@ class Delivery extends CommonDBTM   {
         $delivery = new Delivery();
         $delivery->initForm('');
 
-        $iterator = $DB->request([
-            'FROM' => 'glpi_plugin_tender_deliveries',
-            'WHERE' => [
-                'glpi_plugin_tender_deliveries.tenders_id' => $tender->getID()
-                ]
-        ]);
+        $tenderId = $tender->getID();
 
-        $deliveries = [];
-        foreach ($iterator as $item) {
-            $item['itemtype'] = "GlpiPlugin\Tender\Delivery";
-            $item['view_details'] = '<a href="/plugins/tender/front/delivery.form.php?id=' . $item['id'] . '">' . __('View Details'). '</a>';
-            $deliveries[] = $item;
-        }
+        $deliveries = DeliveryModel::where('plugin_tender_tenders_id', $tender->getID())
+        ->get()
+        ->map(function($item) {
+            return [
+                'id'                        => $item->id,
+                'name'                      => $item->name,
+                'delivery_date'             => $item->delivery_date,
+                'plugin_tender_tenders_id'  => $item->plugin_tender_tenders_id,
+                'itemtype'                  => "GlpiPlugin\Tender\Delivery",
+                'view_details'              => '<a href="/plugins/tender/front/delivery.form.php?id=' . $item->id . '">' . __('View Details', 'tender') . '</a>',
+            ];
+        })->toArray();
 
-        $iterator = $DB->request([
-            'SELECT' => [
-                'glpi_plugin_tender_distributions.id AS distributions_id',
-                'glpi_plugin_tender_distributions.quantity AS quantity',
-                'loc.name AS location_name',
-                'deliv_loc.name AS delivery_location_name',
-                'glpi_plugin_tender_tenderitems.name',
-                'glpi_plugin_tender_tenderitems.description',
-                new \QuerySubQuery([
-                    'SELECT' => [
-                        'SUM' => [
-                            'glpi_plugin_tender_deliveryitems.quantity']
-                        ],
-                    'FROM' => 'glpi_plugin_tender_deliveryitems',
-                    'WHERE' => [
-                        'distributions_id' => new \QueryExpression($DB->quoteName('glpi_plugin_tender_distributions.id'))
-                    ]
-                    ], 'delivered_quantity'),
-            ],
-            'FROM' => 'glpi_plugin_tender_distributions',
-            'LEFT JOIN' => [
-                'glpi_locations AS loc' => [
-                    'FKEY' => [
-                        'glpi_plugin_tender_distributions' => 'locations_id',
-                        'loc' => 'id'
-                    ]
-                ],
-                'glpi_locations AS deliv_loc' => [
-                    'FKEY' => [
-                        'glpi_plugin_tender_distributions' => 'delivery_locations_id',
-                        'deliv_loc' => 'id'
-                    ]
-                ],
-                'glpi_plugin_tender_tenderitems' => [
-                    'FKEY' => [
-                        'glpi_plugin_tender_tenderitems' => 'id',
-                        'glpi_plugin_tender_distributions' => 'tenderitems_id'
-                    ]
-                ],
-                'glpi_plugin_tender_deliveryitems' => [
-                    'FKEY' => [
-                        'glpi_plugin_tender_distributions' => 'id',
-                        'glpi_plugin_tender_deliveryitems' => 'distributions_id'
-                    ]
-                ]
-            ],
-            'WHERE' => [
-                'glpi_plugin_tender_tenderitems.tenders_id' => $tender->getID()
-            ],
-            'GROUPBY' => [
-                'glpi_plugin_tender_tenderitems.id',
-                'glpi_plugin_tender_distributions.locations_id',
-                'glpi_plugin_tender_distributions.delivery_locations_id'
-            ]
-        ]);
-        
-
-    $tenderitems = [];
-    foreach ($iterator as $item) {
-        $tenderitems[] = $item;
-    }
+        $tenderitems = DistributionModel::with([
+            'location',
+            'delivery_location',
+            'tender_item',
+        ])
+        ->whereHas('tender_item', function($query) use ($tenderId) {
+            $query->where('plugin_tender_tenders_id', $tenderId);
+        })
+        ->withSum('delivery_items as delivered_quantity', 'quantity')
+        ->get()
+        ->map(function($item) {
+            return [
+                'distributions_id'          => $item->id,
+                'quantity'                  => $item->quantity,
+                'location_name'             => $item->location->name ?? null,
+                'delivery_location_name'    => $item->delivery_location->name ?? null,
+                'tenderitem_name'           => $item->tender_item->name ?? null,
+                'tenderitem_description'    => $item->tender_item->description ?? null,
+                'delivered_quantity'        => $item->delivered_quantity,
+                'itemtype'                  => "GlpiPlugin\Tender\Delivery",
+                'view_details'              => '<a href="/plugins/tender/front/delivery.form.php?id=' . $item->id . '">' . __('View Details', 'tender') . '</a>',
+            ];
+        })
+        ->toArray();
 
     TemplateRenderer::getInstance()->display('@tender/deliveryList.html.twig', [
         'item' => $delivery,
@@ -242,9 +164,9 @@ class Delivery extends CommonDBTM   {
         'filters' => [],
         'nofilter' => true,
         'columns' => [
-            'delivery_reference' => __('Delivery Reference'),
-            'delivery_date' => __('Delivery date'),
-            'view_details' => __('View Details'),
+            'name' => __('Delivery Reference', 'tender'),
+            'delivery_date' => __('Delivery Date', 'tender'),
+            'view_details' => __('View Details', 'tender'),
         ],
         'formatters' => [
             'delivery_date' => 'date',
@@ -258,7 +180,7 @@ class Delivery extends CommonDBTM   {
             'container'        => 'massGlpiPluginTenderDelivery' . mt_rand(),
             'specific_actions' => [
                 // 'delete' => __('Delete permanently'),
-                Delivery::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect'),
+                Delivery::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect', 'tender'),
             ]
         ],
     ]);
@@ -270,7 +192,7 @@ class Delivery extends CommonDBTM   {
 
         switch ($ma->getAction()) {
         case 'delete':
-            echo Html::submit(__('Post'), array('name' => 'massiveaction'))."</span>";
+            echo Html::submit(__('Post', 'tender'), array('name' => 'massiveaction'))."</span>";
 
             return true;
         }

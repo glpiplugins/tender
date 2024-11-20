@@ -7,32 +7,33 @@
                <div class="row flex-row">
 
                      {{ fields.textField(
-                        'delivery_reference',
+                        'name',
                         '',
-                        __('Delivery Reference', "tender"),
+                        __('Delivery Reference', 'tender'),
                      ) }}
 
                      {{ fields.dateField(
                            'delivery_date',
                            '',
-                           __('Delivery Date', "tender"),
+                           __('Delivery Date', 'tender'),
                            {
                               'required': true
                            }
                      ) }}
                      {{ fields.hiddenField(
-                           'tenders_id',
+                           'plugin_tender_tenders_id',
                            tenders_id
                      ) }}
             <div class="table-responsive" {% if showmassiveactions %} id="{{ massiveactionparams['container'] }}" {% endif %}>
-               <table class="table table-hover">
+               <table class="table table-hover table-input-tender">
                      <thead>
                         <tr>
-                           <th>{{__('Name')}}</th>
-                           <th>{{__('Description')}}</th>
-                           <th>{{__('Quantity', "tender")}}</th>
-                           <th>{{__('Already delivered', "tender")}}</th>
-                           <th>{{__('Delivered Quantity', "tender")}}</th>
+                           <th>{{__('Name', 'tender')}}</th>
+                           <th>{{__('Delivery Location', 'tender')}}</th>
+                           <th>{{__('Target Location', 'tender')}}</th>
+                           <th>{{__('Ordered Quantity', 'tender')}}</th>
+                           <th>{{__('Delivered Quantity', 'tender')}}</th>
+                           <th>{{__('Enter Quantity', 'tender')}}</th>
                         </tr>
                      </thead>
                      <tbody>
@@ -40,13 +41,13 @@
                         {% set pending_quantity = item.quantity - item.delivered_quantity %}
                         <tr>
                            <td>
-                                 {{ item.name }}
+                              {{ item.tenderitem_name }}
                            </td>
                            <td>
-                                 <span class="d-inline-block text-truncate"
-                                    style="max-width: 250px;">
-                                    {{ item['description']|raw }}
-                                 </span>
+                              {{ item.delivery_location_name }}
+                           </td>
+                           <td>
+                              {{ item.location_name }}
                            </td>
                            <td>
                               {{ item.quantity }}
@@ -69,12 +70,10 @@
                               {% else %}
                               {{ pending_quantity }}
                               {% endif %}
-
-                           </td>
-                                 {{ fields.hiddenField(
-                                       'item[' ~ loop.index ~ '][distributions_id]',
-                                       item.distributions_id
-                                 ) }}
+                              {{ fields.hiddenField(
+                                    'item[' ~ loop.index ~ '][plugin_tender_distributions_id]',
+                                    item.distributions_id
+                              ) }}
                            </td>
                         </tr>
                         {% endfor %}

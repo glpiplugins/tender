@@ -1,0 +1,16 @@
+{% extends "generic_show_form.html.twig" %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% set params  = params ?? [] %}
+
+{% block more_fields %}
+
+{{ fields.textareaField(
+   'parameters',
+   item.fields['parameters'],
+   __('Parameter', "tender"),
+   {
+      enable_richtext: false
+   }
+) }}
+  
+{% endblock %}

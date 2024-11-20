@@ -6,12 +6,12 @@
         <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
             <div class="row flex-row align-items-start flex-grow-1">
                 <div class="row flex-row">
-
+                <div><a href="/plugins/tender/front/tender.form.php?id={{offerItem.tender_supplier.plugin_tender_tenders_id}}&_glpi_tab=GlpiPlugin\Tender\OfferItem">{{__('Back')}}</a></div>
                     {{ fields.dropdownField(
                         'Supplier',
                         'suppliers_id',
-                        offerItem.suppliers_id,
-                        __('Suppliers'),
+                        offerItem.tender_supplier.suppliers_id,
+                        __('Supplier'),
                         {
                             'disabled': true
                         }
@@ -19,16 +19,17 @@
 
                     {{ fields.dateField(
                         'offer_date',
-                        offerItem.offer_date,
-                        __('Offerdate', "tender"),
+                        offerItem.tender_supplier.offer_date,
+                        __('Offerdate', 'tender'),
                         {
-                            'required': true
+                            'required': true,
+                             'disabled': true
                         }
                     ) }}
 
                     {{ fields.hiddenField(
                         'tenders_id',
-                        offerItem.tenders_id
+                        offerItem.plugin_tender_tenders_id
                     ) }}
 
                     {{ fields.hiddenField(
@@ -56,13 +57,13 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>{{__('Position')}}</th>
-                    <th>{{__('Name')}}</th>
-                    <th>{{__('Description')}}</th>
-                    <th>{{__('Quantity')}}</th>
-                    <th>{{__('Net Price')}}</th>
-                    <th>{{__('Tax')}}</th>
-                    <th>{{__('Gross Price')}}</th>
+                    <th>{{__('Position', 'tender')}}</th>
+                    <th>{{__('Name', 'tender')}}</th>
+                    <th>{{__('Description', 'tender')}}</th>
+                    <th>{{__('Quantity', 'tender')}}</th>
+                    <th>{{__('Net Price', 'tender')}}</th>
+                    <th>{{__('Tax', 'tender')}}</th>
+                    <th>{{__('Gross Price', 'tender')}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -93,7 +94,7 @@
                         {{ fields.numberField(
                             'item[' ~ loop.index ~ '][net_price]',
                             item.net_price,
-                            __('Net Price'),
+                            __('Net Price', 'tender'),
                             {
                                 'no_label': true,
                                 'step' : ".0001"
@@ -104,7 +105,7 @@
                         {{ fields.numberField(
                             'item[' ~ loop.index ~ '][tax]',
                             item.tax,
-                            __('tax'),
+                            __('Tax', 'tender'),
                             {
                                 'no_label': true,
                             }
@@ -114,25 +115,25 @@
                                 item.id
                         ) }}
                     </td>
-                    <td>
+                    <td class="text-end">
                     {{ ((item.quantity * item.net_price) * ((item.tax / 100) + 1))|number_format(2, ',', '.') }}
                     </td>
                 </tr>
                 {% endfor %}
                 <tr>
                     <td colspan="5"></td>
-                    <td> {{__('total net price')}} </td>
-                    <td>{{ total_net_price|number_format(2, ',', '.') }}</td>
+                    <td> {{__('Total Net Price', 'tender')}} </td>
+                    <td class="text-end">{{ total_net_price|number_format(2, ',', '.') }}</td>
                 </tr>
                 <tr>
                     <td colspan="5"></td>
-                    <td> {{__('total tax')}} </td>
-                    <td>{{ total_tax|number_format(2, ',', '.') }}</td>
+                    <td> {{__('Total Tax', 'tender')}} </td>
+                    <td class="text-end">{{ total_tax|number_format(2, ',', '.') }}</td>
                 </tr>
                 <tr>
                     <td colspan="5"></td>
-                    <td> {{__('total gross price')}} </td>
-                    <td>{{ total_gross_price|number_format(2, ',', '.') }}</td>
+                    <td> {{__('Total Gross Price', 'tender')}} </td>
+                    <td class="text-end">{{ total_gross_price|number_format(2, ',', '.') }}</td>
                 </tr>
             </tbody>
         </table>

@@ -32,8 +32,8 @@ if (isset($_POST['add'])) {
 
    foreach ($tenderitems as $item) {
       $object = new OfferItem();
-      $_POST['tendersuppliers_id'] = $tendersupplier['id'];
-      $_POST['tenderitems_id'] = $item['id'];
+      $_POST['plugin_tender_tendersuppliers_id'] = $tendersupplier['id'];
+      $_POST['plugin_tender_tenderitems_id'] = $item['id'];
       $_POST['net_price'] = $item['net_price'];
       $_POST['tax'] = $item['tax'];
       $newid = $object->add($_POST);

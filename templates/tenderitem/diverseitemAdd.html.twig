@@ -18,7 +18,8 @@
     '',
     __('Description'),
     {
-    enable_richtext: true
+    enable_richtext: true,
+
     }
 ) }}
 
@@ -62,7 +63,7 @@
     __('Financial', 'tender'),
     {
         'to_add': financials,
-         'multiple': true
+        'multiple': true
     }
 ) }}
 
@@ -74,7 +75,7 @@
     'Location',
     'locations_id',
     item['default_locations_id'],
-    __('Distribution', 'tender')
+    __('Target Location', "tender")
 ) }}
 
 {{ fields.dropdownField(
@@ -83,5 +84,16 @@
     item['default_delivery_locations_id'],
     __('Delivery Location', 'tender')
 ) }}
+
+
+<script>
+$(document).ready(function() {
+
+    
+});
+
+
+</script>
+
 
 

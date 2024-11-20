@@ -1,6 +1,7 @@
 <?php
 
 use GlpiPlugin\Tender\Distribution;
+use GlpiPlugin\Tender\DistributionModel;
 use GlpiPlugin\Tender\TenderItem;
 use GlpiPlugin\Tender\Tender;
 
@@ -25,16 +26,21 @@ if (isset($_POST['add'])) {
    //Check CREATE ACL
    //$object->check(-1, CREATE, $_POST);
    //Do object creation
-   $tenderItemObj = new TenderItem();
-   $tenderItem = $tenderItemObj->getByID($_POST['tenderitems_id'])->fields;
-   if($tenderItem['plugin_tender_measures_id'] == 0) {
-      $tenderItem['quantity'] = $tenderItem['quantity'] + $_POST['quantity'];
+   foreach ($_POST['financials'] as $financial) {
+      $_POST['plugin_tender_financials_id'] = $financial;
+      DistributionModel::create($_POST);
    }
-   $tenderItemObj->update($tenderItem);
-   $tenderItemObj->input = $_POST;
-   Distribution::addDistribution($tenderItemObj);
 
-   Tender::calculateEstimatedNetTotal($tenderItem['tenders_id']);
+   // $tenderItemObj = new TenderItem();
+   // $tenderItem = $tenderItemObj->getByID($_POST['plugin_tender_tenderitems_id'])->fields;
+   // if($tenderItem['plugin_tender_measures_id'] == 0) {
+   //    $tenderItem['quantity'] = $tenderItem['quantity'] + $_POST['quantity'];
+   // }
+   // $tenderItemObj->update($tenderItem);
+   // $tenderItemObj->input = $_POST;
+   // Distribution::addDistribution($tenderItemObj);
+
+   
    //Redirect to newly created object form
    Html::back();
 } else if (isset($_POST['update'])) {
@@ -48,8 +54,7 @@ if (isset($_POST['add'])) {
    //Check DELETE ACL
    //$object->check($_POST['id'], DELETE);
    $tenderItemObj = new TenderItem();
-   $tenderItem = $tenderItemObj->getByID($_POST['tenderitems_id'])->fields;
-   Tender::calculateEstimatedNetTotal($tenderItem['tenders_id']);
+   $tenderItem = $tenderItemObj->getByID($_POST['plugin_tender_tenderitems_id'])->fields;
    //Put object in dustbin
    $object->delete($_POST);
    //Redirect to objects list

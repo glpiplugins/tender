@@ -27,11 +27,36 @@ class FinancialModel extends \Illuminate\Database\Eloquent\Model {
     }
 
     /**
+     * Get the account that owns the financial.
+     */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(AccountModel::class, 'plugin_tender_accounts_id', 'id');
+    }
+
+    /**
      * Get the distributions for the financial.
      */
     public function distributions(): HasMany
     {
-        return $this->hasMany(DistributionModel::class, 'financials_id', 'id');
+        return $this->hasMany(DistributionModel::class, 'plugin_tender_financials_id', 'id');
     }
     
+    /**
+     * Get the financial items for the financial.
+     */
+    public function financial_items(): HasMany
+    {
+        return $this->hasMany(FinancialItemModel::class, 'plugin_tender_financials_id', 'id');
+    }
+
+    /**
+     * Get the available total for the financial
+     */
+    public function getTotalAvailableAttribute()
+    {
+        return $this->financial_items->sum(function($item) {
+            return $item->type == 1 ? $item->value : -$item->value;
+        });
+    }
 }

@@ -27,7 +27,7 @@ if (isset($_POST['add'])) {
 
    foreach ($_POST['item'] as $item) {
       $deliveryitem = new DeliveryItem();
-      $item['deliveries_id'] = $newid;
+      $item['plugin_tender_deliveries_id'] = $newid;
       if (intval($item['quantity']) > 0) {
          $deliveryitem->add($item);
       }
@@ -59,7 +59,7 @@ if (isset($_POST['add'])) {
    //Redirect to objects list
    Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/delivery.php");
 } else {
-    Html::header(Delivery::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Delivery");
+    Html::header(Delivery::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Tender");
     //per default, display object
     $object->display(
             $_GET

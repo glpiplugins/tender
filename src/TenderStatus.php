@@ -27,7 +27,7 @@ class TenderStatus extends CommonDropdown  {
    }
        
      static function getIcon() {
-        return "fas fa-shopping-cart";
+        return "fas fa-check-circle";
      }
 
     public function showForm($ID, array $options = []) {

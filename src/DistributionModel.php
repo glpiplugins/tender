@@ -7,6 +7,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Illuminate\Database\Eloquent\Model;
 use  Illuminate\Database\Eloquent\Relations\BelongsTo;
+use  Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DistributionModel extends \Illuminate\Database\Eloquent\Model {
 
@@ -17,12 +18,44 @@ class DistributionModel extends \Illuminate\Database\Eloquent\Model {
      */
     protected $table = 'glpi_plugin_tender_distributions';
 
-    /**
-     * Get the tenderitem that owns the distribution.
-     */
-    public function tenderitem(): BelongsTo
+    const CREATED_AT = 'date_creation';
+    const UPDATED_AT = 'date_mod';
+
+    protected $fillable = [
+        'plugin_tender_tenderitems_id',
+        'quantity',
+        'plugin_tender_financials_id',
+        'locations_id',
+        'delivery_locations_id',
+        'percentage'
+    ];
+
+    protected static function boot()
     {
-        return $this->belongsTo(TenderItemModel::class, 'tenderitems_id', 'id');
+
+        parent::boot();
+
+        static::created(function (DistributionModel $distribution) {
+            $distribution->tender_item?->updateQuantity();
+            $distribution->tender_item->tender->updateFinancialItemValue();
+        });
+
+        static::updated(function (DistributionModel $distribution) {
+            $distribution->tender_item?->updateQuantity();
+            $distribution->tender_item->tender->updateFinancialItemValue();
+        });
+
+        static::deleted(function (DistributionModel $distribution) {
+            $distribution->tender_item?->updateQuantity();
+        });
+    }
+
+    /**
+     * Get the tender item that owns the distribution.
+     */
+    public function tender_item(): BelongsTo
+    {
+        return $this->belongsTo(TenderItemModel::class, 'plugin_tender_tenderitems_id', 'id');
     }
 
     /**
@@ -30,12 +63,59 @@ class DistributionModel extends \Illuminate\Database\Eloquent\Model {
      */
     public function financial(): BelongsTo
     {
-        return $this->belongsTo(FinancialModel::class, 'financials_id', 'id');
+        return $this->belongsTo(FinancialModel::class, 'plugin_tender_financials_id', 'id');
+    }
+
+    /**
+     * Get the location that owns the distribution.
+     */
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(LocationModel::class, 'locations_id', 'id');
+    }
+
+    /**
+     * Get the delivery location that owns the distribution.
+     */
+    public function delivery_location(): BelongsTo
+    {
+        return $this->belongsTo(LocationModel::class, 'delivery_locations_id', 'id');
+    }
+
+    /**
+     * Get the delivery items for the distribution.
+     */
+    public function delivery_items(): HasMany
+    {
+        return $this->hasMany(DeliveryItemModel::class, 'plugin_tender_distributions_id', 'id');
+    }
+
+    /**
+     * Beziehung zu Deliveries über DeliveryItems.
+     */
+    public function deliveries()
+    {
+        return $this->hasManyThrough(
+            DeliveryModel::class,
+            DeliveryItemModel::class,
+            'plugin_tender_distributions_id',
+            'id',
+            'id',
+            'plugin_tender_deliveries_id'
+        );
+    }
+
+    /**
+     * Get the invoice items for the distribution.
+     */
+    public function invoice_items(): HasMany
+    {
+        return $this->hasMany(InvoiceItemModel::class, 'plugin_tender_distributions_id', 'id');
     }
 
     public function getMeasureValue() {
 
-        $measures_id = $this->tenderitem()->pluck('plugin_tender_measures_id');
+        $measures_id = $this->tender_item()->pluck('plugin_tender_measures_id');
 
         return $this->financial()
         ->with(['costcenter' => function ($query) use ($measures_id) {
@@ -48,22 +128,6 @@ class DistributionModel extends \Illuminate\Database\Eloquent\Model {
         ->pluck('costcenter.measureitems')
         ->flatten()
         ->sum('value');
-    }
-
-    /**
-     * Get the location that owns the distribution.
-     */
-    public function location(): BelongsTo
-    {
-        return $this->belongsTo(LocationModel::class, 'locations_id', 'id');
-    }
-
-    /**
-     * Get the deliveryLocation that owns the distribution.
-     */
-    public function deliveryLocation(): BelongsTo
-    {
-        return $this->belongsTo(LocationModel::class, 'delivery_locations_id', 'id');
     }
 
     public function getPercentage() {

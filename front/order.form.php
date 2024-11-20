@@ -28,8 +28,8 @@ if (isset($_POST['add'])) {
    $offeritems = OfferItem::getOfferItems($_POST['tendersuppliers_id']);
 
    foreach ($offeritems as $item) {
-      $tenderitem = TenderItem::getByID($item['tenderitems_id']);
-      $tenderitem->update(['id' => $item['tenderitems_id'], 'net_price' => $item['net_price'], 'tax' => $item['tax'],]);
+      $tenderitem = TenderItem::getByID($item['plugin_tender_tenderitems_id']);
+      $tenderitem->update(['id' => $item['plugin_tender_tenderitems_id'], 'net_price' => $item['net_price'], 'tax' => $item['tax'],]);
    }
    //$object->check(-1, CREATE, $_POST);
    //Do object creation

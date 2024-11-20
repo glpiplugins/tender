@@ -5,6 +5,8 @@ namespace GlpiPlugin\Tender;
 use CommonDBTM;
 use CommonGLPI;
 use Entity;
+use MassiveAction;
+use Html;
 use Glpi\Application\View\TemplateRenderer;
 
 class Financial extends CommonDBTM   {
@@ -192,7 +194,6 @@ class Financial extends CommonDBTM   {
           'FROM' => 'glpi_plugin_tender_financials'
       ]);
   
-
       $financials = [];
 
       foreach ($iterator as $item) {
@@ -252,7 +253,25 @@ class Financial extends CommonDBTM   {
          $items[] = $item;
          $total += $item['value'];
       }
-      
+
+      $items = FinancialItemModel::where('plugin_tender_tenders_id', $tender->getID())
+         ->where('type', 0)
+         ->with(['financial', 'financial.costcenter', 'financial.account'])->get();
+
+         $items = $items->map(function($item) {
+            return [
+                'id'          => $item->id,
+                'value'       => $item->value,
+                'name'        => '<a href="/plugins/tender/front/financial.form.php?id=' . $item->financial->id . '">' . $item->financial->name . '</a>' ?? null,
+                'costcenter'  => $item->financial->costCenter->name ?? null,
+                'account'     => $item->financial->account->name ?? null,
+                'reference'   => $item->financial->reference ?? null,
+                'year'        => $item->year ?? null,
+                'total'       => $item->financial->getTotalAvailableAttribute() ?? null,
+                'itemtype'    => "GlpiPlugin\Tender\FinancialItem"
+            ];
+        })->toArray();
+
       TemplateRenderer::getInstance()->display('@tender/financialList.html.twig', [
          'item'   => $tender,
          'financials' => $financials,
@@ -280,20 +299,23 @@ class Financial extends CommonDBTM   {
                'account' => __('Account', 'tender'),
                'reference' => __('Reference', 'tender'),
                'value' => __('Value', 'tender'),
+               'total' => __('Total', 'tender')
          ],
          'formatters' => [
+            'name'  => 'raw_html',
             'value' => 'float',
+            'total' => 'float',
         ],
          'total_number' => count($items),
          'entries' => $items,
          'used' => array_column($items, 'id'),
-         'showmassiveactions'    => true,
+         // 'showmassiveactions'    => true,
          'massiveactionparams' => [
                'num_displayed'    => min($_SESSION['glpilist_limit'], count($items)),
                'container'        => 'massGlpiPluginTenderTenderItem' . mt_rand(),
                'specific_actions' => [
                   // 'delete' => __('Delete permanently'),
-               //   TenderItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect'),
+                 FinancialItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect1', 'tender'),
                ]
          ],
         ]);
@@ -301,5 +323,40 @@ class Financial extends CommonDBTM   {
         return true;
      }
   
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+      case 'delete':
+          echo Html::submit(__('Post'), array('name' => 'massiveaction'))."</span>";
+
+          return true;
+      }
+      return parent::showMassiveActionsSubForm($ma);
+  }
+
+  static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                      array $ids) {
+      global $DB;
+
+      switch ($ma->getAction()) {
+          case 'delete' :
+              $input = $ma->getInput();
+
+              foreach ($ids as $id) {
+               
+                  if ($item->getFromDB($id)
+                      && $item->deleteFromDB()) {
+                  
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                  } else {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                  $ma->addMessage(__("Something went wrong"));
+                  }
+              }
+              return;
+
+      }
+      parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
+  }
 
 }

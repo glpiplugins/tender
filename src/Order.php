@@ -23,7 +23,7 @@ class Order extends CommonDBTM   {
       if ($item->getType() == 'GlpiPlugin\Tender\Tender') {
           // Hier können Sie prüfen, ob der Benutzer die Rechte hat, den Tab zu sehen
           // und entsprechend den Namen zurückgeben oder false, wenn der Tab nicht angezeigt werden soll
-          return __("Order", "tender");
+          return __('Order', 'tender');
       }
       return '';
   }
@@ -52,12 +52,12 @@ class Order extends CommonDBTM   {
             'glpi_plugin_tender_tendersuppliers' => [
                 'FKEY' => [
                     'glpi_plugin_tender_tendersuppliers' => 'id',
-                    'glpi_plugin_tender_orders' => 'tendersuppliers_id'
+                    'glpi_plugin_tender_orders' => 'plugin_tender_tendersuppliers_id'
                 ]
             ]
         ],
         'WHERE' => [
-            'glpi_plugin_tender_orders.tenders_id' => $tender->getID()
+            'glpi_plugin_tender_orders.plugin_tender_tenders_id' => $tender->getID()
             ]
     ]);
 
@@ -72,16 +72,17 @@ class Order extends CommonDBTM   {
     $offers = [];
     foreach ($iterator as $offer) {
         $offer['supplier_name'] = '<a href="/front/supplier.form.php?id=' . $offer['supplier_id'] . '">' . $offer['supplier_name'] . '</a>';
-        $offer['select_offer'] = '
-            <form action="/plugins/tender/front/order.form.php" method="post">
-                <button type="submit">' .  __('Select Offer') . '</button>
+        $offer['select_offer'] = '<form action="/plugins/tender/front/order.form.php" method="post">
+                <button class="btn btn-sm btn-info" type="submit">' .  __('Select Offer', 'tender') . '</button>
                 <input hidden name="add" value="1" />
-                <input hidden name="tendersuppliers_id" value="' . $offer['id'] .'" />
-                <input hidden name="tenders_id" value="' . $offer['tenders_id'] .'" />
+                <input hidden name="plugin_tender_tendersuppliers_id" value="' . $offer['id'] .'" />
+                <input hidden name="plugin_tender_tenders_id" value="' . $offer['plugin_tender_tenders_id'] .'" />
                 <input hidden name="_glpi_csrf_token" value="' . Session::getNewCSRFToken() . '"/>
             </form>';
         $offers[] = $offer;
     }
+
+
 
     TemplateRenderer::getInstance()->display('@tender/order.html.twig', [
         'item' => $item,
@@ -91,10 +92,10 @@ class Order extends CommonDBTM   {
         'filters' => [],
         'nofilter' => true,
         'columns' => [
-            'supplier_name' => __('name'),
-            'offer_date' => __('Offer date'),
-            'total_gross_price' => __('Total'),
-            'select_offer' => __('Select Offer'),
+            'supplier_name' => __('Name', 'tender'),
+            'offer_date' => __('Offer date', 'tender'),
+            'total_gross_price' => __('Total', 'tender'),
+            'select_offer' => __('Select Offer', 'tender'),
         ],
         'formatters' => [
             'supplier_name' => 'raw_html',

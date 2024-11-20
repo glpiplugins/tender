@@ -3,6 +3,7 @@ include_once ("../../../inc/includes.php");
 require_once __DIR__ . '/../vendor/autoload.php';
 use PhpOffice\PhpWord\TemplateProcessor;
 use Config as GlpiConfig;
+use GlpiPlugin\Tender\InvoiceModel;
 
 $configValues = GlpiConfig::getConfigurationValues('plugin:tender');
 $templateProcessor = new TemplateProcessor($configValues['accounting_template_path']);

@@ -6,7 +6,7 @@
       <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
          <div class="row flex-row align-items-start flex-grow-1">
             <div class="row flex-row" id="form-content">
-            <div><a href="/plugins/tender/front/tender.form.php?id={{item.fields['tenders_id']}}">{{__('Back')}}</a></div>
+            <div><a href="/plugins/tender/front/tender.form.php?id={{item.fields['plugin_tender_tenders_id']}}&glpi_tab=GlpiPlugin\Tender\TenderItem">{{__('Back')}}</a></div>
                   {{ fields.textField(
                      'name',
                      item.fields['name'],
@@ -42,8 +42,8 @@
                   ) }}
 
                   {{ fields.hiddenField(
-                     'tenders_id',
-                     item.fields['tenders_id']
+                     'plugin_tender_tenders_id',
+                     item.fields['plugin_tender_tenders_id']
                   ) }}
 
                   {{ fields.hiddenField(
@@ -97,13 +97,12 @@
                   __('Financial', 'tender'),
                   {
                      'to_add': financials,
-                     'multiple': true,
-                     'used' : used
+                     'multiple': true
                   }
                ) }}
 
                {{ fields.hiddenField(
-                     'tenderitems_id',
+                     'plugin_tender_tenderitems_id',
                      item.fields['id']
                   ) }}
                <div>

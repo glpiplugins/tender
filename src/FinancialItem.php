@@ -5,6 +5,8 @@ namespace GlpiPlugin\Tender;
 use CommonDBTM;
 use CommonGLPI;
 use Entity;
+use MassiveAction;
+use Html;
 use Glpi\Application\View\TemplateRenderer;
 
 class FinancialItem extends CommonDBTM   {
@@ -140,10 +142,10 @@ class FinancialItem extends CommonDBTM   {
             'showmassiveactions'    => true,
             'massiveactionparams' => [
                 'num_displayed'    => min($_SESSION['glpilist_limit'], count($items)),
-                'container'        => 'massGlpiPluginTenderTenderItem' . mt_rand(),
+                'container'        => 'massGlpiPluginTenderFinancialItem' . mt_rand(),
                 'specific_actions' => [
                     // 'delete' => __('Delete permanently'),
-                  //   FinancialItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect'),
+                    // FinancialItem::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'delete' => __('Disconnect', 'tender'),
                 ]
             ],
         ]);
@@ -259,6 +261,42 @@ class FinancialItem extends CommonDBTM   {
 
         return $tab;
 
+    }
+
+    static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+        switch ($ma->getAction()) {
+        case 'delete':
+            echo Html::submit(__('Post'), array('name' => 'massiveaction'))."</span>";
+  
+            return true;
+        }
+        return parent::showMassiveActionsSubForm($ma);
+    }
+  
+    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                        array $ids) {
+        global $DB;
+  
+        switch ($ma->getAction()) {
+            case 'delete' :
+                $input = $ma->getInput();
+  
+                foreach ($ids as $id) {
+                 
+                    if ($item->getFromDB($id)
+                        && $item->deleteFromDB()) {
+                    
+                    $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                    } else {
+                    $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                    $ma->addMessage(__("Something went wrong"));
+                    }
+                }
+                return;
+  
+        }
+        parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
     }
 
 }
