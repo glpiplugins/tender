@@ -81,11 +81,6 @@ class PluginTenderUpgradeTo1_0_3 {
          $tender->save();
       }
 
-      // Change plugin_tender_tender_subject field to unique field
-      $table = 'glpi_plugin_tender_tenders';
-      $migration->changeField($table, 'tender_subject', 'tender_subject', 'varchar(255) not null');
-      $migration->addKey($table, ['tender_subject'], 'unicity', 'UNIQUE');
-
       if (!$DB->tableExists('glpi_plugin_tender_documenttemplates')) {
          $query = "CREATE TABLE `glpi_plugin_tender_documenttemplates` (
             `id` int unsigned NOT NULL AUTO_INCREMENT,

@@ -151,7 +151,7 @@ CREATE TABLE `glpi_plugin_tender_deliveryitems` (
             PRIMARY KEY (`id`),
             KEY `date_mod` (`date_mod`),
             KEY `date_creation` (`date_creation`),
-            FOREIGN KEY (`deliveries_id`)
+            FOREIGN KEY (`plugin_tender_deliveries_id`)
             REFERENCES `glpi_plugin_tender_deliveries`(`id`)
             ON DELETE CASCADE
             ON UPDATE NO ACTION
@@ -255,7 +255,7 @@ CREATE TABLE `glpi_plugin_tender_invoices` (
             PRIMARY KEY (`id`),
             KEY `date_mod` (`date_mod`),
             KEY `date_creation` (`date_creation`),
-            FOREIGN KEY (`tenders_id`)
+            FOREIGN KEY (`plugin_tender_tenders_id`)
             REFERENCES `glpi_plugin_tender_tenders`(`id`)
             ON DELETE CASCADE
             ON UPDATE NO ACTION

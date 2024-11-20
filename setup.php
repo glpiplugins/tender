@@ -62,7 +62,7 @@ function plugin_init_tender()
     $PLUGIN_HOOKS['csrf_compliant']['tender'] = true;
 
     // Plugin::registerClass(Config::class, ['addtabon' => 'Config']);
-    Plugin::registerClass(FileTemplate::class, []);
+    // Plugin::registerClass(FileTemplate::class, []);
     // $PLUGIN_HOOKS['use_massive_action']['tender'] = 1;
     // $PLUGIN_HOOKS['assign_to_ticket']['tender'] = true;
     $PLUGIN_HOOKS["menu_toadd"]['tender'] = ['management' => [Tender::class, Financial::class]];
