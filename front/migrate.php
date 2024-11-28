@@ -4,7 +4,7 @@ define('GLPI_ROOT', '/var/www/glpi/');
 include_once GLPI_ROOT . '/inc/includes.php';
 require_once GLPI_ROOT . '/vendor/autoload.php';
 
-$migration = new Migration('1.0.3');
+$migration = new Migration('1.0.4');
 $upgrade = new PluginTenderUpgradeTo1_0_4();
 $migration = $upgrade->upgrade($migration);
 $migration->executeMigration();
