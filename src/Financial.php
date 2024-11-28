@@ -61,7 +61,7 @@ class Financial extends CommonDBTM   {
             'params' => $options,
             'costcenters' => Costcenter::getAllCostcentersDropdown(),
             'accounts' => Account::getAllAccountsDropdown(),
-            'total_available' => MoneyHandler::formatToString($financial->total_available)
+            'total_available' => MoneyHandler::formatToString($financial->total_available ?? 0)
         ]);
 
         return true;
