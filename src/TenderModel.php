@@ -116,7 +116,7 @@ class TenderModel extends \Illuminate\Database\Eloquent\Model {
                     'plugin_tender_tenders_id'    => $this->id,
                 ],
                 [
-                    'value' => MoneyHandler::sum($group->pluck('total_gross')->toArray())->getAmount(),
+                    'value' => MoneyHandler::sum($group->pluck('total_gross')->toArray())->getAmount() / 100,
                 ]
             );
         });

@@ -1,6 +1,6 @@
 <?php
 
-define('GLPI_ROOT', '/var/www/glpi/');
+define('GLPI_ROOT', '/var/www/html/glpi/');
 include_once GLPI_ROOT . '/inc/includes.php';
 require_once GLPI_ROOT . '/vendor/autoload.php';
 
@@ -63,7 +63,7 @@ class PluginTenderUpgradeTo1_0_4 {
       $migration->migrationOneTable($table);
       $migration->addField($table, 'percentage', 'int signed');
       $migration->migrationOneTable($table);
-      $query = "UPDATE `glpi_plugin_tender_tenderitems`
+      $query = "UPDATE `glpi_plugin_tender_distributions`
                      SET `percentage` = ROUND(percentage_decimal * 100, 0)";
       $DB->doQueryOrDie($query, "1.0.4 migrate percentage to int");
 
