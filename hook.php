@@ -43,10 +43,10 @@ function plugin_tender_install()
     global $DB;
     $migration = new Migration(PLUGIN_TENDER_VERSION);
     if (!$DB->tableExists("glpi_plugin_tender_tenders")) {
-        $DB->runFile(Plugin::getPhpDir('tender')."/install/sql/empty-1.0.3.sql");
+        $DB->runFile(Plugin::getPhpDir('tender')."/install/sql/empty-1.0.4.sql");
     } else {
-        require_once(__DIR__ . '/install/upgrade_to_1.0.3.php');
-        $upgrade = new PluginTenderUpgradeTo1_0_3();
+        require_once(__DIR__ . '/install/upgrade_to_1.0.4.php');
+        $upgrade = new PluginTenderUpgradeTo1_0_4();
         $migration = $upgrade->upgrade($migration);
     }
     $migration->executeMigration();

@@ -42,7 +42,7 @@ use Glpi\Plugin\Hooks;
 use GlpiPlugin\Tender\DBmysqlProxy;
 use Illuminate\Database\Migrations\Migration;
 
-define('PLUGIN_TENDER_VERSION', '1.0.3');
+define('PLUGIN_TENDER_VERSION', '1.0.4');
 
 // Minimal GLPI version, inclusive
 define("PLUGIN_TENDER_MIN_GLPI_VERSION", "10.0.0");
