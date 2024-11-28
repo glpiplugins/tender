@@ -55,7 +55,7 @@ class OfferItemModel extends \Illuminate\Database\Eloquent\Model {
     {
         return Attribute::make(
             get: fn (int $value) => $value,
-            set: fn (float $value) => (int) MoneyHandler::parseFromFloat($value)->getAmount()
+            set: fn (float $value) => (int) MoneyHandler::parseFromFloat($value)->getAmount() / 100
         );
     }
 

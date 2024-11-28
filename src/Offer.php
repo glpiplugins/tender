@@ -69,6 +69,7 @@ class Offer extends CommonDBTM   {
         global $DB;
 
         $offers = OfferModel::where('plugin_tender_tenders_id', $tender->getID())
+        ->whereNotNull('offer_date')
         ->get()
         ->map(function($item) {
             $total = $item->offer_items->pluck('total_gross')->toArray();

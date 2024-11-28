@@ -359,7 +359,7 @@
         watch: {
             items: {
                 handler(newItems) {
-                 /*   newItems.forEach(item => {
+                  newItems.forEach(item => {
                    if (item.plugin_tender_measures_id == 0) {
                         let totalEnteredQuantity = 0;
                         if (item.distributions) {
@@ -372,13 +372,12 @@
             
                             });
                         }
-                        //item.entered_quantity = totalEnteredQuantity;
+                        item.entered_quantity = totalEnteredQuantity;
                      }
                      if (item.entered_quantity > item.pending_quantity) {
-                        //item.entered_quantity = item.quantity
+                        item.entered_quantity = item.quantity
                      }
                     });
-                    */
                 },
                 deep: true
             },

@@ -1,6 +1,9 @@
 <?php
 
 use GlpiPlugin\Tender\Offer;
+use GlpiPlugin\Tender\OfferModel;
+use GlpiPlugin\Tender\OfferItemModel;
+use GlpiPlugin\Tender\TenderItemModel;
 
 include ("../../../inc/includes.php");
 
@@ -32,8 +35,25 @@ if (isset($_POST['add'])) {
 } else if (isset($_POST['update'])) {
    //Check UPDATE ACL
    //$object->check($_POST['id'], UPDATE);
+
+   $offer = OfferModel::where('suppliers_id', $_POST['suppliers_id'])
+      ->where('plugin_tender_tenders_id', $_POST['plugin_tender_tenders_id'])->first();
+   $offer->offer_date = $_POST['offer_date'];
+   $offer->save();
+   $tenderitems = TenderItemModel::where('plugin_tender_tenders_id', $_POST['plugin_tender_tenders_id'])->get();
+
+   foreach ($tenderitems as $item) {
+      OfferItemModel::create(
+         [
+            'plugin_tender_offers_id' => $offer->id,
+            'plugin_tender_tenderitems_id' => $item->id,
+            'net_price' => $item->net_price,
+            'tax' => $item->tax
+         ]
+      );
+   }
    //Do object update
-   $object->update($_POST);
+   // $object->update($_POST);
    //Redirect to object form
    Html::back();
 } else if (isset($_POST['delete'])) {
