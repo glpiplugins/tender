@@ -42,12 +42,16 @@ class DeliveryItem extends CommonDBTM   {
                 $input = $ma->getInput();
 
                 foreach ($ids as $id) {
-
-                    if ($item->getFromDB($id)
-                        && $item->deleteFromDB()) {
-                    $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                    $deliveryItem = DeliveryItemModel::find($id);
+                    $tenderItemID = $deliveryItem->distribution->tender_item->id;
+                    if (DeliveryItemModel::where('plugin_tender_deliveries_id', $deliveryItem->plugin_tender_deliveries_id)
+                    ->whereHas('distribution.tender_item', function($query) use ($tenderItemID) {
+                        $query->where('id', $tenderItemID);
+                    })
+                ->delete()) {
+                    $ma->itemDone($deliveryItem->itemtype, $deliveryItem->id, MassiveAction::ACTION_OK);
                     } else {
-                    $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                    $ma->itemDone($deliveryItem->itemtype, $deliveryItem->id, MassiveAction::ACTION_KO);
                     $ma->addMessage(__("Something went wrong"));
                     }
                 }

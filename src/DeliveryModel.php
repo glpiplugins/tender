@@ -21,7 +21,11 @@ class DeliveryModel extends \Illuminate\Database\Eloquent\Model {
     const CREATED_AT = 'date_creation';
     const UPDATED_AT = 'date_mod';
 
-    protected $itemtype = 'GlpiPlugin\Tender\Delivery';
+    protected $appends = ['itemtype'];
+
+    public function getItemTypeAttribute() {
+        return 'GlpiPlugin\Tender\Delivery';
+    }
 
     /**
      * Get the tender that owns the delivery.

@@ -1,6 +1,6 @@
 {{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/invoice.form.php'}}) }}
 {% import 'components/form/fields_macros.html.twig' as fields %}
-   <div class="card-body d-flex flex-wrap">
+   <div id="app" class="card-body d-flex flex-wrap">
       <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
          <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
             <div class="row flex-row align-items-start flex-grow-1">
@@ -10,6 +10,9 @@
                         'name',
                         '',
                         __('Invoice Reference', 'tender'),
+                        {
+                           'required': true,
+                        }
                      ) }}
 
                      {{ fields.textField(
@@ -64,6 +67,11 @@
                      <thead>
                         <tr>
                            <th>{{__('Name')}}</th>
+                           <th>{{__('Measure', 'tender')}}</th>
+                           <th>{{__('Delivery Location', 'tender')}}</th>
+                           <th>{{__('Distribution', 'tender')}}</th>
+                           <th>{{__('Financial', 'tender')}}</th>
+                           <th>{{__('Reference', 'tender')}}</th>
                            <th>{{__('Ordered Quantity', 'tender')}}</th>
                            <th>{{__('Delivered Quantity', 'tender')}}</th>
                            <th>{{__('Invoiced Quantity', 'tender')}}</th>
@@ -73,15 +81,12 @@
                            <th>{{__('Tax', 'tender')}}</th>
                            <th>{{__('Tax Total', 'tender')}}</th>
                            <th>{{__('Gross Price', 'tender')}}</th>
-                           <th>{{__('Delivery Location', 'tender')}}</th>
-                           <th>{{__('Distribution', 'tender')}}</th>
-                           <th>{{__('Financial', 'tender')}}</th>
-                           <th>{{__('Reference', 'tender')}}</th>
                         </tr>
                      </thead>
                      <tbody>
-                        {% for item in tenderitems %}
-                           
+                        {% set itemsData = [] %}
+                        {% for item in distributions %}
+          
                         {% if item.invoiced_quantity is null %}
                            {% set invoiced_quantity = 0 %}
                            {% else %}
@@ -90,87 +95,177 @@
                         {% if item.delivered_quantity is not null %}
                            {% set delivered_quantity = item.delivered_quantity %}
                            {% set pending_quantity = delivered_quantity - invoiced_quantity %}
-                           <tr>
+                              {% set distributionsData = [] %}
+                              {% for distribution in item.distributions %}
+                               {% set distribution_invoiced_quantity = distribution.invoiced_quantity ?? 0 %}
+                                 {% set distribution_delivered_quantity = distribution.delivered_quantity ?? 0 %}
+                                 {% set distribution_pending_quantity = distribution_delivered_quantity - distribution_invoiced_quantity %}
+                                 {% set distributionData = {
+                                          'id': distribution.id,
+                                          'delivery_location': distribution.delivery_location.name,
+                                          'location': distribution.location.name,
+                                          'financial': distribution.financial.name,
+                                          'reference': distribution.financial.reference,
+                                          'quantity': distribution.quantity,
+                                          'delivered_quantity': distribution_delivered_quantity,
+                                          'invoiced_quantity': distribution_invoiced_quantity,
+                                          'pending_quantity': distribution_pending_quantity,
+                                          'entered_quantity': distribution_pending_quantity,
+                                       } %}
+                                 {% set distributionsData = distributionsData|merge([distributionData]) %}
+                              {% endfor %}
+                                   {% set itemData = {
+                                       'id': item.id,
+                                       'name': item.tenderitem_name,
+                                       'plugin_tender_measures_id': item.plugin_tender_measures_id,
+                                       'measure': item.measure.name,
+                                       'delivery_location': item.delivery_location_name,
+                                       'location': item.location_name,
+                                       'financial': item.financial,
+                                       'reference': item.reference,
+                                       'quantity': item.quantity,
+                                       'delivered_quantity': delivered_quantity,
+                                       'invoiced_quantity': invoiced_quantity,
+                                       'pending_quantity': pending_quantity,
+                                       'entered_quantity': pending_quantity,
+                                       'net_price': item.net_price,
+                                       'tax': item.tax,
+                                       'total_net': item.total_net,
+                                       'total_tax': item.total_tax,
+                                       'total_gross': item.total_gross,
+                                       'distributions': distributionsData
+                                 } %}
+                                 {% set itemsData = itemsData|merge([itemData]) %}
+                           {% endif %}
+                           {% endfor %}
+                           <template v-for="(item, index) in items" :key="item.id">
+                           <tr class="table-secondary">
                               <td>
-                                 {{ item.tender_item.name }}
+                                 [[ item.name ]]
                               </td>
                               <td>
-                                 {{ item.tender_item.quantity }}
+                                 [[ item.measure ]]
                               </td>
                               <td>
-                                 {{ item.delivered_quantity }}
+                                 [[ item.delivery_location ]]
                               </td>
                               <td>
-                                 {{ item.invoiced_quantity }}
+                                 [[ item.location ]]
+                              </td>
+                              <td>
+                                 [[ item.financial ]]
+                              </td>
+                              <td>
+                                 [[ item.reference ]]
+                              </td>
+                              <td>
+                                 [[ item.quantity ]]
+                              </td>
+                              <td>
+                                 [[ item.delivered_quantity ]]
+                              </td>
+                              <td>
+                                 [[ item.invoiced_quantity ]]
                               </td>
                               <td class="item_quantity">
-                                 {% if pending_quantity > 0 %}
-                                    {{ fields.numberField(
-                                       'item[' ~ loop.index ~ '][quantity]',
-                                       pending_quantity,
-                                       '',
-                                       {
-                                          'no_label': true,
-                                          'max': pending_quantity,
-                                          'min': 0
-                                       }
-                                    ) }}
-                                 {% else %}
-                                 {{ pending_quantity }}
-                                 {% endif %}
+                                 <input
+                                 type="number"
+                                 :name="'item[item' + item.id + '][quantity]'"
+                                 v-if="item.pending_quantity > 0 && item.plugin_tender_measures_id != 0"
+                                 v-model.number="item.entered_quantity"
+                                 :max="item.quantity"
+                                 min="0" />
+                                 <input
+                                    hidden
+                                    v-if="item.pending_quantity > 0 && item.plugin_tender_measures_id != 0"
+                                    :name="'item[item' + item.id + '][id]'"
+                                    :value="item.id"
+                                    />
+                                 <span v-if="item.plugin_tender_measures_id == 0">[[ getEnteredQuantity(item) ]]</span>
                               </td>
                               <td class="net_price">
-                                 {{ item.tender_item.net_price|number_format(2, ',', '.') }}
+                                 [[ toCurrency(item.net_price) ]]
                               </td>
                               <td class="net_total">
-                                 {{ (item.tender_item.net_price * pending_quantity)|number_format(2, ',', '.') }}
+                                 [[ toCurrency(calculateNetTotal(item)) ]]
                               </td>
                               <td class="tax">
-                                 {{ item.tender_item.tax }}
+                                 [[ item.tax ]]
                               </td>
                               <td class="tax_total">
-                                 {% if item.tender_item.tax == 0 %} 
-                                    0
-                                 {% else %}
-                                    {{ (item.tender_item.net_price * pending_quantity * ((item.tax / 100)))|number_format(2, ',', '.') }}
-                                 {% endif %}
+                                 [[ toCurrency(calculateTaxTotal(item)) ]]
                               </td>
                               <td class="gross_total">
-                              {% if item.tender_item.tax == 0 %} 
-                                 {{ item.tender_item.net_price * pending_quantity }}
-                              {% else %}
-                                 {{ (item.tender_item.net_price * pending_quantity * (1 + (item.tax / 100)))|number_format(2, ',', '.') }}
-                              {% endif %}
+                                 [[ toCurrency(calculateGrossTotal(item)) ]]
                               </td>
-                              <td>
-                                 {{ item.delivery_location_name }}
-                              </td>
-                              <td>
-                                 {{ item.location_name }}
-                              </td>
-                              <td>
-                                 {{ item.financial.name }}
-                              </td>
-                              <td>
-                                 {{ item.financial.reference }}
-                              </td>
-                                 {% if pending_quantity > 0 %}
-                                    {{ fields.hiddenField(
-                                          'item[' ~ loop.index ~ '][id]',
-                                          item.id
-                                    ) }}
-                                 {% endif %}
                            </tr>
-                        {% endif %}                           
+                        {% for distribution in item.distributions %}
+                        {% set delivered_quantity = item.delivered_quantity %}
+                        {% set pending_quantity = delivered_quantity - invoiced_quantity %}
                         {% endfor %}
+                        <tr v-for="(distribution, index) in item.distributions" :key="distribution.id">
+                           <td></td>
+                           <td>
+                              [[ distribution.delivery_location ]]
+                           </td>
+                           <td></td>
+                           <td>
+                              [[ distribution.location ]]
+                           </td>
+                           <td>
+                              [[ distribution.financial ]]
+                           </td>
+                           <td>
+                              [[ distribution.reference ]]
+                           </td>
+                           <td>
+                              <span v-if="item.plugin_tender_measures_id == 0">
+                                 [[ distribution.quantity ]]
+                              </span>
+                           </td>
+                           <td>
+                              <span v-if="item.plugin_tender_measures_id == 0">
+                                 [[ distribution.delivered_quantity ]]
+                              </span>
+                           </td>
+                           <td>
+                              <span v-if="item.plugin_tender_measures_id == 0">
+                                 [[ distribution.invoiced_quantity ]]
+                              </span>
+                           </td>
+                           <td>
+                              <input type="number"
+                                 :name="'distribution[distribution' + distribution.id + '][quantity]'"
+                                 v-if="distribution.pending_quantity > 0 && item.plugin_tender_measures_id == 0"
+                                 v-model.number="distribution.entered_quantity"
+                                 :max="distribution.quantity"
+                                 min="0" />
+                                 <input
+                                    hidden
+                                    v-if="item.pending_quantity > 0 && item.plugin_tender_measures_id == 0"
+                                    :name="'distribution[distribution' + distribution.id + '][id]'"
+                                    :value="distribution.id"
+                                    />
+              
+                           </td>
+                           <td colspan="5"></td>
+                        </tr>
+                    </template>
+                        
                      </tbody>
                      <tfoot>
                         <tr>
-                           <td colspan="6"></td>
-                           <td class="net_total_sum"></td>
+                           <td colspan="11"></td>
+                           <td class="net_total_sum">
+                              [[ toCurrency(netTotalSum) ]]
+                           </td>
                            <td></td>
-                           <td class="tax_total_sum"></td>
-                           <td class="gross_total_sum"></td>
+                           <td class="tax_total_sum">
+                              [[ toCurrency(taxTotalSum) ]]
+                           </td>
+                           <td class="gross_total_sum">
+                              [[ toCurrency(grossTotalSum) ]]
+                           </td>
                            <td colspan="4"></td>
                         </tr>
                      </tfoot>
@@ -193,77 +288,126 @@
    </div>
 </div>
 <script>
-var tender = JSON.parse('{{ tender|json_encode|raw }}');
-
-$(document).ready(function() {
-   sumTotal();
-
-   $(document).on('change', '.item_quantity input', function(e) {
-      var net_price = this.closest('.item_quantity').parentElement.querySelector('.net_price');
-      var net_total = this.closest('.item_quantity').parentElement.querySelector('.net_total');
-      var tax_total = this.closest('.item_quantity').parentElement.querySelector('.tax_total');
-      var tax = this.closest('.item_quantity').parentElement.querySelector('.tax');
-      var gross_total = this.closest('.item_quantity').parentElement.querySelector('.gross_total');
-
-      var tax = tax.textContent > 0 ? (1 + (parseFloat(tax.textContent) / 100)) : 1;
-      //var gross_total = net_total * (1 + (tax / 100));
-      net_total.textContent = (parseFloat(net_price.textContent) * parseFloat(this.value)).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?:\,\d+)?$)/g, "$1.");
-      gross_total.textContent = (parseFloat(net_price.textContent) * parseFloat(this.value) * parseFloat(tax)).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?:\,\d+)?$)/g, "$1.");
-      tax_total.textContent = ((parseFloat(net_price.textContent) * parseFloat(this.value) * parseFloat(tax)) - (parseFloat(net_price.textContent) * parseFloat(this.value))).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?:\,\d+)?$)/g, "$1.")
-
-      sumTotal();
-
-   });
-
-   $(document).on('change', "input[name='name']", function(e) {
-      var postingTextSuggest = "";
-      if ($("input[name='posting_text']").val().length == 0) {
-         postingTextSuggest = 'RG-Nr: ' + $(this).val() + ', ' + tender["tender_subject"] + '/' + tender["name"];
-         $("input[name='posting_text']").val(postingTextSuggest);
-      }
-   });
-
-   $(document).on('change', "input[name='due_date_in']", function(e) {
-
-      if ($("input[name='due_date']").val().length == 0 && $("input[name='invoice_date']").val().length != 0) {
-         var dueDate = new Date($("input[name='invoice_date']").val());
-
-         dueDate.setDate(dueDate.getDate() + parseInt($(this).val()));
-
-         var year = dueDate.getFullYear();
-         var month = ('0' + (dueDate.getMonth() + 1)).slice(-2);
-         var day = ('0' + dueDate.getDate()).slice(-2);
-         dueDate = year + '-' + month + '-' + day;
-
-         $("input[name='due_date']").next().val(dueDate);
-
-      }
-   });   
-
-   function sumTotal() {
-      var netSum = sumColumn('net_total');
-      var taxSum = sumColumn('tax_total');
-      var grossSum = sumColumn('gross_total');
-
-      // Summen in die entsprechenden Summe-Zellen einfügen
-      $('.net_total_sum').text(netSum.toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?:\,\d+)?$)/g, "$1."));
-      $('.tax_total_sum').text(taxSum.toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?:\,\d+)?$)/g, "$1."));
-      $('.gross_total_sum').text(grossSum.toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?:\,\d+)?$)/g, "$1."));
-
-   }
-
-       function sumColumn(className) {
-        var sum = 0;
-        $('.' + className).each(function(){
-            // Textinhalt des TD-Elements auslesen und in eine Zahl umwandeln
-            var val = parseFloat($(this).text().replace(/\./g, '').replace(',', '.'));
-            console.log(val)
-            if(!isNaN(val)){
-                sum += val;
-            }
-        });
-        return sum;
-    }
-
-});
+    window.itemsData = {{ itemsData|json_encode()|raw }};
+    window.tender = {{ tender|json_encode()|raw }};
 </script>
+    <script>
+      const { createApp, ref, reactive, computed } = Vue
+
+      createApp({
+         data() {
+            return {
+                  items: reactive(window.itemsData),
+                  formData: reactive({
+                     name: '',
+                     posting_text: '',
+                     invoice_date: '',
+                     due_date: '',
+                     due_date_in: '',
+                  }),
+                  tender: window.tender || {}
+            };
+         },
+         mounted() {
+            const inputs = document.querySelectorAll('input[name]');
+            inputs.forEach(input => {
+               const name = input.getAttribute('name');
+               if (this.formData.hasOwnProperty(name)) {
+                     this.formData[name] = input.value;
+                     input.addEventListener('input', (event) => {
+                        this.formData[name] = event.target.value;
+                     });
+               }
+            });
+         },
+         methods: {
+            getEnteredQuantity(item) {
+               return item.entered_quantity;
+            },
+            calculateNetTotal(item) {
+                  return (item.entered_quantity * item.net_price);
+            },
+            calculateTaxTotal(item) {
+                  return this.calculateNetTotal(item) * (item.tax / 100);
+            },
+            calculateGrossTotal(item) {
+                  return this.calculateNetTotal(item) + this.calculateTaxTotal(item);
+            },
+            toCurrency(value) {
+                  if (typeof value !== "number") {
+                     return value;
+                  }
+                  return new Intl.NumberFormat('de-DE', {
+                     style: 'decimal',
+                     currency: 'EUR',
+                     minimumFractionDigits: 2,
+                     maximumFractionDigits: 2
+                  }).format(value / 100);
+            }
+         },
+        computed: {
+            netTotalSum() {
+                return this.items.reduce((sum, item) => sum + this.calculateNetTotal(item), 0);
+            },
+            taxTotalSum() {
+                return this.items.reduce((sum, item) => sum + this.calculateTaxTotal(item), 0);
+            },
+            grossTotalSum() {
+                return this.items.reduce((sum, item) => sum + this.calculateGrossTotal(item), 0);
+            }
+        },
+        watch: {
+            items: {
+                handler(newItems) {
+                 /*   newItems.forEach(item => {
+                   if (item.plugin_tender_measures_id == 0) {
+                        let totalEnteredQuantity = 0;
+                        if (item.distributions) {
+                            item.distributions.forEach(distribution => {
+                               if (distribution.entered_quantity > distribution.pending_quantity) {
+                                 distribution.entered_quantity = distribution.pending_quantity
+                               } else {
+                                 totalEnteredQuantity += parseFloat(distribution.entered_quantity) || 0;
+                               }
+            
+                            });
+                        }
+                        //item.entered_quantity = totalEnteredQuantity;
+                     }
+                     if (item.entered_quantity > item.pending_quantity) {
+                        //item.entered_quantity = item.quantity
+                     }
+                    });
+                    */
+                },
+                deep: true
+            },
+            'formData.name'(newValue) {
+                     this.formData.posting_text = 'RG-Nr: ' + newValue + ', ' + this.tender.tender_subject + '/' + this.tender.name;
+                     document.querySelector('input[name="posting_text"]').value = this.formData.posting_text;
+            },
+            'formData.due_date_in'(newValue) {
+               if (this.formData.invoice_date) {
+                     let dueDate = new Date(this.formData.invoice_date);
+                     dueDate.setDate(dueDate.getDate() + parseInt(newValue));
+                     console.log(dueDate);
+                     let year = dueDate.getFullYear();
+                     let month = ('0' + (dueDate.getMonth() + 1)).slice(-2);
+                     let day = ('0' + dueDate.getDate()).slice(-2);
+                     this.formData.due_date = `${year}-${month}-${day}`;
+                     document.querySelector('input[name="due_date"]').value = this.formData.due_date;
+                     document.querySelector('input[name="due_date"]').nextElementSibling.value = this.formData.due_date;
+               }
+            }
+        },
+         delimiters: ['[[', ']]'],
+         setup() {
+            const message = ref('Hello Vue!')
+
+            return {
+               message
+           }
+                
+         }
+      }).mount('#app')
+    </script>

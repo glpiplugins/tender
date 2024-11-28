@@ -8,6 +8,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
 
@@ -32,7 +33,26 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
         'plugin_tender_measures_id'
     ];
 
+    protected $casts = [
+        'net_price' => 'string',
+    ];
+
+    protected $appends = [
+        'net_price_string',
+        'total_net',
+        'total_tax',
+        'total_gross',
+        'total_net_string',
+        'total_tax_string',
+        'total_gross_string',
+        // 'distribution_allocation',
+        'itemtype'
+    ];
+
     protected $financialIds = [];
+    protected $accountId = null;
+    protected $costcenterIds = [];
+
     protected $locationsId = null;
     protected $deliveryLocationsId = null;
 
@@ -42,12 +62,12 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
         parent::boot();
 
         static::updated(function (TenderItemModel $tenderItem) {
-            // $tenderItem->updateFinancialItemValue();
+            $tenderItem->tender->updateFinancialItemValue();
         });
 
-        static::deleted(function (DistributionModel $distribution) {
-            $distribution->tender_item?->updateQuantity();
-            $distribution->updateFinancialItemValue();
+        static::deleted(function (TenderItemModel $tenderItem) {
+
+            $tenderItem->tender->updateFinancialItemValue();
         });
     }
 
@@ -72,6 +92,13 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
      */
     public function distributions(): HasMany
     {
+        $distributions = $this->hasMany(DistributionModel::class, 'plugin_tender_tenderitems_id', 'id');
+        
+
+        foreach ($distributions as $distribution) {
+
+        }
+
         return $this->hasMany(DistributionModel::class, 'plugin_tender_tenderitems_id', 'id');
     }
 
@@ -83,6 +110,14 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
         return $this->hasMany(OfferItemModel::class, 'plugin_tender_tenderitems_id', 'id');
     }
 
+    protected function netPrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn (int $value) => $value,
+            set: fn (float $value) => (int) MoneyHandler::parseFromFloat($value)->getAmount()
+        );
+    }
+
     public function totalQuantities() {
         if ($this->plugin_tender_measures_id != 0) {
             return $this->quantity;
@@ -91,13 +126,78 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
         }
     }
 
-    public function totalNetValue() {
-        return $this->quantity * $this->net_price;
+    public function getNetPriceStringAttribute() {
+        return MoneyHandler::formatToString($this->net_price);
     }
 
-    public function totalGrossValue() {
-        $tax = $this->tax == 0 ? 1 : (1 + ($this->tax / 100));
-        return $this->quantity * $this->net_price * $tax;
+    public function getTotalNetStringAttribute() {
+        return MoneyHandler::formatToString($this->total_net);
+    }
+
+    public function getTotalTaxStringAttribute() {
+        return MoneyHandler::formatToString($this->total_tax);
+    }
+
+    public function getTotalGrossStringAttribute() {
+        return MoneyHandler::formatToString($this->total_gross);
+    }
+
+    public function getTotalNetAttribute() {
+        return MoneyHandler::multiply($this->net_price, $this->quantity);
+    }
+
+    public function getTotalTaxAttribute() {
+        return $this->tax == 0 ? 0 : MoneyHandler::multiply($this->total_net, $this->tax / 100);
+    }
+
+    public function getTotalGrossAttribute() {
+        return MoneyHandler::add($this->total_net, $this->total_tax);
+    }
+
+    public function getDistributionAllocationAttribute() {
+
+            $distributions = $this->distributions->map(function($item) {
+                return [
+                    'id'                      => $item->id,
+                    'quantity'                => $item->quantity,
+                    'net_price'               => MoneyHandler::formatToString($item->tender_item->net_price),
+                    'percentage'              => $item->percentage,
+                    'tax_rate'                => $this->tax,
+                    'financial_id'            => $item->financial->id,
+                    'financial_name'          => $item->financial->name,
+                    'location_name'           => $item->location->name ?? null,
+                    'delivery_location_name'  => $item->delivery_location->name ?? null,
+                    'itemtype'                => "GlpiPlugin\Tender\Distribution",
+                ];
+            });
+
+            $percentages = $this->distributions->map(function($item) {
+                return $item->percentage;
+            })->toArray();
+
+            $allocations_total_net = $this->total_net->allocate($percentages);
+            $allocations_total_tax = $this->total_tax->allocate($percentages);
+            $allocations_total_gross = $this->total_gross->allocate($percentages);
+
+            $distributions = $distributions->values()->transform(function ($distribution, $index) use ($allocations_total_net, $allocations_total_tax, $allocations_total_gross) {
+                $distribution['total_net'] = $allocations_total_net[$index];
+                $distribution['total_net_string'] = MoneyHandler::formatToString($allocations_total_net[$index]);
+                $distribution['total_tax'] = $allocations_total_tax[$index];
+                $distribution['total_tax_string'] = MoneyHandler::formatToString($allocations_total_tax[$index]);
+                $distribution['total_gross'] = $allocations_total_gross[$index];
+                $distribution['total_gross_string'] = MoneyHandler::formatToString($allocations_total_gross[$index]);
+                return $distribution;
+            });
+    
+        return $distributions;
+    }
+
+    // public function getTotalPercentageAttribute() {
+    //     return min(100, round($this->distributions->sum('percentage'), 4));
+    // }
+
+    public function getItemTypeAttribute() {
+        return 'GlpiPlugin\Tender\TenderItem';
     }
 
     public function totalMeasureValue() {
@@ -116,9 +216,12 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
 
     public static function create(array $attributes = [])
     {
-        $financialIds = $attributes['financials'] ?? [];
-        unset($attributes['financials']);
+        $costcenterIds = $attributes['costcenterIds'] ?? [];
+        unset($attributes['costcenterIds']);
         
+        $accountId = $attributes['accountId'] ?? [];
+        unset($attributes['accountId']);
+
         $locationsId = $attributes['locations_id'] ?? [];
         unset($attributes['locations_id']);
 
@@ -126,96 +229,76 @@ class TenderItemModel extends \Illuminate\Database\Eloquent\Model {
         unset($attributes['delivery_locations_id']);
 
         $tenderItem = static::query()->create($attributes);
-        $tenderItem->financialIds = $financialIds;
+
+        $tenderItem->costcenterIds = $costcenterIds;
+        $tenderItem->accountId = $accountId;
         $tenderItem->locationsId = $locationsId;
         $tenderItem->deliveryLocationsId = $deliveryLocationsId;
+
         $tenderItem->saveDistributions();
 
         return $tenderItem;
     }
 
-    public function calculateDistributions()
-    {
-        $this->load(['distributions.financial', 'distributions.location', 'distributions.delivery_location']);
-        $tenderItem = $this;
-
-        $totalNetPrice = 0;
-        $totalTax = 0;
-        $totalGrossPrice = 0;
-        $financialIds = [];
-
-        $this->distributions->each(function ($distribution) use ($tenderItem, &$totalNetPrice, &$totalTax, &$totalGrossPrice, &$financialIds) {
-            if ($tenderItem->plugin_tender_measures_id != 0) {
-                $calculatedQuantity = $tenderItem->quantity;
-            } else {
-                $calculatedQuantity = $distribution->quantity;
-            }
-
-            $distribution->itemtype = 'GlpiPlugin\Tender\Distribution';
-            $distribution->tax_rate = $tenderItem->tax . ' %';
-            $distribution->net_price = round($tenderItem->net_price, 2);
-            $distribution->net_price_calculated = round($tenderItem->net_price * $calculatedQuantity * ($distribution->percentage / 100), 2);
-            $distribution->tax = round($distribution->net_price_calculated * ($tenderItem->tax / 100), 2);
-            $distribution->gross_price_calculated = round($distribution->net_price_calculated * (1 + $tenderItem->tax / 100), 2);
-
-            $financial = optional($distribution->financial);
-            if ($financial) {
-                $financialIds[] = $financial->id;
-                $distribution->financial_name = $financial->name;
-            }
-
-            $distribution->location_name = optional($distribution->location)->completename;
-            $distribution->delivery_location_name = optional($distribution->deliveryLocation)->completename;
-
-            $totalNetPrice += $distribution->net_price_calculated;
-            $totalTax += $distribution->tax;
-            $totalGrossPrice += $distribution->gross_price_calculated;
-        });
-
-
-        $expectedNetPrice = round($tenderItem->net_price * $tenderItem->quantity, 2);
-        $expectedTax = round($expectedNetPrice * ($tenderItem->tax / 100), 2);
-        $expectedGrossPrice = round($expectedNetPrice * (1 + $tenderItem->tax / 100), 2);
-
-        $roundingDifferenceNetPrice = $expectedNetPrice - $totalNetPrice;
-        $roundingDifferenceTax = $expectedTax - $totalTax;
-        $roundingDifferenceGrossPrice = $expectedGrossPrice - $totalGrossPrice;
-
-        if ($this->distributions->isNotEmpty()) {
-            $lastDistribution = $this->distributions->last();
-            $lastDistribution->net_price_calculated += $roundingDifferenceNetPrice;
-            $lastDistribution->tax += $roundingDifferenceTax;
-            $lastDistribution->gross_price_calculated += $roundingDifferenceGrossPrice;
-        }
-
-        $this->total_net_price = round($this->distributions->sum('net_price_calculated'), 2);
-        $this->total_tax = round($this->distributions->sum('tax'), 2);
-        $this->total_gross_price = round($this->distributions->sum('gross_price_calculated'), 2);
-        $this->total_percentage = min(100, round($this->distributions->sum('percentage'), 4));
-        $this->financialIds = $financialIds;
-        return $this;
-    }
-
     public function updateQuantity() {
+        if ($this->plugin_tender_measures_id != 0) {
+            return;
+        }
         $this->quantity = $this->distributions->sum('quantity');
-        $this->save();
+        if($this->quantity == 0) {
+            $this->delete();
+        } else {
+            $this->save();
+        }
+        
     }
 
     public function saveDistributions()
     {
-        if (!empty($this->financialIds)) {
-            foreach ($this->financialIds as $financialId) {
-                DistributionModel::create([
-                    'plugin_tender_tenderitems_id' => $this->id,
-                    'plugin_tender_financials_id'  => $financialId,
-                    'quantity'                     => $this->quantity,
-                    'locations_id'                 => $this->locationsId,
-                    'delivery_locations_id'        => $this->deliveryLocationsId,
-                    'percentage'                   => 100,
-                ]);
-            }
-        }
 
+        $total = MeasureItemModel::where('plugin_tender_measures_id', $this->plugin_tender_measures_id)
+        ->whereIn('plugin_tender_costcenters_id', $this->costcenterIds)->sum('value');
+
+        $totalPercentage = 0;
+        $totalCostcenterCount = count($this->costcenterIds);
+        $counter = 0;
+        
+        foreach ($this->costcenterIds as $costcenterId) {
+            $counter++;
+            // Find existing financial if exits, if not create a new one
+            $financial = FinancialModel::where('plugin_tender_costcenters_id', $costcenterId)
+                ->where('plugin_tender_accounts_id', $this->accountId)
+                ->first()
+                ??
+                FinancialModel::create([
+                    'plugin_tender_costcenters_id'  => $costcenterId,
+                    'plugin_tender_accounts_id'     => $this->accountId
+                ])->first();
+
+            // Get percentage according to measure
+            if ($this->plugin_tender_measures_id != 0) {
+                $value = MeasureItemModel::where('plugin_tender_measures_id', $this->plugin_tender_measures_id)
+                    ->where('plugin_tender_costcenters_id', $costcenterId)->first()->value;
+
+                $totalPercentage += $percentage = floor($value / $total * 100) ?? 100;
+                
+                if ($counter == $totalCostcenterCount && $totalPercentage !== 100) {
+                    $percentage += 100 - $totalPercentage; 
+                }
+            } else {
+                $percentage = 100;
+            }
+            
+            $distribution = DistributionModel::create([
+                'plugin_tender_tenderitems_id' => $this->id,
+                'plugin_tender_financials_id'  => $financial->id,
+                'quantity'                     => $this->quantity,
+                'locations_id'                 => $this->locationsId,
+                'delivery_locations_id'        => $this->deliveryLocationsId,
+                'percentage'                   => $percentage,
+            ]);
+        }
+        
         $this->tender->updateFinancialItemValue();
     }
 

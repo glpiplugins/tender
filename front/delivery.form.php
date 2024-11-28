@@ -2,6 +2,7 @@
 
 use GlpiPlugin\Tender\Delivery;
 use GlpiPlugin\Tender\DeliveryItem;
+use GlpiPlugin\Tender\TenderItemModel;
 
 include ("../../../inc/includes.php");
 
@@ -24,12 +25,22 @@ if (isset($_POST['add'])) {
 
    $newid = $object->add($_POST);
    //Check CREATE ACL
-
-   foreach ($_POST['item'] as $item) {
+   foreach ($_POST['distribution'] as $distribution) {
       $deliveryitem = new DeliveryItem();
-      $item['plugin_tender_deliveries_id'] = $newid;
-      if (intval($item['quantity']) > 0) {
-         $deliveryitem->add($item);
+      $distribution['plugin_tender_deliveries_id'] = $newid;
+      if (intval($distribution['quantity']) > 0) {
+         $deliveryitem->add($distribution);
+      }
+   }
+   foreach ($_POST['item'] as $item) {
+      $tenderItem = TenderItemModel::find($item['id']);
+      foreach ($tenderItem->distributions as $distribution) {
+         $deliveryitem = new DeliveryItem();
+         $item['plugin_tender_distributions_id'] = $distribution->id;
+         $item['plugin_tender_deliveries_id'] = $newid;
+         if (intval($item['quantity']) > 0) {
+            $deliveryitem->add($item);
+         }
       }
    }
    //$object->check(-1, CREATE, $_POST);

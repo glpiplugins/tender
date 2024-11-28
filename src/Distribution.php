@@ -41,27 +41,28 @@ class Distribution extends CommonDBTM  {
                 
                 foreach ($ids as $id) {
                     try {
-                        $object = new Distribution();
-                        $object->getFromDB($id);
+                        DistributionModel::find($id)->delete();
+                        // $object = new Distribution();
+                        // $object->getFromDB($id);
 
-                        $tenderitem = $DB->request([
-                            'FROM' => 'glpi_plugin_tender_tenderitems',
-                            'WHERE' => [
-                                'id' => $object->fields['plugin_tender_tenderitems_id']
-                                ]
-                        ]);
-                        $tenderitem = $tenderitem->current();
+                        // $tenderitem = $DB->request([
+                        //     'FROM' => 'glpi_plugin_tender_tenderitems',
+                        //     'WHERE' => [
+                        //         'id' => $object->fields['plugin_tender_tenderitems_id']
+                        //         ]
+                        // ]);
+                        // $tenderitem = $tenderitem->current();
 
-                        $tenderItemObj = new TenderItem();
-                        $newQuantity = $tenderitem['quantity'] - $object->fields['quantity'];
-                        if ($newQuantity > 0) {
-                            $tenderItemObj->update(['id' => $tenderitem['id'], 'quantity' => ($tenderitem['quantity'] - $object->fields['quantity'])]);
-                            self::removeDistribution($id);
-                            $object->delete(['id' => $id]);
-                        } else {
-                            self::removeAllDistributions($tenderitem['id']);
-                            $tenderItemObj->delete(['id' => $tenderitem['id']]);
-                        }
+                        // $tenderItemObj = new TenderItem();
+                        // $newQuantity = $tenderitem['quantity'] - $object->fields['quantity'];
+                        // if ($newQuantity > 0) {
+                        //     $tenderItemObj->update(['id' => $tenderitem['id'], 'quantity' => ($tenderitem['quantity'] - $object->fields['quantity'])]);
+                        //     self::removeDistribution($id);
+                        //     $object->delete(['id' => $id]);
+                        // } else {
+                        //     self::removeAllDistributions($tenderitem['id']);
+                        //     $tenderItemObj->delete(['id' => $tenderitem['id']]);
+                        // }
                                                
                         
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);

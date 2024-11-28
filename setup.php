@@ -61,8 +61,10 @@ function plugin_init_tender()
 
     $PLUGIN_HOOKS['csrf_compliant']['tender'] = true;
 
-    // Plugin::registerClass(Config::class, ['addtabon' => 'Config']);
+    $PLUGIN_HOOKS['add_javascript']['tender'][] = 'assets/js/vue3.5.13.min.js';
+
     // Plugin::registerClass(FileTemplate::class, []);
+    
     // $PLUGIN_HOOKS['use_massive_action']['tender'] = 1;
     // $PLUGIN_HOOKS['assign_to_ticket']['tender'] = true;
     $PLUGIN_HOOKS["menu_toadd"]['tender'] = ['management' => [Tender::class, Financial::class]];
@@ -115,9 +117,9 @@ function plugin_init_tender()
         $PLUGIN_HOOKS['plugin_datainjection_populate']['tender'] = "plugin_datainjection_populate_tender";
     }
 
-    $PLUGIN_HOOKS[]['tender'] = [FileTemplate::class => [
-        FileTemplate::class, 'preItemAdd'
-    ]];
+    // $PLUGIN_HOOKS[]['tender'] = [FileTemplate::class => [
+    //     FileTemplate::class, 'preItemAdd'
+    // ]];
 
     $DBmysqlProxy = new DBmysqlProxy($DB);
 

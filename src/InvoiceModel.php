@@ -50,16 +50,20 @@ class InvoiceModel extends \Illuminate\Database\Eloquent\Model {
     }
 
     public function getTotalNetAttribute() {
-        return $this->invoice_items->sum('total_net');
+        return MoneyHandler::sum($this->invoice_items->pluck('total_net')->toArray());
     }
 
     public function getTotalTaxAttribute() {
-        return $this->invoice_items->sum('total_tax');
+        return MoneyHandler::sum($this->invoice_items->pluck('total_tax')->toArray());
     }
 
     public function getTotalGrossAttribute() {
-        return $this->invoice_items->sum('total_gross');
-    }
+        return MoneyHandler::sum($this->invoice_items->pluck('total_gross')->toArray());
+    }    
+
+    public function getTotalGrossStringAttribute() {
+        return MoneyHandler::formatToString($this->total_gross);
+    }    
 
     public function getDocumentTemplate() {
         return [

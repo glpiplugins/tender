@@ -1,0 +1,7 @@
+<form action="/plugins/tender/front/order.form.php" method="post">
+    <button class="btn btn-sm btn-info" type="submit">{{ __('Select Offer', 'tender')}}</button>
+    <input hidden name="add" value="1" />
+    <input hidden name="plugin_tender_offers_id" value="{{ offer.id }}" />
+    <input hidden name="plugin_tender_tenders_id" value="{{offer.plugin_tender_tenders_id }}" />
+    <input hidden name="_glpi_csrf_token" value="{{ csrf_token }}"/>
+</form>

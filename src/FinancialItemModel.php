@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class FinancialItemModel extends \Illuminate\Database\Eloquent\Model {
 
@@ -25,6 +26,7 @@ class FinancialItemModel extends \Illuminate\Database\Eloquent\Model {
     protected $fillable = [
         'plugin_tender_financials_id',
         'plugin_tender_tenders_id',
+        'type',
         'value'
     ];
 
@@ -79,6 +81,14 @@ class FinancialItemModel extends \Illuminate\Database\Eloquent\Model {
             'id',
             'plugin_tender_financials_id',
             'id'
+        );
+    }
+
+    protected function value(): Attribute
+    {
+        return Attribute::make(
+            get: fn (int $value) => $value,
+            set: fn (float $value) => (int) MoneyHandler::parseFromFloat($value)->getAmount()
         );
     }
 

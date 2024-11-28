@@ -4,12 +4,18 @@
     'name',
     '',
     __('Name'),
+    {
+        'required': true
+    }
 ) }}
 
 {{ fields.numberField(
     'quantity',
     '',
     __('Quantity', 'tender'),
+    {
+        'required': true
+    }
 ) }}
 
 
@@ -29,10 +35,11 @@
 
 {{ fields.numberField(
     'net_price',
-    '',
+    0,
     __('Net Price', 'tender'),
     {
-        'step' : ".0001"
+        'step': ".01",
+        'required': true
     }
 ) }}
 
@@ -47,6 +54,30 @@
 )}}
 
 {{ fields.dropdownField(
+    'GlpiPlugin\\Tender\\Account',
+    'accountId',
+    '',
+    __('Account', 'tender'),
+    {
+        'to_add': accounts,
+        'multiple': false,
+        'required': true
+    }
+) }}
+
+{{ fields.dropdownField(
+    'GlpiPlugin\\Tender\\Costcenter',
+    'costcenterIds',
+    [],
+    __('Costcenter', 'tender'),
+    {
+        'to_add': accounts,
+        'multiple': true,
+        'required': true
+    }
+) }}
+
+{{ fields.dropdownField(
     'GlpiPlugin\\Tender\\Measure',
     'plugin_tender_measures_id',
     '',
@@ -56,7 +87,7 @@
     }
 ) }}
 
-{{ fields.dropdownField(
+{# {{ fields.dropdownField(
     'GlpiPlugin\\Tender\\Financial',
     'financials',
     [],
@@ -65,7 +96,7 @@
         'to_add': financials,
         'multiple': true
     }
-) }}
+) }} #}
 
 {{ fields.smallTitle( 
     __('Location'),
@@ -75,14 +106,20 @@
     'Location',
     'locations_id',
     item['default_locations_id'],
-    __('Target Location', "tender")
+    __('Target Location', "tender"),
+    {
+        'required': true
+    }
 ) }}
 
 {{ fields.dropdownField(
     'Location',
     'delivery_locations_id',
     item['default_delivery_locations_id'],
-    __('Delivery Location', 'tender')
+    __('Delivery Location', 'tender'),
+    {
+        'required': true
+    }
 ) }}
 
 

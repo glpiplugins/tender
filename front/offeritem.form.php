@@ -1,8 +1,9 @@
 <?php
 
 use GlpiPlugin\Tender\TenderItem;
-use GlpiPlugin\Tender\TenderSupplier;
+use GlpiPlugin\Tender\Offer;
 use GlpiPlugin\Tender\OfferItem;
+use GlpiPlugin\Tender\OfferItemModel;
 
 include ("../../../inc/includes.php");
 
@@ -22,17 +23,17 @@ if (!$plugin->isInstalled('tender') || !$plugin->isActivated('tender')) {
 $object = new OfferItem();
 
 if (isset($_POST['add'])) {
-   $tendersupplier = TenderSupplier::getSupplier($_POST['tenders_id'], $_POST['suppliers_id']);
-   $tendersupplierObj = new TenderSupplier();
+   $offer = Offer::getSupplier($_POST['tenders_id'], $_POST['suppliers_id']);
+   $offerObj = new Offer();
    $tendersup = $_POST;
-   $tendersup['id'] = $tendersupplier['id'];
-   $tendersupplierObj->update($tendersup);
+   $tendersup['id'] = $offer['id'];
+   $offerObj->update($tendersup);
 
    $tenderitems = TenderItem::getTenderitems($_POST['tenders_id']);
 
    foreach ($tenderitems as $item) {
       $object = new OfferItem();
-      $_POST['plugin_tender_tendersuppliers_id'] = $tendersupplier['id'];
+      $_POST['plugin_tender_offers_id'] = $offer['id'];
       $_POST['plugin_tender_tenderitems_id'] = $item['id'];
       $_POST['net_price'] = $item['net_price'];
       $_POST['tax'] = $item['tax'];
@@ -47,15 +48,13 @@ if (isset($_POST['add'])) {
 } else if (isset($_POST['update_items'])) {
 
    foreach ($_POST['item'] as $item) {
-         $object->update($item);
+      OfferItemModel::find($item["id"])->update($item);
    }
 
 
    Html::back();
 } else if (isset($_POST['update'])) {
-   $tendersupplierObj = new TenderSupplier();
-   $tendersup = $_POST;
-   $tendersupplierObj->update($tendersup);
+   OfferItemModel::find($_GET["id"])->update($_POST);
    //Check UPDATE ACL
    //$object->check($_POST['id'], UPDATE);
    //Do object update

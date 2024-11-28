@@ -55,17 +55,15 @@ class InvoiceItemModel extends \Illuminate\Database\Eloquent\Model {
     }
 
     public function getTotalNetAttribute() {
-        return $this->quantity * $this->tender_item->net_price;
+        return $this->distribution->total_net;
     }
 
     public function getTotalTaxAttribute() {
-        $taxRate = $this->tender_item->tax;
-
-        return $taxRate == 0 ? 0 : ($this->total_net) * ($taxRate / 100);
+        return $this->distribution->total_tax;
     }
 
     public function getTotalGrossAttribute() {
-        return $this->total_net + $this->total_tax;
+        return $this->distribution->total_gross;
     }
 
 }

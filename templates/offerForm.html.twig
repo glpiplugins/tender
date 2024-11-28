@@ -2,15 +2,15 @@
 
 <div class="card-body d-flex flex-wrap">
     <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
-    {{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/offeritem.form.php'}}) }}
+    {{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/offer.form.php'}}) }}
         <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
             <div class="row flex-row align-items-start flex-grow-1">
                 <div class="row flex-row">
-                <div><a href="/plugins/tender/front/tender.form.php?id={{offerItem.tender_supplier.plugin_tender_tenders_id}}&_glpi_tab=GlpiPlugin\Tender\OfferItem">{{__('Back')}}</a></div>
+                <div><a href="/plugins/tender/front/tender.form.php?id={{offer.plugin_tender_tenders_id}}&_glpi_tab=GlpiPlugin\Tender\Offer">{{__('Back')}}</a></div>
                     {{ fields.dropdownField(
                         'Supplier',
                         'suppliers_id',
-                        offerItem.tender_supplier.suppliers_id,
+                        offer.suppliers_id,
                         __('Supplier'),
                         {
                             'disabled': true
@@ -19,22 +19,21 @@
 
                     {{ fields.dateField(
                         'offer_date',
-                        offerItem.tender_supplier.offer_date,
+                        offer.offer_date,
                         __('Offerdate', 'tender'),
                         {
-                            'required': true,
-                             'disabled': true
+                            'required': true
                         }
                     ) }}
 
                     {{ fields.hiddenField(
                         'tenders_id',
-                        offerItem.plugin_tender_tenders_id
+                        offer.plugin_tender_tenders_id
                     ) }}
 
                     {{ fields.hiddenField(
                         'id',
-                        offerItem.id
+                        offer.id
                     ) }}
 
                     <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
@@ -61,73 +60,60 @@
                     <th>{{__('Name', 'tender')}}</th>
                     <th>{{__('Quantity', 'tender')}}</th>
                     <th>{{__('Net Price', 'tender')}}</th>
-                    <th>{{__('Tax', 'tender')}}</th>
-                    <th>{{__('Gross Price', 'tender')}}</th>
+                    <th>{{__('Total Net', 'tender')}}</th>
+                    <th>{{__('Tax Rate', 'tender')}}</th>
+                    <th>{{__('Total Tax', 'tender')}}</th>
+                    <th>{{__('Total Gross', 'tender')}}</th>
                 </tr>
             </thead>
             <tbody>
-                {% set total_net_price = 0 %}
-                {% set total_tax = 0 %}
-                {% set total_gross_price = 0 %}
                 {% for item in offerItems %}
-                {% set total_net_price = total_net_price + (item.quantity * item.net_price) %}
-                {% set total_tax = total_tax + (item.quantity * item.net_price * (item.tax / 100)) %}
-                {% set total_gross_price = total_gross_price + (item.quantity * item.net_price * (item.tax / 100 + 1)) %}
-                <tr>
-                    <td>
-                        1
-                    </td>
-                    <td>
+                  <tr>
+                     <td>
+                        {{ loop.index }}
+                     </td>
+                     <td>
                         {{ item.name }}
-                    </td>
-                    <td>
+                     </td>
+                     <td>
                         {{ item.quantity }}
-                    </td>
-                    <td>
+                     </td>
+                     <td>
                         {{ fields.numberField(
-                            'item[' ~ loop.index ~ '][net_price]',
-                            item.net_price|number_format(2, '.', ','),
-                            __('Net Price', 'tender'),
-                            {
-                                'no_label': true,
-                                'step' : ".0001"
-                            }
+                           'item[' ~ loop.index ~ '][net_price]',
+                           item.net_price / 100,
+                           __('Net Price', 'tender'),
+                           {
+                              'no_label': true,
+                              'step' : ".01"
+                           }
                         ) }}
-                    </td>
-                    <td>
+                     </td>
+                     <td class="text-end">
+                        {{ item.total_net }}
+                     </td>
+                     <td>
                         {{ fields.numberField(
-                            'item[' ~ loop.index ~ '][tax]',
-                            item.tax,
-                            __('Tax', 'tender'),
-                            {
-                                'no_label': true,
-                            }
+                           'item[' ~ loop.index ~ '][tax]',
+                           item.tax,
+                           __('Tax', 'tender'),
+                           {
+                              'no_label': true,
+                           }
                         ) }}
                         {{ fields.hiddenField(
-                                'item[' ~ loop.index ~ '][id]',
-                                item.id
+                              'item[' ~ loop.index ~ '][id]',
+                              item.id
                         ) }}
-                    </td>
-                    <td class="text-end">
-                    {{ ((item.quantity * item.net_price) * ((item.tax / 100) + 1))|number_format(2, ',', '.') }}
-                    </td>
+                     </td>
+                     <td class="text-end">
+                        {{ item.total_tax }}
+                     </td>
+                     <td class="text-end">
+                        {{ item.total_gross }}
+                     </td>
                 </tr>
                 {% endfor %}
-                <tr>
-                    <td colspan="4"></td>
-                    <td> {{__('Total Net Price', 'tender')}} </td>
-                    <td class="text-end">{{ total_net_price|number_format(2, ',', '.') }}</td>
-                </tr>
-                <tr>
-                    <td colspan="4"></td>
-                    <td> {{__('Total Tax', 'tender')}} </td>
-                    <td class="text-end">{{ total_tax|number_format(2, ',', '.') }}</td>
-                </tr>
-                <tr>
-                    <td colspan="4"></td>
-                    <td> {{__('Total Gross Price', 'tender')}} </td>
-                    <td class="text-end">{{ total_gross_price|number_format(2, ',', '.') }}</td>
-                </tr>
             </tbody>
         </table>
     </div>

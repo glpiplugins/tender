@@ -42,21 +42,31 @@ class OfferItem extends CommonDBTM   {
 
         $this->initForm($ID, $options);
 
-        // Erste Abfrage in Eloquent
+        // $offer = OfferModel::find($ID);
+
+        // $offerItems = $offer->offer_items->map(function($item) {
+        //     return [
+        //         'id' => $item->id,
+        //         'net_price' => MoneyHandler::formatToString($item->net_price),
+        //         'tax' => $item->tax,
+        //         'name' => $item->tender_item->name,
+        //         'description' => $item->tender_item->description,
+        //         'quantity' => $item->tender_item->quantity,
+        //     ];
+        // })->toArray();
+
         $offerItem = OfferItemModel::with(['tender_supplier:id,suppliers_id,offer_date,plugin_tender_tenders_id'])
             ->where('id', $ID)
-            ->first(['id', 'plugin_tender_tendersuppliers_id']);
+            ->first(['id', 'plugin_tender_offers_id']);
         
-        // Zweite Abfrage in Eloquent
         $offerItems = OfferItemModel::with(['tender_item:id,name,description,quantity'])
-            ->where('plugin_tender_tendersuppliers_id', $this->fields['plugin_tender_tendersuppliers_id'])
+            ->where('plugin_tender_offers_id', $this->fields['plugin_tender_offers_id'])
             ->get(['id', 'net_price', 'tax', 'plugin_tender_tenderitems_id']);
         
-        // Daten für die Darstellung vorbereiten
         $offerItemsArray = $offerItems->map(function($item) {
             return [
                 'id' => $item->id,
-                'net_price' => $item->net_price,
+                'net_price' => MoneyHandler::formatToString($item->net_price),
                 'tax' => $item->tax,
                 'name' => $item->tender_item->name,
                 'description' => $item->tender_item->description,
@@ -66,7 +76,7 @@ class OfferItem extends CommonDBTM   {
         TemplateRenderer::getInstance()->display('@tender/offeritemForm.html.twig', [
             'item'       => $this,
             'offerItem'  => $offerItem,
-            'offerItems' => $offerItemsArray,
+            'offerItems' => $offerItems,
             'params'     => $options,
         ]);
         
@@ -78,15 +88,31 @@ class OfferItem extends CommonDBTM   {
     global $DB;
     global $CFG_GLPI;
 
-    $iterator = self::getOfferList($tender);
-    
-    $items = [];
-    foreach ($iterator as $item) {
-        $item['supplier_name'] = '<a href="/front/supplier.form.php?id=' . $item['supplier_id'] . '">' . $item['supplier_name'] . '</a>';
-        $item['view_offer'] = '<a href="/plugins/tender/front/offeritem.form.php?id=' . $item['offeritem_id'] . '">' .  __('View Offer', 'tender') . '</a>';
-        $item['itemtype'] = "GlpiPlugin\Tender\OfferItem";
-        $items[] = $item;
-    }
+    // $iterator = self::getOfferList($tender);
+
+    $offers = OfferModel::where('plugin_tender_tenders_id', $tender->getID())
+        ->get()
+        ->map(function($item) {
+            $total = $item->offer_items->pluck('total_gross')->toArray();
+
+            return [
+                'id'                => $item->id,
+                'supplier_name'     => '<a href="/front/supplier.form.php?id=' . $item->supplier->id . '">' . $item->supplier->name . '</a>',
+                'offer_date'        => $item->offer_date,
+                'total_gross'       => MoneyHandler::formatToString(MoneyHandler::sum($item->offer_items->pluck('total_gross')->toArray())->getAmount()),
+                'view_offer'      => '<a href="/plugins/tender/front/offer.form.php?id=' . $item->id . '">' .  __('View Offer', 'tender') . '</a>',
+                'itemtype'          => 'GlpiPlugin\Tender\TenderItem'
+            ];
+        });
+
+      
+    // $items = [];
+    // foreach ($iterator as $item) {
+    //     $item['supplier_name'] = '<a href="/front/supplier.form.php?id=' . $item['supplier_id'] . '">' . $item['supplier_name'] . '</a>';
+    //     $item['view_offer'] = '<a href="/plugins/tender/front/offeritem.form.php?id=' . $item['offeritem_id'] . '">' .  __('View Offer', 'tender') . '</a>';
+    //     $item['itemtype'] = "GlpiPlugin\Tender\OfferItem";
+    //     $items[] = $item;
+    // }
 
     TemplateRenderer::getInstance()->display('@tender/offeritemList.html.twig', [
         'item' => $tender,
@@ -97,26 +123,25 @@ class OfferItem extends CommonDBTM   {
         'columns' => [
             'supplier_name' => __('Name', 'tender'),
             'offer_date' => __('Offer date', 'tender'),
-            'total_gross_price' => __('Total', 'tender'),
+            'total_gross' => __('Total', 'tender'),
             'view_offer' => __('Details', 'tender'),
         ],
         'formatters' => [
             'supplier_name' => 'raw_html',
             'offer_date' => 'date',
-            'total_gross_price' => 'float',
             'view_offer' => 'raw_html',
         ],
-        'total_number' => count($items),
-        'entries' => $items,
-        'supplierIds' => SupplierModel::whereDoesntHave('tender_suppliers', function ($query) use ($tender) {
+        'total_number' => count($offers),
+        'entries' => $offers,
+        'supplierIds' => SupplierModel::whereDoesntHave('offers', function ($query) use ($tender) {
             $query->where('plugin_tender_tenders_id', $tender->getID())
                   ->whereDoesntHave('offer_items');
         })->pluck('id')->toArray(),
         // 'tender_suppliers' => SupplierModel::where('plugin_tender_tenders_id', $tender->getID())->doesntHave('offer_items')->pluck('suppliers_id')->toArray(),
-        // 'used' => TenderSupplierModel::doesntHave('offer_items')->pluck('suppliers_id')->toArray(),
+        // 'used' => OfferModel::doesntHave('offer_items')->pluck('suppliers_id')->toArray(),
         'showmassiveactions'    => true,
         'massiveactionparams' => [
-            'num_displayed'    => min($_SESSION['glpilist_limit'], count($items)),
+            'num_displayed'    => min($_SESSION['glpilist_limit'], count($offers)),
             'container'        => 'massGlpiPluginTenderOfferItem' . mt_rand(),
             'specific_actions' => [
                 // 'delete' => __('Delete permanently'),
@@ -150,7 +175,7 @@ class OfferItem extends CommonDBTM   {
                 $iterator = $DB->request([
                     'FROM' => 'glpi_plugin_tender_offeritems',
                     'WHERE' => [
-                        'glpi_plugin_tender_offeritems.plugin_tender_tendersuppliers_id' => $ids
+                        'glpi_plugin_tender_offeritems.plugin_tender_offers_id' => $ids
                     ]
                 ]);
                 
@@ -160,7 +185,7 @@ class OfferItem extends CommonDBTM   {
                 }
 
                 foreach ($ids as $id) {
-                    $object = new TenderSupplier();
+                    $object = new Offer();
                     if ($object->getFromDB($id)
                         && $object->update(['id' => $id, 'offer_date' => NULL])) {
                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
@@ -173,97 +198,6 @@ class OfferItem extends CommonDBTM   {
 
         }
         parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
-    }
-
-    // static function getUsedSuppliers($tenderItem) {
-
-    //     // $usedSuppliers = TenderSupplierModel::where('plugin_tender_tenders_id', $tenderItem->getID())->pluck('suppliers_id')->toArray();
-    //     // $unUsedSuppliers = TenderSupplierModel::where('plugin_tender_tenders_id', $tenderItem->getID())->pluck('suppliers_id')->toArray();
-    //     // $tenderSuppliers = TenderSupplier::getSuppliers($tenderItem->getID());
-    //     // $unUsedSuppliers = array_diff($tenderSuppliers, $offerItemSuppliers);
-
-    //     $usedSuppliers = [];
-
-    //     if (!empty($unUsedSuppliers)) {
-    //         $crit = ['NOT' => ['id' => $unUsedSuppliers] ];
-    //     } else {
-    //         $crit = ['id' => $tenderSuppliers];
-    //     }
-        
-    //     $iterator = $DB->request(
-    //         'glpi_suppliers',
-    //         $crit);
-    //     foreach ($iterator as $supplier) {
-    //         $usedSuppliers[] = $supplier['id'];
-    //     }
-    
-
-    //     return $usedSuppliers;
-
-    // }
-
-    static function getOfferList($tender) {
-
-        global $DB;
-
-        $iterator = $DB->request([
-            'SELECT' => [
-                'glpi_suppliers.name AS supplier_name',
-                'glpi_suppliers.id AS supplier_id',
-                'glpi_plugin_tender_tendersuppliers.plugin_tender_tenders_id',
-                'glpi_plugin_tender_tendersuppliers.id as id',
-                'glpi_plugin_tender_tendersuppliers.offer_date',
-                'glpi_plugin_tender_offeritems.id as offeritem_id',
-                'glpi_plugin_tender_tenderitems.quantity',
-                'SUM' => [
-                    'glpi_plugin_tender_offeritems.net_price` * (`glpi_plugin_tender_offeritems.tax`/100+1) * `glpi_plugin_tender_tenderitems.quantity as total_gross_price'
-                ]
-            ],
-            'FROM' => 'glpi_plugin_tender_tendersuppliers',
-            'INNER JOIN' => [
-                'glpi_plugin_tender_offeritems' => [
-                    'FKEY' => [
-                        'glpi_plugin_tender_tendersuppliers' => 'id',
-                        'glpi_plugin_tender_offeritems' => 'plugin_tender_tendersuppliers_id'
-                    ]
-                ],
-                'glpi_suppliers' => [
-                    'FKEY' => [
-                        'glpi_suppliers' => 'id',
-                        'glpi_plugin_tender_tendersuppliers' => 'suppliers_id'
-                    ]
-                ],
-                'glpi_plugin_tender_tenderitems' => [
-                    'FKEY' => [
-                        'glpi_plugin_tender_tenderitems' => 'id',
-                        'glpi_plugin_tender_offeritems' => 'plugin_tender_tenderitems_id'
-                    ]
-                ]
-            ],
-            'WHERE' => [
-                'glpi_plugin_tender_tendersuppliers.plugin_tender_tenders_id' => $tender->getID()
-            ],
-            'GROUPBY' => [
-                'glpi_suppliers.name',
-                'glpi_plugin_tender_tendersuppliers.plugin_tender_tenders_id'
-            ]
-        ]);
-
-        return $iterator;
-    }
-
-    static function getOfferItems($tendersuppliers_id) {
-
-        global $DB;
-
-        $iterator = $DB->request([
-            'FROM' => 'glpi_plugin_tender_offeritems',
-            'WHERE' => [
-                'glpi_plugin_tender_offeritems.plugin_tender_tendersuppliers_id' => $tendersuppliers_id
-            ],
-        ]);
-
-        return $iterator;
     }
 
 }

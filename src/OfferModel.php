@@ -9,14 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class TenderSupplierModel extends \Illuminate\Database\Eloquent\Model {
+class OfferModel extends \Illuminate\Database\Eloquent\Model {
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'glpi_plugin_tender_tendersuppliers';
+    protected $table = 'glpi_plugin_tender_offers';
 
     const CREATED_AT = 'date_creation';
     const UPDATED_AT = 'date_mod';
@@ -26,7 +26,7 @@ class TenderSupplierModel extends \Illuminate\Database\Eloquent\Model {
      */
     public function supplier(): BelongsTo
     {
-        return $this->belongsTo(SupplierModel::class, 'plugin_tender_suppliers_id', 'id');
+        return $this->belongsTo(SupplierModel::class, 'suppliers_id', 'id');
     }
 
     /**
@@ -38,11 +38,11 @@ class TenderSupplierModel extends \Illuminate\Database\Eloquent\Model {
     }
 
     /**
-     * Get the offer_items for the tender_supplier.
+     * Get the offer_items for the offer.
      */
     public function offer_items(): HasMany
     {
-        return $this->hasMany(OfferItemModel::class, 'plugin_tender_tendersuppliers_id', 'id');
+        return $this->hasMany(OfferItemModel::class, 'plugin_tender_offers_id', 'id');
     }
 
 }

@@ -41,7 +41,7 @@ class Tender extends CommonDBTM {
 
         // Uncomment the following lines to add additional tabs
         $this->addStandardTab('GlpiPlugin\Tender\Financial', $ong, $options);
-        // $this->addStandardTab('GlpiPlugin\Tender\TenderSupplier', $ong, $options);
+        // $this->addStandardTab('GlpiPlugin\Tender\Offer', $ong, $options);
 
         // Add the TenderItem tab
         $this->addStandardTab('GlpiPlugin\Tender\TenderItem', $ong, $options);
@@ -49,7 +49,7 @@ class Tender extends CommonDBTM {
         // If TenderItems exist, add OfferItem and Order tabs
         $tenderitem = new TenderItem();
         if ($tenderitem->find(['plugin_tender_tenders_id' => $this->fields['id']])) {
-            $this->addStandardTab('GlpiPlugin\Tender\OfferItem', $ong, $options);
+            $this->addStandardTab('GlpiPlugin\Tender\Offer', $ong, $options);
             $this->addStandardTab('GlpiPlugin\Tender\Order', $ong, $options);
         }
 
@@ -89,12 +89,13 @@ class Tender extends CommonDBTM {
         // Initialize the form
         $this->initForm($ID, $options);
         // Render the Tender form using a Twig template
+
         TemplateRenderer::getInstance()->display('@tender/tender.html.twig', [
             'item'               => $this,
             'params'             => $options,
             'tendertypes'        => TenderTypeModel::all()->pluck('name', 'id')->toArray(),
             'tenderstatus'       => TenderStatusModel::all()->pluck('name', 'id')->toArray(),
-            'current_suppliers'  => TenderSupplierModel::where('plugin_tender_tenders_id', $ID)->pluck('suppliers_id')->toArray(),
+            'current_suppliers'  => OfferModel::where('plugin_tender_tenders_id', $ID)->pluck('suppliers_id')->toArray(),
         ]);
 
         return true;
@@ -249,7 +250,7 @@ class Tender extends CommonDBTM {
             'joinparams'    => [
                 'beforejoin' => [
                     // Join with the tender-suppliers linking table
-                    'table'      => 'glpi_plugin_tender_tendersuppliers',
+                    'table'      => 'glpi_plugin_tender_offers',
                     'joinparams' => [
                         'jointype'  => 'child',
                         'on'        => [
@@ -283,10 +284,10 @@ class Tender extends CommonDBTM {
           $suppliers_ids = [];
       }
 
-      $tenderSupplier = new TenderSupplier();
+      $offer = new Offer();
 
       // Get existing suppliers
-      $existing_suppliers = $tenderSupplier->find(['plugin_tender_tenders_id' => $this->fields['id']]);
+      $existing_suppliers = $offer->find(['plugin_tender_tenders_id' => $this->fields['id']]);
 
       $existing_suppliers_ids = array_column($existing_suppliers, 'suppliers_id');
 
@@ -298,7 +299,7 @@ class Tender extends CommonDBTM {
 
       // Add new suppliers
       foreach ($suppliers_to_add as $supplier_id) {
-          $tenderSupplier->add([
+          $offer->add([
               'plugin_tender_tenders_id'   => $this->fields['id'],
               'suppliers_id' => $supplier_id
           ]);
@@ -306,7 +307,7 @@ class Tender extends CommonDBTM {
 
       // Delete removed suppliers
       foreach ($suppliers_to_delete as $supplier_id) {
-          $tenderSupplier->deleteByCriteria([
+          $offer->deleteByCriteria([
               'plugin_tender_tenders_id'   => $this->fields['id'],
               'suppliers_id' => $supplier_id
           ]);

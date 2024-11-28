@@ -1,6 +1,7 @@
 <?php
 
 use GlpiPlugin\Tender\FinancialItem;
+use GlpiPlugin\Tender\FinancialItemModel;
 
 include ("../../../inc/includes.php");
 
@@ -25,7 +26,8 @@ if (isset($_POST['add'])) {
    $_POST = array_filter($_POST);
       
    //Do object creation
-   $newid = $object->add($_POST);
+   // $newid = $object->add($_POST);
+   $newid = FinancialItemModel::create($_POST)->id;
    //Redirect to newly created object form
    Html::back();
 } else if (isset($_POST['update'])) {

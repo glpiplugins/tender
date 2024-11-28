@@ -1,6 +1,6 @@
 <?php
 
-use GlpiPlugin\Tender\TenderSupplier;
+use GlpiPlugin\Tender\Offer;
 
 include ("../../../inc/includes.php");
 
@@ -17,7 +17,7 @@ if (!$plugin->isInstalled('tender') || !$plugin->isActivated('tender')) {
    Html::displayNotFoundError();
 }
 
-$object = new TenderSupplier();
+$object = new Offer();
 
 if (isset($_POST['add'])) {
    if($_POST['suppliers_id'] == 0) {
@@ -49,9 +49,9 @@ if (isset($_POST['add'])) {
    //Do object purge
    $object->delete($_POST, 1);
    //Redirect to objects list
-   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/tendersupplier.php");
+   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/tender/front/offer.php");
 } else {
-    Html::header(TenderSupplier::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\TenderSupplier");
+    Html::header(Offer::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "management", "GlpiPlugin\Tender\Offer");
     //per default, display object
     $object->display(
             $_GET

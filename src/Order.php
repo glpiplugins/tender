@@ -45,14 +45,14 @@ class Order extends CommonDBTM   {
     $iterator = $DB->request([
         'SELECT' => [
             'glpi_plugin_tender_orders.*',
-            'glpi_plugin_tender_tendersuppliers.suppliers_id'
+            'glpi_plugin_tender_offers.suppliers_id'
         ],
         'FROM' => 'glpi_plugin_tender_orders',
         'INNER JOIN' => [
-            'glpi_plugin_tender_tendersuppliers' => [
+            'glpi_plugin_tender_offers' => [
                 'FKEY' => [
-                    'glpi_plugin_tender_tendersuppliers' => 'id',
-                    'glpi_plugin_tender_orders' => 'plugin_tender_tendersuppliers_id'
+                    'glpi_plugin_tender_offers' => 'id',
+                    'glpi_plugin_tender_orders' => 'plugin_tender_offers_id'
                 ]
             ]
         ],
@@ -67,21 +67,20 @@ class Order extends CommonDBTM   {
         $item->initForm($order['id']);
     }
 
-    $iterator = OfferItem::getOfferList($tender);
-
-    $offers = [];
-    foreach ($iterator as $offer) {
-        $offer['supplier_name'] = '<a href="/front/supplier.form.php?id=' . $offer['supplier_id'] . '">' . $offer['supplier_name'] . '</a>';
-        $offer['select_offer'] = '<form action="/plugins/tender/front/order.form.php" method="post">
-                <button class="btn btn-sm btn-info" type="submit">' .  __('Select Offer', 'tender') . '</button>
-                <input hidden name="add" value="1" />
-                <input hidden name="plugin_tender_tendersuppliers_id" value="' . $offer['id'] .'" />
-                <input hidden name="plugin_tender_tenders_id" value="' . $offer['plugin_tender_tenders_id'] .'" />
-                <input hidden name="_glpi_csrf_token" value="' . Session::getNewCSRFToken() . '"/>
-            </form>';
-        $offers[] = $offer;
-    }
-
+    $offers = OfferModel::where('plugin_tender_tenders_id', $tender->getID())
+    ->get()
+    ->map(function($item) {
+        return [
+            'id'                => $item->id,
+            'supplier_name'     => '<a href="/front/supplier.form.php?id=' . $item->supplier->id . '">' . $item->supplier->name . '</a>',
+            'offer_date'        => $item->offer_date,
+            'total_gross'       => MoneyHandler::formatToString(MoneyHandler::sum($item->offer_items->pluck('total_gross')->toArray())->getAmount()),
+            'select_offer'      => TemplateRenderer::getInstance()->render('@tender/components/orderSubmitForm.html.twig', [
+                                    'offer' => $item,
+                                    'csrf_token' => Session::getNewCSRFToken()
+                                ])
+        ];
+    })->toArray();
 
 
     TemplateRenderer::getInstance()->display('@tender/order.html.twig', [
@@ -94,13 +93,12 @@ class Order extends CommonDBTM   {
         'columns' => [
             'supplier_name' => __('Name', 'tender'),
             'offer_date' => __('Offer date', 'tender'),
-            'total_gross_price' => __('Total', 'tender'),
+            'total_gross' => __('Total', 'tender'),
             'select_offer' => __('Select Offer', 'tender'),
         ],
         'formatters' => [
             'supplier_name' => 'raw_html',
             'offer_date' => 'date',
-            'total_gross_price' => 'float',
             'select_offer' => 'raw_html',
         ],
         'total_number' => count($offers),

@@ -1,9 +1,9 @@
 <?php
 
 use GlpiPlugin\Tender\Order;
-use GlpiPlugin\Tender\TenderSupplier;
-use GlpiPlugin\Tender\TenderItem;
-use GlpiPlugin\Tender\OfferItem;
+use GlpiPlugin\Tender\Offer;
+use GlpiPlugin\Tender\TenderItemModel;
+use GlpiPlugin\Tender\OfferItemModel;
 
 include ("../../../inc/includes.php");
 
@@ -25,13 +25,13 @@ $object = new Order();
 if (isset($_POST['add'])) {
 
    //Check CREATE ACL
-   $offeritems = OfferItem::getOfferItems($_POST['tendersuppliers_id']);
+   $offeritems = OfferItemModel::where('plugin_tender_offers_id', $_POST['plugin_tender_offers_id'])->get();
 
    foreach ($offeritems as $item) {
-      $tenderitem = TenderItem::getByID($item['plugin_tender_tenderitems_id']);
-      $tenderitem->update(['id' => $item['plugin_tender_tenderitems_id'], 'net_price' => $item['net_price'], 'tax' => $item['tax'],]);
+      $tenderItem = TenderItemModel::find($item->plugin_tender_tenderitems_id);
+      $tenderItem->update(['id' => $item->plugin_tender_tenderitems_id, 'net_price' => $item->net_price / 100, 'tax' => $item->tax]);
    }
-   //$object->check(-1, CREATE, $_POST);
+
    //Do object creation
    $newid = $object->add($_POST);
    //Redirect to newly created object form

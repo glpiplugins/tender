@@ -21,8 +21,17 @@ class TenderModel extends \Illuminate\Database\Eloquent\Model {
     const CREATED_AT = 'date_creation';
     const UPDATED_AT = 'date_mod';
 
+    protected $appends = [
+        'total_net',
+        'total_tax',
+        'total_gross',
+        'total_net_string',
+        'total_tax_string',
+        'total_gross_string'
+    ];
+
     /**
-     * Get the tenderitems for the tender.
+     * Get the tender items for the tender.
      */
     public function tender_items(): HasMany
     {
@@ -52,17 +61,29 @@ class TenderModel extends \Illuminate\Database\Eloquent\Model {
         );
     }
 
-    public function totalNetValue() {
-        return $this->tender_items->sum(function ($item) {
-            return $item->totalNetValue();
-        });
+    public function getTotalNetAttribute() {
+        return MoneyHandler::sum($this->tender_items->pluck('total_net')->toArray());
     }
 
-    public function totalGrossValue() {
-        return $this->tender_items->sum(function ($item) {
-            return $item->totalGrossValue();
-        });
+    public function getTotalTaxAttribute() {
+        return MoneyHandler::sum($this->tender_items->pluck('total_tax')->toArray());
+    }
+
+    public function getTotalGrossAttribute() {
+        return MoneyHandler::sum($this->tender_items->pluck('total_gross')->toArray());
     }    
+
+    public function getTotalNetStringAttribute() {
+        return MoneyHandler::formatToString($this->total_net);
+    }
+
+    public function getTotalTaxStringAttribute() {
+        return MoneyHandler::formatToString($this->total_tax);
+    }
+
+    public function getTotalGrossStringAttribute() {
+        return MoneyHandler::formatToString($this->total_gross);
+    }
 
     /**
      * Calculate the estimated net total for a Tender
@@ -82,44 +103,61 @@ class TenderModel extends \Illuminate\Database\Eloquent\Model {
 
     public function updateFinancialItemValue()
     {
+        FinancialItemModel::where('plugin_tender_tenders_id', $this->id)->delete();
 
-        $distributions = $this->distributions;
-        $groupedDistributions = $distributions->groupBy('plugin_tender_financials_id');
-        // print('<pre>');
-        // print($this);
-        // // print($groupedDistributions);
-        // print('</pre>');
-        //     die();
-        foreach ($groupedDistributions as $financialId => $group) {
-
-            $newValue = $group->sum(function ($distribution) {
-                $tenderItem = $distribution->tender_item;
-
-                if (!$tenderItem) {
-                    return 0;
-                }
-
-                // Berechnung des Brutto-Einheitspreises
-                $unitPriceGross = $tenderItem->net_price * (1 + ($tenderItem->tax / 100));
-
-                // Berechnung des Werts dieser Distribution
-                $value = $distribution->quantity * $unitPriceGross;
-
-                return $value;
-            });
-
-            // Aktualisiere oder erstelle den FinancialItem
-            FinancialItemModel::updateOrCreate(
+        $allocations = collect([]);
+        $tender_items = $this->tender_items->each(function (TenderItemModel $item, int $key) use (&$allocations) {
+            $allocations->push($item->distribution_allocation);
+        });
+        $test = $allocations->collapse()->groupBy('financial_id')->map(function ($group, $financialId) {
+            return FinancialItemModel::updateOrCreate(
                 [
                     'plugin_tender_financials_id' => $financialId,
                     'plugin_tender_tenders_id'    => $this->id,
                 ],
                 [
-                    'value' => $newValue,
+                    'value' => MoneyHandler::sum($group->pluck('total_gross')->toArray())->getAmount(),
                 ]
             );
+        });
+        // $distributions = $this->distributions;
+        // $groupedDistributions = $distributions->groupBy('plugin_tender_financials_id');
+        // // print('<pre>');
+        // // print($this);
+        // // // print($groupedDistributions);
+        // // print('</pre>');
+        // //     die();
+        // FinancialItemModel::where('plugin_tender_tenders_id', $this->id)->delete();
+        // foreach ($groupedDistributions as $financialId => $group) {
 
-        }
+        //     $newValue = $group->sum(function ($distribution) {
+        //         $tenderItem = $distribution->tender_item;
+
+        //         if (!$tenderItem) {
+        //             return 0;
+        //         }
+
+        //         // Berechnung des Brutto-Einheitspreises
+        //         $unitPriceGross = $tenderItem->net_price * (1 + ($tenderItem->tax / 100));
+
+        //         // Berechnung des Werts dieser Distribution
+        //         $value = $distribution->quantity * $unitPriceGross;
+
+        //         return $value;
+        //     });
+
+        //     // Aktualisiere oder erstelle den FinancialItem
+        //     FinancialItemModel::updateOrCreate(
+        //         [
+        //             'plugin_tender_financials_id' => $financialId,
+        //             'plugin_tender_tenders_id'    => $this->id,
+        //         ],
+        //         [
+        //             'value' => $newValue,
+        //         ]
+        //     );
+
+        // }
     }
 
 }

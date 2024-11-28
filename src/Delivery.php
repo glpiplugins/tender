@@ -61,15 +61,38 @@ class Delivery extends CommonDBTM   {
     ->filter(function($item) {
         return $item->delivered_quantity > 0;
     })
+    // ->groupBy('plugin_tender_tenderitems_id')
+    // ->map(function($item) {
+    //     return [
+    //         'id'                                => $item->delivery_items->first()->id ?? null,
+    //         'plugin_tender_distributions_id'    => $item->id,
+    //         'quantity'                          => $item->quantity,
+    //         'name'                              => $item->tender_item->name,
+    //         'location_name'                     => $item->location->name ?? null,
+    //         'delivery_location_name'            => $item->delivery_location->name ?? null,
+    //         'delivered_quantity'                => $item->delivered_quantity,
+    //         'itemtype'                          => "GlpiPlugin\Tender\DeliveryItem",
+    //     ];
+    // })
+    // ->toArray();
+    ->groupBy('plugin_tender_tenderitems_id')
     ->map(function($item) {
         return [
-            'id'                                => $item->delivery_items->first()->id ?? null,
-            'plugin_tender_distributions_id'    => $item->id,
-            'quantity'                          => $item->quantity,
-            'name'                              => $item->tender_item->name,
-            'location_name'                     => $item->location->name ?? null,
-            'delivery_location_name'            => $item->delivery_location->name ?? null,
-            'delivered_quantity'                => $item->delivered_quantity,
+            'id'                                => $item->first()->delivery_items->first()->id ?? null,
+            'plugin_tender_tenderitems_id'      => $item->first()->tender_item->id,
+            'quantity'                          => $item->first()->tender_item->quantity,
+            'name'                              => $item->first()->tender_item->name,
+            'measure'                           => $item->first()->tender_item->measure->name ?? null,
+            'plugin_tender_measures_id'         => $item->first()->tender_item->plugin_tender_measures_id,
+            'delivered_quantity'                => $item->sum('delivered_quantity'),
+            'child_entries'                     => $item->map(function($item) {
+                return [
+                    'delivery_location_name'    => $item->delivery_location->name,
+                    'location_name'             => $item->location->name,
+                    'quantity'                  => $item->quantity,
+                    'delivered_quantity'        => $item->delivered_quantity
+                ];
+            }),
             'itemtype'                          => "GlpiPlugin\Tender\DeliveryItem",
         ];
     })
@@ -83,6 +106,7 @@ class Delivery extends CommonDBTM   {
         'nofilter' => true,
         'columns' => [
             'name' => __('Name', 'tender'),
+            'measure' => __('Measure', 'tender'),
             'delivery_location_name' => __('Delivery Location', 'tender'),
             'location_name' => __('Target Location', 'tender'),
             'quantity' => __('Quantity', 'tender'),
@@ -141,17 +165,17 @@ class Delivery extends CommonDBTM   {
         })
         ->withSum('delivery_items as delivered_quantity', 'quantity')
         ->get()
+        ->groupBy('plugin_tender_tenderitems_id')
         ->map(function($item) {
+            $tst = $item->first()->tender_item;
             return [
-                'distributions_id'          => $item->id,
-                'quantity'                  => $item->quantity,
-                'location_name'             => $item->location->name ?? null,
-                'delivery_location_name'    => $item->delivery_location->name ?? null,
-                'tenderitem_name'           => $item->tender_item->name ?? null,
-                'tenderitem_description'    => $item->tender_item->description ?? null,
-                'delivered_quantity'        => $item->delivered_quantity,
-                'itemtype'                  => "GlpiPlugin\Tender\Delivery",
-                'view_details'              => '<a href="/plugins/tender/front/delivery.form.php?id=' . $item->id . '">' . __('View Details', 'tender') . '</a>',
+                'id'                        => $item->first()->tender_item->id,
+                'quantity'                  => $item->first()->tender_item->quantity,
+                'tenderitem_name'           => $item->first()->tender_item->name,
+                'measure'                   => $item->first()->tender_item->measure,
+                'plugin_tender_measures_id' => $item->first()->tender_item->plugin_tender_measures_id,
+                'delivered_quantity'        => $item->sum('delivered_quantity'),
+                'distributions'             => $item
             ];
         })
         ->toArray();
@@ -208,7 +232,6 @@ class Delivery extends CommonDBTM   {
                 $input = $ma->getInput();
 
                 foreach ($ids as $id) {
-
                     if ($item->getFromDB($id)
                         && $item->deleteFromDB()) {
                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);

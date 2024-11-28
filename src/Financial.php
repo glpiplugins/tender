@@ -54,29 +54,14 @@ class Financial extends CommonDBTM   {
 
         $this->initForm($ID, $options);
             
-        $iterator = $DB->request([
-            'FROM' => 'glpi_plugin_tender_financialitems',
-            'WHERE' => [
-                'plugin_tender_financials_id' => $ID
-               ]
-        ]);
-    
-        $total = 0;
-        $items = [];
-        foreach ($iterator as $item) {
-            $value = $item['value'];
-            if($item['type'] == 0) {
-               $value = $item['value'] * -1;
-            }
-            $total += $value;
-        }
-
+        $financial = FinancialModel::find($ID);
+        
         TemplateRenderer::getInstance()->display('@tender/financials.html.twig', [
             'item'   => $this,
             'params' => $options,
             'costcenters' => Costcenter::getAllCostcentersDropdown(),
             'accounts' => Account::getAllAccountsDropdown(),
-            'total' => $total
+            'total_available' => MoneyHandler::formatToString($financial->total_available)
         ]);
 
         return true;
@@ -261,13 +246,13 @@ class Financial extends CommonDBTM   {
          $items = $items->map(function($item) {
             return [
                 'id'          => $item->id,
-                'value'       => $item->value,
+                'value'       => MoneyHandler::formatToString($item->value),
                 'name'        => '<a href="/plugins/tender/front/financial.form.php?id=' . $item->financial->id . '">' . $item->financial->name . '</a>' ?? null,
                 'costcenter'  => $item->financial->costCenter->name ?? null,
                 'account'     => $item->financial->account->name ?? null,
                 'reference'   => $item->financial->reference ?? null,
                 'year'        => $item->year ?? null,
-                'total'       => $item->financial->getTotalAvailableAttribute() ?? null,
+                'total'       => MoneyHandler::formatToString($item->financial->getTotalAvailableAttribute()) ?? null,
                 'itemtype'    => "GlpiPlugin\Tender\FinancialItem"
             ];
         })->toArray();
@@ -277,7 +262,7 @@ class Financial extends CommonDBTM   {
          'financials' => $financials,
          'footer_entries' => [
             0 => [
-               'value' => $total
+               'value' => MoneyHandler::formatToString($total)
             ]
          ],
          'years' => [
@@ -303,8 +288,6 @@ class Financial extends CommonDBTM   {
          ],
          'formatters' => [
             'name'  => 'raw_html',
-            'value' => 'float',
-            'total' => 'float',
         ],
          'total_number' => count($items),
          'entries' => $items,

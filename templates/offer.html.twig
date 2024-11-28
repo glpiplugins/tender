@@ -1,17 +1,30 @@
-{{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/tendersupplier.form.php'}}) }}
+{{ include('components/form/header.html.twig', {params: {target: '/plugins/tender/front/offer.form.php'}}) }}
 {% import 'components/form/fields_macros.html.twig' as fields %}
    <div class="card-body d-flex flex-wrap">
       <div class="col-12 col-xxl-{{ item_has_pictures ? '9' : '12' }} flex-column">
          <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
             <div class="row flex-row align-items-start flex-grow-1">
                <div class="row flex-row">
-                  {{ fields.dropdownField(
-                     'Supplier',
-                     'suppliers_id',
-                     '',
-                     __('Suppliers'),
-                     {'used': used}
-                  ) }}
+                    {{ fields.dropdownField(
+                        'Supplier',
+                        'suppliers_id',
+                        '',
+                        __('Suppliers'),
+                        {
+                           'used': used,
+                           'required': true
+                           }
+                    ) }}
+
+                    {{ fields.dateField(
+                        'offer_date',
+                        '',
+                        __('Offerdate', "tender"),
+                        {
+                           'required': true
+                        }
+                    ) }}
+
                   {{ fields.hiddenField(
                      'tenders_id',
                      item.fields['id']

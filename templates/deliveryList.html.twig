@@ -29,6 +29,7 @@
                      <thead>
                         <tr>
                            <th>{{__('Name', 'tender')}}</th>
+                           <th>{{__('Measure', 'tender')}}</th>
                            <th>{{__('Delivery Location', 'tender')}}</th>
                            <th>{{__('Target Location', 'tender')}}</th>
                            <th>{{__('Ordered Quantity', 'tender')}}</th>
@@ -39,9 +40,12 @@
                      <tbody>
                         {% for item in tenderitems %}
                         {% set pending_quantity = item.quantity - item.delivered_quantity %}
-                        <tr>
+                        <tr class="table-secondary">
                            <td>
                               {{ item.tenderitem_name }}
+                           </td>
+                           <td>
+                              {{ item.measure.name }}
                            </td>
                            <td>
                               {{ item.delivery_location_name }}
@@ -56,9 +60,9 @@
                               {{ item.delivered_quantity }}
                            </td>
                            <td>
-                              {% if pending_quantity > 0 %}
+                              {% if item.plugin_tender_measures_id != 0 and pending_quantity > 0 %}
                                  {{ fields.numberField(
-                                    'item[' ~ loop.index ~ '][quantity]',
+                                    'item[item' ~ item.id ~ '][quantity]',
                                     pending_quantity,
                                     '',
                                     {
@@ -67,15 +71,61 @@
                                        'min': 0
                                     }
                                  ) }}
-                              {% else %}
-                              {{ pending_quantity }}
                               {% endif %}
                               {{ fields.hiddenField(
-                                    'item[' ~ loop.index ~ '][plugin_tender_distributions_id]',
-                                    item.distributions_id
+                                    'item[item' ~ item.id ~ '][id]',
+                                    item.id,
+                                    '',
+                                    {
+                                       'no_label': true,
+                                    }
                               ) }}
                            </td>
                         </tr>
+                        {% for distribution in item.distributions %}
+                        {% set pending_quantity = distribution.quantity - distribution.delivered_quantity %}
+                        <tr>
+                           <td colspan="2"></td>
+                           <td>
+                              {{distribution.delivery_location.name}}
+                           </td>
+                           <td>
+                              {{distribution.location.name}}
+                           </td>
+                           <td>
+                              {% if item.plugin_tender_measures_id == 0 %}
+                                 {{distribution.quantity}}
+                              {% endif %}
+                           </td>
+                           <td>
+                              {% if item.plugin_tender_measures_id == 0 %}
+                                 {{ distribution.delivered_quantity ? distribution.delivered_quantity : 0 }}
+                              {% endif %}
+                           </td>
+                           <td>
+                              {% if item.plugin_tender_measures_id == 0 and pending_quantity > 0 %}
+                                 {{ fields.numberField(
+                                    'distribution[distribution' ~ distribution.id ~ '][quantity]',
+                                    pending_quantity,
+                                    '',
+                                    {
+                                       'no_label': true,
+                                       'max': pending_quantity,
+                                       'min': 0
+                                    }
+                                 ) }}
+                                 {{ fields.hiddenField(
+                                       'distribution[distribution' ~ distribution.id ~ '][plugin_tender_distributions_id]',
+                                       distribution.id,
+                                       '',
+                                       {
+                                          'no_label': true,
+                                       }
+                                 ) }}
+                              {% endif %}
+                           </td>
+                        </tr>
+                        {% endfor %}
                         {% endfor %}
                      </tbody>
                </table>

@@ -1,0 +1,12 @@
+<div id="app">
+  {% block body %}{% endblock %}
+</div>
+
+<script>
+  const { createApp, ref } = Vue
+
+  createApp({
+    delimiters: ['${', '}']
+  }).mount('#app')
+
+</script>

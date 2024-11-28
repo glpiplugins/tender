@@ -37,5 +37,8 @@ class DeliveryItemModel extends \Illuminate\Database\Eloquent\Model {
         return $this->belongsTo(DistributionModel::class, 'plugin_tender_distributions_id', 'id');
     }
 
+    public function getItemTypeAttribute() {
+        return 'GlpiPlugin\Tender\DeliveryItem';
+    }
 
 }

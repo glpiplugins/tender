@@ -3,7 +3,7 @@
 use GlpiPlugin\Tender\Invoice;
 use GlpiPlugin\Tender\InvoiceItem;
 use GlpiPlugin\Tender\InvoiceModel;
-use GlpiPlugin\Tender\InvoiceItemModel;
+use GlpiPlugin\Tender\TenderItemModel;
 
 include ("../../../inc/includes.php");
 
@@ -26,7 +26,27 @@ if (isset($_POST['add'])) {
 
    // $newid = $object->add($_POST);
    //Check CREATE ACL
-   $newid = InvoiceModel::create($_POST);
+   $newid = InvoiceModel::create($_POST)->id;
+
+   foreach ($_POST['distribution'] as $distribution) {
+      $invoiceitem = new InvoiceItem();
+      $distribution['plugin_tender_invoices_id'] = $newid;
+      $distribution['plugin_tender_distributions_id'] = $distribution['id'];
+      if (intval($distribution['quantity']) > 0) {
+         $invoiceitem->add($distribution);
+      }
+   }
+   foreach ($_POST['item'] as $item) {
+      $tenderItem = TenderItemModel::find($item['id']);
+      foreach ($tenderItem->distributions as $distribution) {
+         $invoiceitem = new InvoiceItem();
+         $item['plugin_tender_distributions_id'] = $distribution->id;
+         $item['plugin_tender_invoices_id'] = $newid;
+         if (intval($item['quantity']) > 0) {
+            $invoiceitem->add($item);
+         }
+      }
+   }
 
    foreach ($_POST['item'] as $item) {
       $invoiceitem = new InvoiceItem();

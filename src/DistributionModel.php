@@ -47,6 +47,7 @@ class DistributionModel extends \Illuminate\Database\Eloquent\Model {
 
         static::deleted(function (DistributionModel $distribution) {
             $distribution->tender_item?->updateQuantity();
+            $distribution->tender_item->tender->updateFinancialItemValue();
         });
     }
 
@@ -111,6 +112,18 @@ class DistributionModel extends \Illuminate\Database\Eloquent\Model {
     public function invoice_items(): HasMany
     {
         return $this->hasMany(InvoiceItemModel::class, 'plugin_tender_distributions_id', 'id');
+    }
+
+    public function getTotalNetAttribute() {
+        return $this->tender_item->distribution_allocation->firstWhere('id', $this->id)['total_net'];
+    }
+
+    public function getTotalTaxAttribute() {
+        return $this->tender_item->distribution_allocation->firstWhere('id', $this->id)['total_tax'];
+    }
+
+    public function getTotalGrossAttribute() {
+        return $this->tender_item->distribution_allocation->firstWhere('id', $this->id)['total_gross'];
     }
 
     public function getMeasureValue() {

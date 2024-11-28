@@ -18,14 +18,8 @@ class FinancialItem extends CommonDBTM   {
         return __('Financial Item', 'Financial Items');
     }
 
-   //  static function getIcon() {
-   //      return "fas fa-credit-card";
-   //   }
-
    public function getTabNameForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       if ($item->getType() == 'GlpiPlugin\Tender\Financial') {
-          // Hier können Sie prüfen, ob der Benutzer die Rechte hat, den Tab zu sehen
-          // und entsprechend den Namen zurückgeben oder false, wenn der Tab nicht angezeigt werden soll
           return __("Financial Item", "tender");
       }
       return '';
@@ -33,7 +27,6 @@ class FinancialItem extends CommonDBTM   {
 
    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       if ($item->getType() == 'GlpiPlugin\Tender\Financial') {
-         // Hier generieren Sie den Inhalt, der im Tab angezeigt werden soll
          self::showList($item);
       }
    }
@@ -57,55 +50,30 @@ class FinancialItem extends CommonDBTM   {
 
         global $DB;
         global $CFG_GLPI;
-    
-        $iterator = $DB->request([
-            'SELECT' => [
-                'glpi_plugin_tender_financialitems' => [
-                    'id',
-                    'year',
-                    'type',
-                    'value'
-                ],
-                'glpi_plugin_tender_tenders' => [
-                    'id as tenders_id',
-                    'name',
-                    'tender_subject'
-                ]
-            ],
-            'FROM' => 'glpi_plugin_tender_financialitems',
-            'LEFT JOIN' => [
-                'glpi_plugin_tender_tenders' => [
-                    'FKEY' => [
-                        'glpi_plugin_tender_financialitems' => 'plugin_tender_tenders_id',
-                        'glpi_plugin_tender_tenders' => 'id'
-                    ]
-                ]
-            ],
-            'WHERE' => [
-                'plugin_tender_financials_id' => $financial->getID()
-                ]
-        ]);
-  
-        $total = 0;
-        $items = [];
-        foreach ($iterator as $item) {
-            $item['itemtype'] = "GlpiPlugin\Tender\FinancialItem";
-            $item['view_details'] = '<a href="/plugins/tender/front/tenderitem.form.php?id=' . $item['id'] . '">' . __('View Details', 'tender'). '</a>';
-            $item['type_name'] = $item['type'] == 0 ? __('Expense', 'tender') : __('Income', 'tender');
-            $item['tender_link'] = $item['name'] !== NULL ? '<a href="/plugins/tender/front/tender.form.php?id=' . $item['tenders_id'] . '">' .$item['tender_subject'] . ' ' . $item['name'] . '</a>' : '';
-            if($item['type'] == 0) {
-                $item['value'] = $item['value'] * -1;
-            }
-            $items[] = $item;
-            $total += $item['value'];
-        }
+        
+        $financialItems = FinancialItemModel::where('plugin_tender_financials_id', $financial->getID())
+        ->get()
+        ->map(function($item) {
+            return [
+                'total_available'                   => $item->financial->total_available,
+                'id'                                => $item->id,
+                'year'                              => $item->year,
+                'type'                              => $item->type,
+                'value'                             => $item->type == 0 ? MoneyHandler::formatToString($item->value * -1) : MoneyHandler::formatToString($item->value),
+                'view_details'                      => '<a href="/plugins/tender/front/tenderitem.form.php?id=' . $item->id . '">' . __('View Details', 'tender'). '</a>',
+                'itemtype'                          => "GlpiPlugin\Tender\FinancialItem",
+                'type_name'                         => $item->type == 0 ? __('Expense', 'tender') : __('Income', 'tender'),
+                'tender_link'                       => $item->tender ? '<a href="/plugins/tender/front/tender.form.php?id=' . $item->tender->id . '">' . $item->tender->tender_subject . '/' . $item->tender->name . '</a>' : '',
+            ];
+        });
+
   
         TemplateRenderer::getInstance()->display('@tender/financialItemList.html.twig', [
             'item'   => $financial,
-            'financialItems' => $items,
+            'financialItems' => $financialItems,
             'footer_entries' => [
               0 => [
-                  'value' => $total,
+                  'value' => MoneyHandler::formatToString($financialItems->first()['total_available'] ?? 0),
               ]
             ],
             'years' => [
@@ -134,14 +102,13 @@ class FinancialItem extends CommonDBTM   {
            'formatters' => [
                   'view_details' => 'raw_html',
                   'tender_link' => 'raw_html',
-                  'value' => 'float',
             ],
-            'total_number' => count($items),
-            'entries' => $items,
-            'used' => array_column($items, 'id'),
+            'total_number' => count($financialItems),
+            'entries' => $financialItems,
+            'used' => $financialItems,
             'showmassiveactions'    => true,
             'massiveactionparams' => [
-                'num_displayed'    => min($_SESSION['glpilist_limit'], count($items)),
+                'num_displayed'    => min($_SESSION['glpilist_limit'], count($financialItems)),
                 'container'        => 'massGlpiPluginTenderFinancialItem' . mt_rand(),
                 'specific_actions' => [
                     // 'delete' => __('Delete permanently'),
@@ -220,18 +187,6 @@ class FinancialItem extends CommonDBTM   {
             'injectable'         => true
          ];
 
-        // $tab[] = [
-        //     'id'            => '9',
-        //     'table'         => 'glpi_plugin_tender_financials',
-        //     'field'         => 'name',
-        //     'name'          => __('Financial'),
-        //     'datatype'      => 'itemlink',
-        //     'itemlink_type' => 'GlpiPlugin\Tender\Financial',
-        //     'massiveaction' => false,
-        //     'joinparams'    => ['jointype' => 'child'],
-        //     'injectable'    => true
-        //  ];
-
         $tab[] = [
             'id'                 => '9',
             'table'              => 'glpi_plugin_tender_financials',
@@ -283,14 +238,24 @@ class FinancialItem extends CommonDBTM   {
                 $input = $ma->getInput();
   
                 foreach ($ids as $id) {
-                 
-                    if ($item->getFromDB($id)
-                        && $item->deleteFromDB()) {
-                    
-                    $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                    $financialItem = FinancialItemModel::find($id);
+                    $hasMatchingDistribution = FinancialItemModel::where('id', $id)
+                        ->whereHas('tender.distributions', function ($query) use ($financialItem) {
+                            $query->where('plugin_tender_financials_id', $financialItem->plugin_tender_financials_id);
+                        })->exists();
+
+                    if (!$hasMatchingDistribution) {
+                        if ($item->getFromDB($id)
+                            && $item->deleteFromDB()) {
+                        
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                        } else {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                        $ma->addMessage(__("Something went wrong"));
+                        }
                     } else {
-                    $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
-                    $ma->addMessage(__("Something went wrong"));
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                        $ma->addMessage(__("Something went wrong"));
                     }
                 }
                 return;

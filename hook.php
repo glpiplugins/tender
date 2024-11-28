@@ -29,7 +29,7 @@
  * --------------------------------------------------------------------------
  */
 
-use GlpiPlugin\Tender\TenderSupplier;
+use GlpiPlugin\Tender\Offer;
 use GlpiPlugin\Tender\Tender;
 
 /**
@@ -81,7 +81,7 @@ function plugin_tender_uninstall()
 
     // $tables = [
     //     "glpi_plugin_tender_tenders",
-    //     "glpi_plugin_tender_tendersuppliers",
+    //     "offers",
     //     "glpi_plugin_tender_tenderitems",
     //     "glpi_plugin_tender_distributions",
     //     "glpi_plugin_tender_catalogueitems",

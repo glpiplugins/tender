@@ -20,7 +20,7 @@ class MeasureModel extends \Illuminate\Database\Eloquent\Model {
     /**
      * Get the measureitems for the measure.
      */
-    public function measureitems(): HasMany
+    public function measure_items(): HasMany
     {
         return $this->hasMany(MeasureItemModel::class, 'plugin_tender_measures_id', 'id');
     }
@@ -28,7 +28,7 @@ class MeasureModel extends \Illuminate\Database\Eloquent\Model {
     /**
      * Get the tenderitems for the measure.
      */
-    public function tenderitems(): HasMany
+    public function tender_items(): HasMany
     {
         return $this->hasMany(TenderItemModel::class, 'plugin_tender_measures_id', 'id');
     }

@@ -21,11 +21,11 @@ class SupplierModel extends \Illuminate\Database\Eloquent\Model {
     const UPDATED_AT = 'date_mod';
 
     /**
-     * Get the tender_suppliers for the supplier.
+     * Get the offers for the supplier.
      */
-    public function tender_suppliers(): HasMany
+    public function offers(): HasMany
     {
-        return $this->hasMany(TenderSupplierModel::class, 'suppliers_id', 'id');
+        return $this->hasMany(OfferModel::class, 'suppliers_id', 'id');
     }
 
 }
