@@ -82,12 +82,7 @@ class InvoiceModel extends \Illuminate\Database\Eloquent\Model {
             'invoice_number'    => $this->name,
             'invoice_date'      => $this->invoice_date,
             'due_date'          => $this->due_date,
-            'total_gross'       => number_format(
-                                    $this->total_gross,
-                                    2, // decimals
-                                    ',', // decimal_seperator
-                                    '.' // thousands_separator
-                                ),
+            'total_gross'       => MoneyHandler::formatToString($this->total_gross),
             'posting_text'      => $this->posting_text,
             'current_date'      => date('Y-m-d'),
             'financials'        => $this->financials
@@ -114,12 +109,7 @@ class InvoiceModel extends \Illuminate\Database\Eloquent\Model {
                             'costcenter'                    => $financial->costcenter->name ?? null,
                             'account'                       => $financial->account->name ?? null,
                             'reference'                     => $financial->reference ?? null,
-                            'total_gross'                   => number_format(
-                                $group->sum('total_gross'),
-                                2, // decimals
-                                ',', // decimal_seperator
-                                '.' // thousands_separator
-                            )
+                            'total_gross'                   => MoneyHandler::formatToString(MoneyHandler::sum($group->pluck('total_gross')->toArray())->getAmount())
                         ];
                     })
                     ->values() // Optional: Setze die Schlüssel zurück
