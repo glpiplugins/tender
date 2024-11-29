@@ -86,6 +86,7 @@ class Invoice extends CommonDBTM   {
                     return [
                         'delivery_location_name'    => $item->delivery_location->name,
                         'location_name'             => $item->location->name,
+                        'financial'                 => $item->financial->name,
                         'quantity'                  => $item->quantity,
                         'invoiced_quantity'         => $item->invoiced_quantity
                     ];
