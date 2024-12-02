@@ -28,6 +28,7 @@ if (isset($_POST['add'])) {
    foreach ($_POST['distribution'] as $distribution) {
       $deliveryitem = new DeliveryItem();
       $distribution['plugin_tender_deliveries_id'] = $newid;
+      unset($distribution['id']);
       if (intval($distribution['quantity']) > 0) {
          $deliveryitem->add($distribution);
       }
@@ -38,6 +39,7 @@ if (isset($_POST['add'])) {
          $deliveryitem = new DeliveryItem();
          $item['plugin_tender_distributions_id'] = $distribution->id;
          $item['plugin_tender_deliveries_id'] = $newid;
+         unset($item['id']);
          if (intval($item['quantity']) > 0) {
             $deliveryitem->add($item);
          }

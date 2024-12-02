@@ -77,6 +77,11 @@ class Delivery extends CommonDBTM   {
     // ->toArray();
     ->groupBy('plugin_tender_tenderitems_id')
     ->map(function($item) {
+        if ($item->first()->tender_item->plugin_tender_measures_id != 0) {
+            $delivered_quantity = $item->sum('delivered_quantity') > 0 ? $item->first()->tender_item->quantity : 0;
+        } else {
+            $delivered_quantity = $item->sum('delivered_quantity');
+        }
         return [
             'id'                                => $item->first()->delivery_items->first()->id ?? null,
             'plugin_tender_tenderitems_id'      => $item->first()->tender_item->id,
@@ -84,7 +89,7 @@ class Delivery extends CommonDBTM   {
             'name'                              => $item->first()->tender_item->name,
             'measure'                           => $item->first()->tender_item->measure->name ?? null,
             'plugin_tender_measures_id'         => $item->first()->tender_item->plugin_tender_measures_id,
-            'delivered_quantity'                => $item->sum('delivered_quantity'),
+            'delivered_quantity'                => $delivered_quantity,
             'child_entries'                     => $item->map(function($item) {
                 return [
                     'delivery_location_name'    => $item->delivery_location->name,
@@ -167,14 +172,18 @@ class Delivery extends CommonDBTM   {
         ->get()
         ->groupBy('plugin_tender_tenderitems_id')
         ->map(function($item) {
-            $tst = $item->first()->tender_item;
+            if ($item->first()->tender_item->plugin_tender_measures_id != 0) {
+                $delivered_quantity = $item->sum('delivered_quantity') > 0 ? $item->first()->tender_item->quantity : 0;
+            } else {
+                $delivered_quantity = $item->sum('delivered_quantity');
+            }
             return [
                 'id'                        => $item->first()->tender_item->id,
                 'quantity'                  => $item->first()->tender_item->quantity,
                 'tenderitem_name'           => $item->first()->tender_item->name,
                 'measure'                   => $item->first()->tender_item->measure,
                 'plugin_tender_measures_id' => $item->first()->tender_item->plugin_tender_measures_id,
-                'delivered_quantity'        => $item->sum('delivered_quantity'),
+                'delivered_quantity'        => $delivered_quantity,
                 'distributions'             => $item
             ];
         })

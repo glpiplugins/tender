@@ -32,6 +32,7 @@ if (isset($_POST['add'])) {
       $invoiceitem = new InvoiceItem();
       $distribution['plugin_tender_invoices_id'] = $newid;
       $distribution['plugin_tender_distributions_id'] = $distribution['id'];
+      unset($distribution['id']);
       if (intval($distribution['quantity']) > 0) {
          $invoiceitem->add($distribution);
       }
@@ -42,6 +43,7 @@ if (isset($_POST['add'])) {
          $invoiceitem = new InvoiceItem();
          $item['plugin_tender_distributions_id'] = $distribution->id;
          $item['plugin_tender_invoices_id'] = $newid;
+         unset($item['id']);
          if (intval($item['quantity']) > 0) {
             $invoiceitem->add($item);
          }

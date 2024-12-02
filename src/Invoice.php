@@ -69,6 +69,13 @@ class Invoice extends CommonDBTM   {
         ->get()
         ->groupBy('plugin_tender_tenderitems_id')
         ->map(function($item) {
+            if ($item->first()->tender_item->plugin_tender_measures_id != 0) {
+                $delivered_quantity = $item->sum('delivered_quantity') > 0 ? $item->first()->tender_item->quantity : 0;
+                $invoiced_quantity = $item->sum('invoiced_quantity') > 0 ? $item->first()->tender_item->quantity : 0;
+            } else {
+                $delivered_quantity = $item->sum('delivered_quantity');
+                $invoiced_quantity = $item->sum('invoiced_quantity');
+            }
             return [
                 'id'                                => $item->first()->invoice_items->first()->id ?? null,
                 'plugin_tender_tenderitems_id'      => $item->first()->tender_item->id,
@@ -76,7 +83,8 @@ class Invoice extends CommonDBTM   {
                 'name'                              => $item->first()->tender_item->name,
                 'measure'                           => $item->first()->tender_item->measure->name ?? null,
                 'plugin_tender_measures_id'         => $item->first()->tender_item->plugin_tender_measures_id,
-                'invoiced_quantity'                 => $item->first()->tender_item->plugin_tender_measures_id != 0 ? $item->first()->tender_item->quantity : $item->sum('invoiced_quantity'),
+                'delivered_quantity'                => $delivered_quantity,
+                'invoiced_quantity'                 => $invoiced_quantity,
                 'net_price'                         => MoneyHandler::formatToString($item->first()->tender_item->net_price),
                 'tax'                               => $item->first()->tender_item->tax,
                 'total_net'                         => MoneyHandler::formatToString($item->first()->tender_item->total_net),
@@ -180,15 +188,23 @@ class Invoice extends CommonDBTM   {
     })
     ->get()
     ->groupBy('plugin_tender_tenderitems_id')
-    ->map(function($item) {
+    ->map(function($item) { {}
+        if ($item->first()->tender_item->plugin_tender_measures_id != 0) {
+            $delivered_quantity = $item->sum('delivered_quantity') > 0 ? $item->first()->tender_item->quantity : 0;
+            $invoiced_quantity = $item->sum('invoiced_quantity') > 0 ? $item->first()->tender_item->quantity : 0;
+        } else {
+            $delivered_quantity = $item->sum('delivered_quantity');
+            $invoiced_quantity = $item->sum('invoiced_quantity');
+        }
+       
         return [
             'id'                        => $item->first()->tender_item->id,
             'quantity'                  => $item->first()->tender_item->quantity,
             'tenderitem_name'           => $item->first()->tender_item->name,
             'measure'                   => $item->first()->tender_item->measure,
             'plugin_tender_measures_id' => $item->first()->tender_item->plugin_tender_measures_id,
-            'delivered_quantity'        => $item->sum('delivered_quantity'),
-            'invoiced_quantity'         => $item->first()->tender_item->plugin_tender_measures_id != 0 ? $item->first()->tender_item->quantity : $item->sum('invoiced_quantity'),
+            'delivered_quantity'        => $delivered_quantity,
+            'invoiced_quantity'         => $invoiced_quantity,
             'net_price'                 => $item->first()->tender_item->net_price,
             'tax'                       => $item->first()->tender_item->tax,
             'total_net'                 => MoneyHandler::formatToString($item->first()->tender_item->total_net),
